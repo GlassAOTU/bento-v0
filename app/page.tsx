@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { fetchAnimeDetails } from "./api/anilist/route"
+import TagButton from "@/components/TagButton"
 
 export default function Home() {
 
@@ -96,7 +97,7 @@ export default function Home() {
             setIsLoading(false);
         }
     };
-    
+
     return (
         <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16">
 
@@ -123,28 +124,18 @@ export default function Home() {
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                        {[
-                            "Adventure",
-                            "Isekai",
-                            "Comedy",
-                            "Horror",
-                            "Sci-Fi",
-                            "Slice of Life",
-                            "Action",
-                            "Shonen",
-                            "Retro",
-                            "90s",
-                            "Fun",
-                            "Hello",
-                        ].map((tag) => (
-                            <Button
-                                key={tag}
-                                variant="outline"
-                                className="rounded-lg border border-[#d9d9d9] bg-white text-[#4a4023] hover:bg-[#f5f2ec] px-4 py-1 h-auto"
-                            >
-                                {tag}
-                            </Button>
-                        ))}
+                        {tags.map((tag) => {
+                            const isSelected = selectedTags.includes(tag);
+                            return (
+                                <TagButton
+                                    key={tag}
+                                    label={tag}
+                                    isSelected={selectedTags.includes(tag)}
+                                    onClick={() => handleTagClick(tag)}
+                                />
+
+                            );
+                        })}
                     </div>
                 </div>
 
