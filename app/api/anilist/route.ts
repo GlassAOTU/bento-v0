@@ -1,5 +1,5 @@
 export async function fetchAnimeDetails(animeTitle: string) {
-  const query = `
+    const query = `
     query ($search: String) {
       Media(search: $search, type: ANIME) {
         title {
@@ -12,24 +12,31 @@ export async function fetchAnimeDetails(animeTitle: string) {
           url
           site
         }
+        description(asHtml: false)
       }
     }
   `;
 
-  const variables = { search: animeTitle };
+    const variables = { search: animeTitle };
 
-  const response = await fetch("https://graphql.anilist.co", {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query, variables }),
-  });
+    const response = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query, variables }),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  return {
-      coverImage: data?.data?.Media?.coverImage?.large || "",
-      streamingLink: data?.data?.Media?.streamingEpisodes?.[0] || null // Grab only the first link
-  };
+    return {
+        coverImage: data?.data?.Media?.coverImage?.large || "",
+        streamingLink: data?.data?.Media?.streamingEpisodes?.[0] || null, // Grab only the first link
+        description: (data?.data?.Media?.description || "No description available")
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<[^>]+>/g, "")
+            .replace(/\(Source:.*?\)/gi, "")
+            .replace(/\s*\n\s*/g, "\n")
+            .trim()
+    };
 }
