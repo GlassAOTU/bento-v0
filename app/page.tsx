@@ -15,6 +15,7 @@ export default function Home() {
     const [customTag, setCustomTag] = useState("")   // stores user tag input
     const [description, setDescription] = useState("")
     const [recommendations, setRecommendations] = useState<{ title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[]>([]);
+    const [seenTitles, setSeenTitles] = useState<string[]>([]); // stores titles of games already seen
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
 
@@ -62,6 +63,12 @@ export default function Home() {
         }
     };
 
+    const addSeenTitle = (title: string) => {
+        if (!seenTitles.includes(title)) {   // checks to see if the seenTitles array already included the title
+            setSeenTitles([...seenTitles, title])    // adds title to the end seenTitles array
+        }
+    }
+
     const handleGetRecommendations = async () => {
         setIsLoading(true);
         setError("");
@@ -70,7 +77,7 @@ export default function Home() {
             const response = await fetch("/api/recommendations", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ description, tags: selectedTags }),
+                body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
             });
 
             if (!response.ok) throw new Error("Failed to get recommendations");
@@ -80,17 +87,22 @@ export default function Home() {
             const animeFinish: { title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[] = [];
 
             for (const title of animeList) {
-                const { description, coverImage, streamingLink } = await fetchAnimeDetails(title);
-            
-                animeFinish.push({
-                    title,
-                    description,
-                    image: coverImage,
-                    streamingLink
-                });
-            }
-            
 
+                if (seenTitles.includes(title)) continue;
+
+                try {
+                    const { description, coverImage, streamingLink } = await fetchAnimeDetails(title);
+                    animeFinish.push({
+                        title,
+                        description,
+                        image: coverImage,
+                        streamingLink
+                    });
+                    setSeenTitles(prev => [...prev, title]);
+                } catch (e) {
+                    console.warn(`Failed to fetch details for: ${title}`, e);
+                }
+            }
             setRecommendations(animeFinish);
         } catch (err) {
             setError("Failed to get recommendations. Please try again.");
