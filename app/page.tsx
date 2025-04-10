@@ -1,9 +1,102 @@
+'use client'
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react"
+import { fetchAnimeDetails } from "./api/anilist/route"
 
 export default function Home() {
+
+    const [selectedTags, setSelectedTags] = useState<string[]>([])  // state of empty array of string, initalized to an empty array
+    const [customTag, setCustomTag] = useState("")   // stores user tag input
+    const [description, setDescription] = useState("")
+    const [recommendations, setRecommendations] = useState<{ title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[]>([]);
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState("")
+
+    const tags = [
+        "Shonen",
+        "Isekai",
+        "Fantasy",
+        "Slice of Life",
+        "Sci-Fi",
+        "Romance",
+        "Comedy",
+        "Sports",
+        "Horror",
+        "Psychological",
+        "Retro",
+        "Long runners",
+        "Quick watches"
+    ]
+
+    const handleTagClick = (tag: string) => {
+        if (selectedTags.includes(tag)) {   // checks to see if the selectedTags array already included the tag
+            setSelectedTags(selectedTags.filter(t => t !== tag))    // removes tag from the selectedTags array
+        } else if (selectedTags.length < 5) {   // if there is space for more tags
+            setSelectedTags([...selectedTags, tag])     // adds tag to the end selectedTags array
+        }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCustomTag(e.target.value);
+    };
+
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();  // Prevent accidental form submission
+
+            const trimmedTag = customTag.trim();
+            if (!trimmedTag) return; // Ignore empty input
+
+            // Check for duplicates and tag limit
+            if (!selectedTags.includes(trimmedTag) && selectedTags.length < 5) {
+                setSelectedTags([...selectedTags, trimmedTag]); // Add new tag
+            }
+
+            setCustomTag(""); // Clear input
+        }
+    };
+
+    const handleGetRecommendations = async () => {
+        setIsLoading(true);
+        setError("");
+
+        try {
+            const response = await fetch("/api/recommendations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description, tags: selectedTags }),
+            });
+
+            if (!response.ok) throw new Error("Failed to get recommendations");
+
+            const data = await response.json();
+            const animeList: string[] = data.recommendations.split(" | ");
+            const animeFinish: { title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[] = [];
+
+            for (const anime of animeList) {
+                const [title, description] = anime.split(" ~ ");
+                const { coverImage, streamingLink } = await fetchAnimeDetails(title);
+
+                animeFinish.push({
+                    title,
+                    description,
+                    image: coverImage,
+                    streamingLink  // This is now a single link, not an array
+                });
+            }
+
+            setRecommendations(animeFinish);
+        } catch (err) {
+            setError("Failed to get recommendations. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
     return (
         <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16">
 
