@@ -20,7 +20,8 @@ export async function POST(request: Request) {
                     Give only official anime titles, no fan-made or unofficial titles, no fandubs, no expansions, extra content, or spin-offs.
                     If the anime has a remake, use the remake title.
                     Do not repeat any animes that are already in the ${seenTitles} list.
-                    If user input is nonsence, respond with 000 and only 000.
+                    If user input is nonsence, disregard it and only accept premade tags and ignore the description.
+                    If all else fails, display random animes from the list of 1000 most popular animes.
 
                     Input:
                     Description: ${description || "None"}
