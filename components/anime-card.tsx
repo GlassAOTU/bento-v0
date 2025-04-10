@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
-export default function AnimeCard({ item }: { item: { title: string; description: string; image: string; streamingLink: { url: string; site: string } | null } }) {
+export default function AnimeCard({ item }: { item: { title: string; description: string; image: string; externalLinks: { url: string; site: string } | null } }) {
     return (
         <div className="flex gap-6 rounded-lg font-sans">
             <div className="w-40 h-52 max-w-[160px] max-h-[208px] flex-shrink-0 rounded-md overflow-hidden shadow-md">
@@ -20,10 +20,10 @@ export default function AnimeCard({ item }: { item: { title: string; description
                     {item.description}
                 </p>
 
-                {item.streamingLink && (
+                {item.externalLinks && (
                     <div className="self-start">
-                        <a href={item.streamingLink.url} target="_blank" rel="noopener noreferrer" className="inline-block">
-                            <button className="px-4 py-1 rounded-md border border-black hover:bg-[#e6e3df] transition-colors font-bold">{item.streamingLink.site}</button>
+                        <a href={item.externalLinks.url} target="_blank" rel="noopener noreferrer" className="inline-block">
+                            <button className="px-4 py-1 rounded-md border border-black hover:bg-[#e6e3df] transition-colors font-bold">{item.externalLinks.site}</button>
                         </a>
                     </div>
                 )}
