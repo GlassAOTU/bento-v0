@@ -14,7 +14,7 @@ export default function Home() {
     const [selectedTags, setSelectedTags] = useState<string[]>([])  // state of empty array of string, initalized to an empty array
     const [customTag, setCustomTag] = useState("")   // stores user tag input
     const [description, setDescription] = useState("")
-    const [recommendations, setRecommendations] = useState<{ title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[]>([]);
+    const [recommendations, setRecommendations] = useState<{ title: string; description: string; image: string; externalLinks: { url: string; site: string } | null }[]>([]);
     const [seenTitles, setSeenTitles] = useState<string[]>([]); // stores titles of games already seen
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
@@ -84,26 +84,22 @@ export default function Home() {
 
             const data = await response.json();
             const animeList: string[] = data.recommendations.split(" | ");
-            const animeFinish: { title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[] = [];
+            const newSeenTitles = [...seenTitles];
+            const animeFinish: { title: string; description: string; image: string; externalLinks: { url: string; site: string } | null }[] = [];
 
             for (const title of animeList) {
-
-                if (seenTitles.includes(title)) continue;
+                if (newSeenTitles.includes(title)) continue;
 
                 try {
-                    const { description, coverImage, streamingLink } = await fetchAnimeDetails(title);
-                    animeFinish.push({
-                        title,
-                        description,
-                        image: coverImage,
-                        streamingLink
-                    });
-                    setSeenTitles(prev => [...prev, title]);
+                    const { description, coverImage, externalLinks } = await fetchAnimeDetails(title);
+                    animeFinish.push({ title, description, image: coverImage, externalLinks });
+                    newSeenTitles.push(title);
                 } catch (e) {
                     console.warn(`Failed to fetch details for: ${title}`, e);
                 }
             }
-            setRecommendations(animeFinish);
+            setSeenTitles(newSeenTitles);
+            setRecommendations(prev => [...animeFinish, ...prev]);
         } catch (err) {
             setError("Failed to get recommendations. Please try again.");
         } finally {
@@ -114,6 +110,7 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-[#fffcf8] text-black pb-16 font-sans">
 
+            {/* banner */}
             <section className="w-full flex justify-center">
                 <Image
                     src="/images/banner.png"
@@ -123,10 +120,9 @@ export default function Home() {
                     className="w-full max-w-[1200px] h-auto mb-6 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                 />
             </section>
-            {/* aligning and centering page */}
-            <div className="max-w-3xl flex flex-col mx-auto gap-8">
-                {/* banner image */}
 
+            {/* aligning and centering page */}
+            <div className="max-w-4xl flex flex-col mx-auto gap-8 px-10">
 
                 {/* user description section */}
                 <section className="">
@@ -136,7 +132,7 @@ export default function Home() {
                     {/* user input */}
                     <input
                         placeholder="Write your description..."
-                        className="w-full rounded-md border border-black px-4 py-6 bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                        className="w-full rounded-md border font-mono border-black px-4 py-6 bg-white focus:outline-none focus:ring-1 focus:ring-black"
                         value={description} onChange={(e) => setDescription(e.target.value)}
                     />
                 </section>
