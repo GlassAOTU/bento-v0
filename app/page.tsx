@@ -160,10 +160,31 @@ export default function Home() {
 
                                 );
                             })}
-                            {/* <input
-                                placeholder="Choose custom tag"
-                                className="pl-2 border border-black placeholder:text-black placeholder:text-center text-black bg-[#fffcf8] font-mono rounded-lg"
-                            /> */}
+
+                            {/* Render custom tags that weren't in the original list */}
+                            {selectedTags
+                                .filter((tag) => !tags.includes(tag)) // Only show truly custom tags
+                                .map((tag) => (
+                                    <TagButton
+                                        key={tag}
+                                        label={tag}
+                                        isSelected={selectedTags.includes(tag)}
+                                        onClick={() => handleTagClick(tag)}
+                                    />
+
+                                ))}
+
+                            {/* Custom tag input (only if less than 5 tags are selected) */}
+                            {selectedTags.length < 5 && (
+                                <input
+                                    type="text"
+                                    placeholder="Type a tag..."
+                                    value={customTag}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleInputKeyDown}
+                                    className="text-sm font-mono px-2 py-1.5 rounded-md border border-black w-36 focus:outline-none focus:ring-1 focus:ring-black"
+                                />
+                            )}
                         </div>
                     </div>
 
