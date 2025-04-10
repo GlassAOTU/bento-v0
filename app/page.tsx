@@ -108,7 +108,7 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] text-black pb-16 font-sans">
+        <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16 font-sans">
 
             {/* banner */}
             <section className="w-full flex justify-center">
@@ -132,7 +132,7 @@ export default function Home() {
                     {/* user input */}
                     <input
                         placeholder="Write your description..."
-                        className="w-full rounded-md border font-mono border-black px-4 py-6 bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                        className="w-full rounded-md border font-mono border-[#4a4023]/50 px-4 py-6 bg-white focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
                         value={description} onChange={(e) => setDescription(e.target.value)}
                     />
                 </section>
@@ -153,7 +153,6 @@ export default function Home() {
                                         isSelected={selectedTags.includes(tag)}
                                         onClick={() => handleTagClick(tag)}
                                     />
-
                                 );
                             })}
 
@@ -178,7 +177,7 @@ export default function Home() {
                                     value={customTag}
                                     onChange={handleInputChange}
                                     onKeyDown={handleInputKeyDown}
-                                    className="text-sm font-mono px-2 py-1.5 rounded-md border border-black w-36 focus:outline-none focus:ring-1 focus:ring-black"
+                                    className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 w-48 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
                                 />
                             )}
                         </div>
@@ -189,7 +188,15 @@ export default function Home() {
                 <hr />
 
                 {/* Search Button */}
-                <button className="w-full mx-auto py-4 rounded-lg bg-stone-800 hover:bg-stone-900 transition-colors text-white" disabled={(!description && selectedTags.length === 0) || isLoading} onClick={handleGetRecommendations}>
+                <button
+                    className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white
+    ${isLoading || (!description && selectedTags.length === 0)
+                            ? "bg-[#000000] cursor-not-allowed"
+                            : "bg-[#4a4023] hover:bg-[#3b341c] cursor-pointer"}
+  `}
+                    disabled={isLoading || (!description && selectedTags.length === 0)}
+                    onClick={handleGetRecommendations}
+                >
                     {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
                 </button>
                 {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
