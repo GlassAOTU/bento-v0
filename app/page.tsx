@@ -99,7 +99,19 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16">
+        <div className="min-h-screen bg-[#fffcf8] text-black pb-16 font-sans">
+
+            <div className="w-full flex justify-center">
+                <Image
+                    src="/images/banner.png"
+                    alt="Banner"
+                    width={1200} // just a reference size
+                    height={300}
+                    className="w-full max-w-[1200px] h-auto"
+                />
+            </div>
+
+
 
             {/* Description Section */}
             <div className="max-w-3xl mx-auto px-6 mt-8">
