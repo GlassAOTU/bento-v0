@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button"
 
 export default function AnimeCard({ item }: { item: { title: string; description: string; image: string; externalLinks: { url: string; site: string } | null } }) {
     return (
-        <div className="flex gap-6 rounded-lg">
-            <div className="w-40 h-52 max-w-[160px] max-h-[208px] flex-shrink-0 rounded-md overflow-hidden shadow-md">
+        <div className="flex gap-6 rounded-lg flex-col sm:flex-row">
+            <div className="w-40 h-52 max-w-[160px] max-h-[208px] rounded-md overflow-hidden shadow-md">
                 <Image
                     src={item.image || 'images/placeholder.png'} alt={item.title}
                     width={200}
