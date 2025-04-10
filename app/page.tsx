@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { fetchAnimeDetails } from "./api/anilist/route"
-import TagButton from "@/components/TagButton"
+import TagButton from "@/components/tag-button"
+import AnimeCard from "@/components/anime-card"
 
 export default function Home() {
 
@@ -78,17 +79,17 @@ export default function Home() {
             const animeList: string[] = data.recommendations.split(" | ");
             const animeFinish: { title: string; description: string; image: string; streamingLink: { url: string; site: string } | null }[] = [];
 
-            for (const anime of animeList) {
-                const [title, description] = anime.split(" ~ ");
-                const { coverImage, streamingLink } = await fetchAnimeDetails(title);
-
+            for (const title of animeList) {
+                const { description, coverImage, streamingLink } = await fetchAnimeDetails(title);
+            
                 animeFinish.push({
                     title,
                     description,
                     image: coverImage,
-                    streamingLink  // This is now a single link, not an array
+                    streamingLink
                 });
             }
+            
 
             setRecommendations(animeFinish);
         } catch (err) {
@@ -101,91 +102,84 @@ export default function Home() {
     return (
         <div className="min-h-screen bg-[#fffcf8] text-black pb-16 font-sans">
 
-            <div className="w-full flex justify-center">
+            <section className="w-full flex justify-center">
                 <Image
                     src="/images/banner.png"
                     alt="Banner"
-                    width={1200} // just a reference size
+                    width={600} // just a reference size
                     height={300}
-                    className="w-full max-w-[1200px] h-auto"
+                    className="w-full max-w-[1200px] h-auto mb-6 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                 />
-            </div>
+            </section>
+            {/* aligning and centering page */}
+            <div className="max-w-3xl flex flex-col mx-auto gap-8">
+                {/* banner image */}
 
 
+                {/* user description section */}
+                <section className="">
+                    <p className="mb-2 text-xl">Share a short description of what you're looking for / choose some tags.</p>
+                    <p className="mb-4 text-xl">We take care of the rest</p>
 
-            {/* Description Section */}
-            <div className="max-w-3xl mx-auto px-6 mt-8">
-                <p className="text-[#4a4023] mb-2">Share a short description of what you're looking for / choose some tags.</p>
-                <p className="text-[#4a4023] mb-4">We take care of the rest</p>
+                    {/* user input */}
+                    <input
+                        placeholder="Write your description..."
+                        className="w-full rounded-md border border-black px-4 py-6 bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                        value={description} onChange={(e) => setDescription(e.target.value)}
+                    />
+                </section>
 
-                <Input
-                    placeholder="Write your description..."
-                    className="w-full border border-[#d9d9d9] rounded-lg p-4 bg-white text-[#4a4023]"
-                />
+                <hr />
 
                 {/* Tags Section */}
-                <div className="mt-8">
-                    <div className="flex justify-between items-center mb-4">
-                        <p className="text-[#4a4023]">Tags (Choose up to 5)</p>
-                        <div className="relative">
-                            <Input
+                <section className="">
+                    <div className="flex flex-col justify-between gap-3">
+                        <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-2">
+                            {tags.map((tag) => {
+                                const isSelected = selectedTags.includes(tag);
+                                return (
+                                    <TagButton
+                                        key={tag}
+                                        label={tag}
+                                        isSelected={selectedTags.includes(tag)}
+                                        onClick={() => handleTagClick(tag)}
+                                    />
+
+                                );
+                            })}
+                            {/* <input
                                 placeholder="Choose custom tag"
-                                className="border border-[#d9d9d9] rounded-lg px-3 py-1 bg-white text-[#4a4023]"
-                            />
+                                className="pl-2 border border-black placeholder:text-black placeholder:text-center text-black bg-[#fffcf8] font-mono rounded-lg"
+                            /> */}
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                        {tags.map((tag) => {
-                            const isSelected = selectedTags.includes(tag);
-                            return (
-                                <TagButton
-                                    key={tag}
-                                    label={tag}
-                                    isSelected={selectedTags.includes(tag)}
-                                    onClick={() => handleTagClick(tag)}
-                                />
+                </section>
 
-                            );
-                        })}
-                    </div>
-                </div>
+                <hr />
 
-                {/* Recommendations */}
-                <div className="mt-12 space-y-6">
-                    {[1, 2, 3, 4, 5].map((item) => (
-                        <div key={item} className="flex gap-4 border border-[#d9d9d9] rounded-lg p-4 bg-white">
-                            <div className="w-32 h-24 flex-shrink-0">
-                                <Image
-                                    src="/placeholder.svg?height=96&width=128"
-                                    alt="Anime thumbnail"
-                                    width={128}
-                                    height={96}
-                                    className="w-full h-full object-cover rounded-md"
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="font-bold text-lg text-[#4a4023]">Frieren: Beyond Journey's End</h3>
-                                <p className="text-sm text-[#4a4023] mt-1 line-clamp-4">
-                                    During their decade-long quest to defeat the Demon King, the hero Himmel and his companions —priest
-                                    Heiter, dwarf warrior Eisen, and elven mage Frieren—forge deep bonds through countless adventures,
-                                    creating cherished memories for most of them. However, for Frieren, whose life spans over a thousand
-                                    years, this time is but a fleeting moment. After their victory, she resumes her solitary pursuit of
-                                    collecting spells, seemingly indifferent to their shared past. Yet, as the years pass and she
-                                    witnesses the deaths of her former comrades, she comes to regret taking their presence for granted.
-                                    Determined to understand human emotions and forge true connections, Frieren embarks on a new
-                                    journey—one of self-discovery and genuine companionship.
-                                </p>
-                                <Button
-                                    variant="outline"
-                                    className="mt-2 rounded-md border border-[#d9d9d9] bg-white text-[#4a4023] hover:bg-[#f5f2ec] px-4 py-1 h-auto"
-                                >
-                                    Where to watch it
-                                </Button>
-                            </div>
+                {/* Search Button */}
+                <button className="w-full mx-auto py-4 rounded-lg bg-stone-800 hover:bg-stone-900 transition-colors text-white" disabled={(!description && selectedTags.length === 0) || isLoading} onClick={handleGetRecommendations}>
+                    {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
+                </button>
+                {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+
+                <hr />
+
+                {/* Anime Recommendations */}
+                <section className="flex flex-col">
+                    {recommendations.map((item, index) => (
+                        <div key={index}>
+                            <AnimeCard item={item} />
+                            {index !== recommendations.length - 1 && (
+                                <hr className="my-5 border-t border-stone-300" />
+                            )}
                         </div>
                     ))}
-                </div>
+                </section>
+
+
             </div>
         </div>
     )
