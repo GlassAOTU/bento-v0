@@ -8,9 +8,9 @@ export async function fetchAnimeDetails(animeTitle: string) {
         coverImage {
           large
         }
-        streamingEpisodes {
-          url
-          site
+        externalLinks {
+            url
+            site
         }
         description(asHtml: false)
       }
@@ -31,7 +31,7 @@ export async function fetchAnimeDetails(animeTitle: string) {
 
     return {
         coverImage: data?.data?.Media?.coverImage?.large || "",
-        streamingLink: data?.data?.Media?.streamingEpisodes?.[0] || null, // Grab only the first link
+        externalLinks: data?.data?.Media?.externalLinks?.[0] || null, // Grab only the first link
         description: (data?.data?.Media?.description || "No description available")
             .replace(/<br\s*\/?>/gi, "\n")
             .replace(/<[^>]+>/g, "")
