@@ -88,8 +88,8 @@ export default function Home() {
                 if (newSeenTitles.includes(title)) continue;
 
                 try {
-                    const { description, coverImage, externalLinks } = await fetchAnimeDetails(title);
-                    animeFinish.push({ title, description, image: coverImage, externalLinks });
+                    const { description, bannerImage, externalLinks } = await fetchAnimeDetails(title);
+                    animeFinish.push({ title, description, image: bannerImage, externalLinks });
                     newSeenTitles.push(title);
                 } catch (e) {
                     console.warn(`Failed to fetch details for: ${title}`, e);

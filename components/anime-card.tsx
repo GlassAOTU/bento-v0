@@ -2,17 +2,20 @@ import Image from "next/image"
 
 export default function AnimeCard({ item }: { item: { title: string; description: string; image: string; externalLinks: { url: string; site: string } | null } }) {
     return (
-        <div className="flex gap-6 rounded-lg flex-col sm:flex-row">
-            <div className="w-40 h-52 max-w-[160px] max-h-[208px] rounded-md overflow-hidden shadow-md">
+        <div className="flex gap-6 rounded-lg flex-col">
+            {/* <div className="w-40 h-52 max-w-[950px] max-h-[208px] rounded-md overflow-hidden shadow-md bg-red-600"> */}
+            <div className="rounded-md overflow-hidden">
+
                 <Image
                     src={item.image || 'images/placeholder.png'} alt={item.title}
-                    width={208}
-                    height={160}
+                    width={1900}
+                    height={400}
                     className="object-cover w-full h-full"
                     priority={true}
                     loading="eager"
                 />
             </div>
+            {/* </div> */}
             <div className="flex flex-col justify-between flex-1">
                 <h3 className="text-xl  font-bold text-[#4a4023] mb-2 tracking-tighter">
                     {item.title}

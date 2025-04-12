@@ -21,6 +21,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ['s4.anilist.co']
   },
   experimental: {
     webpackBuildWorker: true,

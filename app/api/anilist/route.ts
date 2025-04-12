@@ -5,9 +5,7 @@ export async function fetchAnimeDetails(animeTitle: string) {
         title {
           romaji
         }
-        coverImage {
-          large
-        }
+        bannerImage
         externalLinks {
             url
             site
@@ -30,7 +28,7 @@ export async function fetchAnimeDetails(animeTitle: string) {
     const data = await response.json();
 
     return {
-        coverImage: data?.data?.Media?.coverImage?.large || "",
+        bannerImage: data?.data?.Media?.bannerImage || "",
         externalLinks: data?.data?.Media?.externalLinks?.[0] || null, // Grab only the first link
         description: (data?.data?.Media?.description || "No description available")
             .replace(/<br\s*\/?>/gi, "\n")
