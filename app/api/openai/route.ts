@@ -12,8 +12,6 @@ export async function POST(request: Request) {
                     Do not recommend any pornographic animes.
                     Only allow animes from the same franchise if the description explicitly allows it.
                     Include both modern and classic animes where appropriate.
-                    Format the response as:
-                    [title] | [title] | [title] | [title] | [title]
                     Respond in plaintext only. No extra commentary.
                     Respond with the official anime title as listed on AniList only. 
                     Avoid including extra subtitles, editions, or years unless it is essential.
@@ -22,7 +20,11 @@ export async function POST(request: Request) {
                     Do not repeat any animes that are already in the ${seenTitles} list.
                     If user input is nonsence, disregard it and only accept premade tags and ignore the description.
                     If all else fails, display random animes from the list of 1000 most popular animes.
+                    Give a 1-2 sentence reasoning on why the specific anime is similar to the user's input.
 
+
+                    Format the response as:
+                    [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason]
                     Input:
                     Description: ${description || "None"}
                     Tags: ${tags.length ? tags.join(", ") : "None"}`;

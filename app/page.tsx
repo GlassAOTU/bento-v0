@@ -11,7 +11,7 @@ export default function Home() {
     const [selectedTags, setSelectedTags] = useState<string[]>([])  // state of empty array of string, initalized to an empty array
     const [customTag, setCustomTag] = useState("")   // stores user tag input
     const [description, setDescription] = useState("")
-    const [recommendations, setRecommendations] = useState<{ title: string; description: string; image: string; externalLinks: { url: string; site: string } | null }[]>([]);
+    const [recommendations, setRecommendations] = useState<{ title: string; reason: string; description: string; image: string; externalLinks: { url: string; site: string } | null }[]>([]);
     const [seenTitles, setSeenTitles] = useState<string[]>([]); // stores titles of games already seen
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
@@ -71,7 +71,7 @@ export default function Home() {
         setError("");
 
         try {
-            const response = await fetch("/api/recommendations", {
+            const response = await fetch("/api/openai", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
@@ -80,16 +80,39 @@ export default function Home() {
             if (!response.ok) throw new Error("Failed to get recommendations");
 
             const data = await response.json();
-            const animeList: string[] = data.recommendations.split(" | ");
-            const newSeenTitles = [...seenTitles];
-            const animeFinish: { title: string; description: string; image: string; externalLinks: { url: string; site: string } | null }[] = [];
 
-            for (const title of animeList) {
+            // Split the recommendations string by "|" first.
+            const recommendations = data.recommendations.split(" | ");
+
+            // We'll build an array of our anime objects, now with a "reason" key.
+            const newSeenTitles = [...seenTitles];
+            const animeFinish: {
+                title: string;
+                reason: string;
+                description: string;
+                image: string;
+                externalLinks: { url: string; site: string } | null;
+            }[] = [];
+
+            for (const rec of recommendations) {
+                // Split each recommendation by " ~ " to get the title and the reason.
+                const [title, reason] = rec.split(" ~ ");
+
                 if (newSeenTitles.includes(title)) continue;
 
                 try {
+                    // Fetch extra details for the title.
                     const { description, bannerImage, externalLinks } = await fetchAnimeDetails(title);
-                    animeFinish.push({ title, description, image: bannerImage, externalLinks });
+
+                    // Push the new object including reason.
+                    animeFinish.push({
+                        title,
+                        reason: reason.trim(), // trim in case there are extra spaces
+                        description,
+                        image: bannerImage,
+                        externalLinks,
+                    });
+
                     newSeenTitles.push(title);
                 } catch (e) {
                     console.warn(`Failed to fetch details for: ${title}`, e);
