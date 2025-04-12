@@ -5,6 +5,7 @@ import { useState } from "react"
 import { fetchAnimeDetails } from "./api/anilist/route"
 import TagButton from "@/components/tag-button"
 import AnimeCard from "@/components/anime-card"
+import BottomButton from "@/components/bottom-button"
 
 export default function Home() {
 
@@ -128,114 +129,117 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16 font-sans">
+        <>
+            <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16 font-sans">
 
-            {/* banner */}
-            <section className="w-full flex justify-center">
-                <Image
-                    src="/images/header-image.png"
-                    alt="Banner"
-                    width={600} // just a reference size
-                    height={300}
-                    className="w-full max-w-[1200px] h-auto mb-6 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
-                />
-            </section>
-
-            {/* aligning and centering page */}
-            <div className="max-w-4xl flex flex-col mx-auto gap-8 px-10">
-
-                {/* user description section */}
-                <section className="">
-                    <p className="mb-2 text-xl">Share a short description of what you're looking for / choose some tags.</p>
-                    <p className="mb-4 text-xl">We take care of the rest</p>
-
-                    {/* user input */}
-                    <input
-                        placeholder="Write your description..."
-                        className="w-full rounded-md border font-mono border-[#4a4023]/50 px-4 py-6 bg-white focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
-                        value={description} onChange={(e) => setDescription(e.target.value)}
+                {/* banner */}
+                <section className="w-full flex justify-center">
+                    <Image
+                        src="/images/header-image.png"
+                        alt="Banner"
+                        width={600} // just a reference size
+                        height={300}
+                        className="w-full max-w-[1200px] h-auto mb-6 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                     />
                 </section>
 
-                <hr />
+                {/* aligning and centering page */}
+                <div className="max-w-4xl flex flex-col mx-auto gap-8 px-10">
 
-                {/* Tags Section */}
-                <section className="">
-                    <div className="flex flex-col justify-between gap-3">
-                        <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
-                        <div className="flex flex-wrap gap-x-3 gap-y-2">
-                            {tags.map((tag) => {
-                                const isSelected = selectedTags.includes(tag);
-                                return (
-                                    <TagButton
-                                        key={tag}
-                                        label={tag}
-                                        isSelected={selectedTags.includes(tag)}
-                                        onClick={() => handleTagClick(tag)}
+                    {/* user description section */}
+                    <section className="">
+                        <p className="mb-2 text-xl">Share a short description of what you're looking for / choose some tags.</p>
+                        <p className="mb-4 text-xl">We take care of the rest</p>
+
+                        {/* user input */}
+                        <input
+                            placeholder="Write your description..."
+                            className="w-full rounded-md border font-mono border-[#4a4023]/50 px-4 py-6 bg-white focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
+                            value={description} onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </section>
+
+                    <hr />
+
+                    {/* Tags Section */}
+                    <section className="">
+                        <div className="flex flex-col justify-between gap-3">
+                            <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
+                            <div className="flex flex-wrap gap-x-3 gap-y-2">
+                                {tags.map((tag) => {
+                                    const isSelected = selectedTags.includes(tag);
+                                    return (
+                                        <TagButton
+                                            key={tag}
+                                            label={tag}
+                                            isSelected={selectedTags.includes(tag)}
+                                            onClick={() => handleTagClick(tag)}
+                                        />
+                                    );
+                                })}
+
+                                {/* Render custom tags that weren't in the original list */}
+                                {selectedTags
+                                    .filter((tag) => !tags.includes(tag)) // Only show truly custom tags
+                                    .map((tag) => (
+                                        <TagButton
+                                            key={tag}
+                                            label={tag}
+                                            isSelected={selectedTags.includes(tag)}
+                                            onClick={() => handleTagClick(tag)}
+                                        />
+
+                                    ))}
+
+                                {/* Custom tag input (only if less than 5 tags are selected) */}
+                                {selectedTags.length < 5 && (
+                                    <input
+                                        type="text"
+                                        placeholder="Type a tag..."
+                                        value={customTag}
+                                        onChange={handleInputChange}
+                                        onKeyDown={handleInputKeyDown}
+                                        className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 w-48 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
                                     />
-                                );
-                            })}
-
-                            {/* Render custom tags that weren't in the original list */}
-                            {selectedTags
-                                .filter((tag) => !tags.includes(tag)) // Only show truly custom tags
-                                .map((tag) => (
-                                    <TagButton
-                                        key={tag}
-                                        label={tag}
-                                        isSelected={selectedTags.includes(tag)}
-                                        onClick={() => handleTagClick(tag)}
-                                    />
-
-                                ))}
-
-                            {/* Custom tag input (only if less than 5 tags are selected) */}
-                            {selectedTags.length < 5 && (
-                                <input
-                                    type="text"
-                                    placeholder="Type a tag..."
-                                    value={customTag}
-                                    onChange={handleInputChange}
-                                    onKeyDown={handleInputKeyDown}
-                                    className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 w-48 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
-                                />
-                            )}
+                                )}
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <hr />
+                    <hr />
 
-                {/* Search Button */}
-                <button
-                    className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white
+                    {/* Search Button */}
+                    <button
+                        className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white
     ${isLoading || (!description && selectedTags.length === 0)
-                            ? "bg-[#000000] cursor-not-allowed"
-                            : "bg-[#4a4023] hover:bg-[#3b341c] cursor-pointer"}
+                                ? "bg-[#000000] cursor-not-allowed"
+                                : "bg-[#4a4023] hover:bg-[#3b341c] cursor-pointer"}
   `}
-                    disabled={isLoading || (!description && selectedTags.length === 0)}
-                    onClick={handleGetRecommendations}
-                >
-                    {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
-                </button>
-                {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+                        disabled={isLoading || (!description && selectedTags.length === 0)}
+                        onClick={handleGetRecommendations}
+                    >
+                        {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
+                    </button>
+                    {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
 
-                <hr />
+                    <hr />
 
-                {/* recommendation cards */}
-                <section className="flex flex-col">
-                    {recommendations.map((item, index) => (
-                        <div key={index}>
-                            <AnimeCard item={item} />
-                            {index !== recommendations.length - 1 && (
-                                <hr className="my-5 border-t border-stone-300" />
-                            )}
-                        </div>
-                    ))}
-                </section>
+                    {/* recommendation cards */}
+                    <section className="flex flex-col">
+                        {recommendations.map((item, index) => (
+                            <div key={index}>
+                                <AnimeCard item={item} />
+                                {index !== recommendations.length - 1 && (
+                                    <hr className="my-5 border-t border-stone-300" />
+                                )}
+                            </div>
+                        ))}
+                    </section>
 
-
+                </div>
             </div>
-        </div>
+
+            <BottomButton />
+        </>
     )
 }
