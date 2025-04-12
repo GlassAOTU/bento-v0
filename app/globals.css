@@ -40,8 +40,6 @@
     font-display: swap;
 }
 
-
-
 @layer base {
     :root {
         --font-geist-sans: 'Geist Sans', sans-serif;

@@ -1,9 +1,6 @@
 'use client'
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { fetchAnimeDetails } from "./api/anilist/route"
 import TagButton from "@/components/tag-button"
@@ -182,7 +179,6 @@ export default function Home() {
                             )}
                         </div>
                     </div>
-
                 </section>
 
                 <hr />
@@ -203,7 +199,7 @@ export default function Home() {
 
                 <hr />
 
-                {/* Anime Recommendations */}
+                {/* recommendation cards */}
                 <section className="flex flex-col">
                     {recommendations.map((item, index) => (
                         <div key={index}>

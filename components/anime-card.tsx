@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 
 export default function AnimeCard({ item }: { item: { title: string; description: string; image: string; externalLinks: { url: string; site: string } | null } }) {
     return (
@@ -7,9 +6,11 @@ export default function AnimeCard({ item }: { item: { title: string; description
             <div className="w-40 h-52 max-w-[160px] max-h-[208px] rounded-md overflow-hidden shadow-md">
                 <Image
                     src={item.image || 'images/placeholder.png'} alt={item.title}
-                    width={200}
-                    height={144}
+                    width={208}
+                    height={160}
                     className="object-cover w-full h-full"
+                    priority={true}
+                    loading="eager"
                 />
             </div>
             <div className="flex flex-col justify-between flex-1">
