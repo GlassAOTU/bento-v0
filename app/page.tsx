@@ -110,7 +110,7 @@ export default function Home() {
             {/* banner */}
             <section className="w-full flex justify-center">
                 <Image
-                    src="/images/banner.png"
+                    src="/images/header-image.png"
                     alt="Banner"
                     width={600} // just a reference size
                     height={300}
