@@ -129,19 +129,29 @@ export default function Home() {
     };
 
     return (
-        <>
+        <div className="bg-[#fffcf8]">
             <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16 font-sans">
 
                 {/* banner */}
                 <section className="w-full flex justify-center">
-                    <Image
-                        src="/images/header-image.png"
-                        alt="Banner"
-                        width={600} // just a reference size
-                        height={300}
-                        className="w-full max-w-[1200px] h-auto mb-6 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
-                    />
+                    <div className="relative w-full max-w-[1200px]">
+                        <Image
+                            src="/images/header-image.png"
+                            alt="Banner"
+                            width={600}
+                            height={300}
+                            className="w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                        />
+                        <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+                            <button className="absolute left-[5%] top-[70%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
+                                Waitlist
+                            </button></a>
+
+                    </div>
                 </section>
+
+
+
 
                 {/* aligning and centering page */}
                 <div className="max-w-4xl flex flex-col mx-auto gap-8 px-10">
@@ -240,6 +250,6 @@ export default function Home() {
             </div>
 
             <BottomButton />
-        </>
+        </div>
     )
 }
