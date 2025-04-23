@@ -2,7 +2,7 @@ import Image from "next/image"
 
 export default function AnimeCard({ item }: { item: { title: string; reason: string; description: string; image: string; externalLinks: { url: string; site: string } | null } }) {
     return (
-        <div className="flex gap-6 rounded-lg flex-col">
+        <div className="flex gap-6 rounded-lg flex-col hover:scale-[102%] transition-all">
             {/* <div className="w-40 h-52 max-w-[950px] max-h-[208px] rounded-md overflow-hidden shadow-md bg-red-600"> */}
             <div className="rounded-md overflow-hidden  flex items-center justify-center">
 
