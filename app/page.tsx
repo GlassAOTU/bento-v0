@@ -9,6 +9,7 @@ import AnimeCard from "@/components/anime-card"
 import BottomButton from "@/components/bottom-button"
 import ErrorBox from "@/components/error-box"
 import LimitPopup from "@/components/limit-popup"
+import WaitlistBox from "@/components/waitlist-box"
 
 export default function Home() {
 
@@ -20,6 +21,7 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
     const [isPopupOpen, setPopupOpen] = useState(false)
+    const [isBoxOpen, setBoxOpen] = useState(true)
 
     const handleTagClick = (tag: string) => {
         if (selectedTags.includes(tag)) {   // checks to see if the selectedTags array already included the tag
@@ -35,6 +37,14 @@ export default function Home() {
 
     const closePopup = () => {
         setPopupOpen(false);
+    };
+
+    const openBox = () => {
+        setBoxOpen(true);
+    };
+
+    const closeBox = () => {
+        setBoxOpen(false);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,12 +158,13 @@ export default function Home() {
                             alt="Banner"
                             width={600}
                             height={300}
-                            className="w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                            className="w-full h-auto mb-10 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                         />
-                        <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+                        {/* <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
                             <button className="absolute left-[5%] top-[70%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
                                 Waitlist
-                            </button></a>
+                            </button>
+                        </a> */}
 
                     </div>
                 </section>
@@ -260,7 +271,10 @@ export default function Home() {
                 </div>
             </div>
 
+            {isBoxOpen && <WaitlistBox onDismiss={closeBox} />}
             <BottomButton />
+
+
         </div>
     )
 }
