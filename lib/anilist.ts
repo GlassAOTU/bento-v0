@@ -12,20 +12,26 @@ export async function fetchAnimeDetails(animeTitle: string) {
         }
         description(asHtml: false)
       }
-    }
-  `;
+    }`
 
-    const variables = { search: animeTitle };
-
+    const variables = { search: animeTitle }
     const response = await fetch("https://graphql.anilist.co", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({ query, variables }),
-    });
+    })
 
-    const data = await response.json();
+    if (!response.ok) {
+        throw new Error("AniList API returned an error: " + response.status);
+    }
+
+    const data = await response.json()
+
+    if (!data?.data?.Media) {
+        throw new Error("Anime not found in AniList response");
+    }
 
     return {
         bannerImage: data?.data?.Media?.bannerImage || "",
@@ -36,5 +42,5 @@ export async function fetchAnimeDetails(animeTitle: string) {
             .replace(/\(Source:.*?\)/gi, "")
             .replace(/\s*\n\s*/g, "\n")
             .trim()
-    };
+    }
 }

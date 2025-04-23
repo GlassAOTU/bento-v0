@@ -2,36 +2,24 @@
 
 import Image from "next/image"
 import { useState } from "react"
-import { fetchAnimeDetails } from "./api/anilist/route"
+import { fetchAnimeDetails } from "@/lib/anilist"
+import { TAGS } from "@/lib/constants"
 import TagButton from "@/components/tag-button"
 import AnimeCard from "@/components/anime-card"
 import BottomButton from "@/components/bottom-button"
+import ErrorBox from "@/components/error-box"
+import LimitPopup from "@/components/limit-popup"
 
 export default function Home() {
 
     const [selectedTags, setSelectedTags] = useState<string[]>([])  // state of empty array of string, initalized to an empty array
     const [customTag, setCustomTag] = useState("")   // stores user tag input
     const [description, setDescription] = useState("")
-    const [recommendations, setRecommendations] = useState<{ title: string; reason: string; description: string; image: string; externalLinks: { url: string; site: string } | null }[]>([]);
+    const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>([]);
     const [seenTitles, setSeenTitles] = useState<string[]>([]); // stores titles of games already seen
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
-
-    const tags = [
-        "Shonen",
-        "Isekai",
-        "Fantasy",
-        "Slice of Life",
-        "Sci-Fi",
-        "Romance",
-        "Comedy",
-        "Sports",
-        "Horror",
-        "Psychological",
-        "Retro",
-        "Long runners",
-        "Quick watches"
-    ]
+    const [isPopupOpen, setPopupOpen] = useState(false)
 
     const handleTagClick = (tag: string) => {
         if (selectedTags.includes(tag)) {   // checks to see if the selectedTags array already included the tag
@@ -40,6 +28,14 @@ export default function Home() {
             setSelectedTags([...selectedTags, tag])     // adds tag to the end selectedTags array
         }
     }
+
+    const openPopup = () => {
+        setPopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setPopupOpen(false);
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCustomTag(e.target.value);
@@ -61,10 +57,19 @@ export default function Home() {
         }
     };
 
+    type AnimeRecommendation = {
+        title: string;
+        reason: string;
+        description: string;
+        image: string;
+        externalLinks: { url: string; site: string } | null;
+    };
+
+    // Check if the title is already in the seenTitles array
     const addSeenTitle = (title: string) => {
-        if (!seenTitles.includes(title)) {   // checks to see if the seenTitles array already included the title
-            setSeenTitles([...seenTitles, title])    // adds title to the end seenTitles array
-        }
+        setSeenTitles((prev) =>
+            prev.includes(title) ? prev : [...prev, title]
+        );
     }
 
     const handleGetRecommendations = async () => {
@@ -78,7 +83,12 @@ export default function Home() {
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
             });
 
-            if (!response.ok) throw new Error("Failed to get recommendations");
+            if (response.status === 429) {
+                openPopup(); // this sets the state to show the popup
+                throw new Error("Rate limit reached");
+            }
+
+            if (!response.ok) throw ErrorBox({ message: "Failed to fetch recommendations from ChatGPT on page.tsx" });
 
             const data = await response.json();
 
@@ -87,17 +97,13 @@ export default function Home() {
 
             // We'll build an array of our anime objects, now with a "reason" key.
             const newSeenTitles = [...seenTitles];
-            const animeFinish: {
-                title: string;
-                reason: string;
-                description: string;
-                image: string;
-                externalLinks: { url: string; site: string } | null;
-            }[] = [];
+            const animeFinish: AnimeRecommendation[] = [];
 
             for (const rec of recommendations) {
                 // Split each recommendation by " ~ " to get the title and the reason.
-                const [title, reason] = rec.split(" ~ ");
+                const [rawTitle, reason] = rec.split(" ~ ");
+                const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
+
 
                 if (newSeenTitles.includes(title)) continue;
 
@@ -116,13 +122,15 @@ export default function Home() {
 
                     newSeenTitles.push(title);
                 } catch (e) {
+                    <ErrorBox message="Failed to fetch anime details" />;
                     console.warn(`Failed to fetch details for: ${title}`, e);
                 }
             }
             setSeenTitles(newSeenTitles);
             setRecommendations(prev => [...animeFinish, ...prev]);
         } catch (err) {
-            setError("Failed to get recommendations. Please try again.");
+            setError("Failed to get recommendations. Rate limited")
+
         } finally {
             setIsLoading(false);
         }
@@ -150,9 +158,6 @@ export default function Home() {
                     </div>
                 </section>
 
-
-
-
                 {/* aligning and centering page */}
                 <div className="max-w-4xl flex flex-col mx-auto gap-8 px-10">
 
@@ -176,7 +181,7 @@ export default function Home() {
                         <div className="flex flex-col justify-between gap-3">
                             <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
                             <div className="flex flex-wrap gap-x-3 gap-y-2">
-                                {tags.map((tag) => {
+                                {TAGS.map((tag) => {
                                     const isSelected = selectedTags.includes(tag);
                                     return (
                                         <TagButton
@@ -190,7 +195,7 @@ export default function Home() {
 
                                 {/* Render custom tags that weren't in the original list */}
                                 {selectedTags
-                                    .filter((tag) => !tags.includes(tag)) // Only show truly custom tags
+                                    .filter((tag) => !TAGS.includes(tag)) // Only show truly custom tags
                                     .map((tag) => (
                                         <TagButton
                                             key={tag}
@@ -230,7 +235,13 @@ export default function Home() {
                     >
                         {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
                     </button>
-                    {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+                    {isPopupOpen && (
+                        <LimitPopup
+                            message="Rate limit reached. Please wait before trying again."
+                            onClose={closePopup}
+                        />
+                    )}
+                    {/* {error && ErrorBox({ message: error })} */}
 
                     <hr />
 

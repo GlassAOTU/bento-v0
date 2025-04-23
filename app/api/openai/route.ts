@@ -1,11 +1,30 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
+// tells vercel to run route as edge function
+export const config = {
+    runtime: 'edge',
+}
+
 export async function POST(request: Request) {
+    // grab the IP address from the request headers
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'
+
+    // check the rate limit for the IP address
+    const allowed = await checkRateLimit(ip, 'chatgpt')
+    if (!allowed) {
+        return NextResponse.json(
+            { error: 'Too many requests. Please wait before trying again.' },
+            { status: 429 }
+        )
+    }
+
+    // Parse the request body
     const { description, tags, seenTitles } = await request.json()
     const prompt = `You are an anime recommendation engine.
                     Based on the following input, recommend exactly 5 distinct animes, matching the described themes or genres, and/or the provided tags.
@@ -27,20 +46,18 @@ export async function POST(request: Request) {
                     [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason]
                     Input:
                     Description: ${description || "None"}
-                    Tags: ${tags.length ? tags.join(", ") : "None"}`;
+                    Tags: ${tags.length ? tags.join(", ") : "None"}`
 
     try {
+        // Call OpenAI API with the prompt
         const completion = await openai.chat.completions.create({
             model: "gpt-4",
             messages: [{ role: "user", content: prompt }],
-        });
-
-        const reply = completion.choices[0]?.message?.content?.trim();
-
-        return NextResponse.json({ recommendations: reply });
+        })
+        const reply = completion.choices[0]?.message?.content?.trim()
+        return NextResponse.json({ recommendations: reply })
     } catch (error) {
-        console.error("OpenAI error:", error);
-        return NextResponse.json({ error: "Failed to get recommendations" }, { status: 500 });
-
+        console.error("OpenAI error:", error)
+        return NextResponse.json({ error: "Failed to get recommendations woooooooo" }, { status: 500 })
     }
 }
