@@ -82,7 +82,15 @@ export default function Home() {
         );
     }
 
+    const [isRateLimited, setIsRateLimited] = useState(false);
+
     const handleGetRecommendations = async () => {
+        // 1. Prevent sending request if already rate limited
+        if (isRateLimited) {
+            openPopup();
+            return;
+        }
+
         setIsLoading(true);
         setError("");
 
@@ -93,38 +101,36 @@ export default function Home() {
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
             });
 
+            // 2. Handle server-side rate limit
             if (response.status === 429) {
-                openPopup(); // this sets the state to show the popup
+                setIsRateLimited(true);
+                openPopup();
                 throw new Error("Rate limit reached");
             }
 
-            if (!response.ok) throw ErrorBox({ message: "Failed to fetch recommendations from ChatGPT on page.tsx" });
+            if (!response.ok) {
+                throw new Error("Failed to fetch recommendations");
+            }
 
             const data = await response.json();
-
-            // Split the recommendations string by "|" first.
-            const recommendations = data.recommendations.split(" | ");
-
-            // We'll build an array of our anime objects, now with a "reason" key.
             const newSeenTitles = [...seenTitles];
             const animeFinish: AnimeRecommendation[] = [];
 
+            const recommendations = data.recommendations.split(" | ");
+
             for (const rec of recommendations) {
-                // Split each recommendation by " ~ " to get the title and the reason.
                 const [rawTitle, reason] = rec.split(" ~ ");
                 const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
 
-
+                // 3. Skip titles already seen
                 if (newSeenTitles.includes(title)) continue;
 
                 try {
-                    // Fetch extra details for the title.
                     const { description, bannerImage, externalLinks } = await fetchAnimeDetails(title);
 
-                    // Push the new object including reason.
                     animeFinish.push({
                         title,
-                        reason: reason.trim(), // trim in case there are extra spaces
+                        reason: reason?.trim() || "No reason provided",
                         description,
                         image: bannerImage,
                         externalLinks,
@@ -132,19 +138,21 @@ export default function Home() {
 
                     newSeenTitles.push(title);
                 } catch (e) {
-                    <ErrorBox message="Failed to fetch anime details" />;
                     console.warn(`Failed to fetch details for: ${title}`, e);
                 }
             }
+
             setSeenTitles(newSeenTitles);
             setRecommendations(prev => [...animeFinish, ...prev]);
-        } catch (err) {
-            setError("Failed to get recommendations. Rate limited")
 
+        } catch (err) {
+            console.error(err);
+            setError("Failed to get recommendations. Please try again later.");
         } finally {
             setIsLoading(false);
         }
     };
+
 
     return (
         <div className="bg-[#fffcf8]">
@@ -161,7 +169,7 @@ export default function Home() {
                             className="w-full h-auto mb-10 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                         />
                         {/* <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
-                            <button className="absolute left-[5%] top-[70%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
+                            <button className="absolute left-[1%] top-[60%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
                                 Waitlist
                             </button>
                         </a> */}

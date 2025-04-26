@@ -4,7 +4,12 @@ export default function LimitPopup({ message, onClose }: { message: string; onCl
             <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm mx-auto">
                 <h2 className="text-lg font-semibold text-black">Thank you for trying Bento!</h2>
                 <h3>Please sign up for the full release!</h3>
-                <p>FORM GOES HERE</p>
+                {/* <p>FORM GOES HERE</p> */}
+                <form action="https://submit-form.com/akdxwKQgR" className="flex flex-col">
+                    <label htmlFor="email">E-mail</label>
+                    <input type="email" id="email" placeholder="example@domain.com" required />
+                    <button type="submit">Submit</button>
+                </form>
                 <button
                     onClick={onClose}
                     className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
