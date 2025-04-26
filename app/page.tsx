@@ -1,7 +1,8 @@
 'use client'
 
 import Image from "next/image"
-import { useState } from "react"
+import { use, useEffect, useState } from "react"
+import { ScaleLoader } from "react-spinners"
 import { fetchAnimeDetails } from "@/lib/anilist"
 import { TAGS } from "@/lib/constants"
 import TagButton from "@/components/tag-button"
@@ -19,9 +20,11 @@ export default function Home() {
     const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>([]);
     const [seenTitles, setSeenTitles] = useState<string[]>([]); // stores titles of games already seen
     const [isLoading, setIsLoading] = useState(false)
+    const [isRateLimited, setIsRateLimited] = useState(false);
     const [error, setError] = useState("")
-    const [isPopupOpen, setPopupOpen] = useState(false)
-    const [isBoxOpen, setBoxOpen] = useState(true)
+    const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false)
+    const [isLimitPopupOpen, setLimitPopupOpen] = useState(false)
+    const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false)
 
     const handleTagClick = (tag: string) => {
         if (selectedTags.includes(tag)) {   // checks to see if the selectedTags array already included the tag
@@ -30,22 +33,6 @@ export default function Home() {
             setSelectedTags([...selectedTags, tag])     // adds tag to the end selectedTags array
         }
     }
-
-    const openPopup = () => {
-        setPopupOpen(true);
-    };
-
-    const closePopup = () => {
-        setPopupOpen(false);
-    };
-
-    const openBox = () => {
-        setBoxOpen(true);
-    };
-
-    const closeBox = () => {
-        setBoxOpen(false);
-    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCustomTag(e.target.value);
@@ -67,6 +54,42 @@ export default function Home() {
         }
     };
 
+    useEffect(() => {
+        // Only runs client-side
+        const hasVisited = localStorage.getItem('hasVisitedBefore');
+        const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
+
+        if (!hasVisited) {
+            setWelcomePopupOpen(true);
+        }
+
+        if (!hasDismissedWaitlist) {
+            setWaitlistBoxOpen(true);
+        }
+    }, []);
+
+    const handleWelcomePopup = () => {
+        setWelcomePopupOpen(false);
+        localStorage.setItem('hasVisitedBefore', 'true');
+    };
+
+    const openLimitPopup = () => {
+        setLimitPopupOpen(true);
+    };
+
+    const closeLimitPopup = () => {
+        setLimitPopupOpen(false);
+    };
+
+    const openWaitlistBox = () => {
+        setWaitlistBoxOpen(true);
+    };
+
+    const closeWaitlistBox = () => {
+        setWaitlistBoxOpen(false);
+        localStorage.setItem('waitlistDismissed', 'true')
+    };
+
     type AnimeRecommendation = {
         title: string;
         reason: string;
@@ -82,12 +105,10 @@ export default function Home() {
         );
     }
 
-    const [isRateLimited, setIsRateLimited] = useState(false);
-
     const handleGetRecommendations = async () => {
         // 1. Prevent sending request if already rate limited
         if (isRateLimited) {
-            openPopup();
+            openLimitPopup();
             return;
         }
 
@@ -104,7 +125,7 @@ export default function Home() {
             // 2. Handle server-side rate limit
             if (response.status === 429) {
                 setIsRateLimited(true);
-                openPopup();
+                openLimitPopup();
                 throw new Error("Rate limit reached");
             }
 
@@ -157,6 +178,17 @@ export default function Home() {
     return (
         <div className="bg-[#fffcf8]">
             <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16 font-sans">
+
+                <div>
+                    {isWelcomePopupOpen && (
+                        <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
+                            <div className="relative">
+                                <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} />
+                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 px-4 py-2 m-4 rounded-full font-mono border-2 text-xs sm:text-md border-[#4a4023]/50 transition-all">Close</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* banner */}
                 <section className="w-full flex justify-center">
@@ -243,8 +275,9 @@ export default function Home() {
                     <hr />
 
                     {/* Search Button */}
+
                     <button
-                        className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white
+                        className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white flex items-center justify-center gap-2
     ${isLoading || (!description && selectedTags.length === 0)
                                 ? "bg-[#000000] cursor-not-allowed"
                                 : "bg-[#4a4023] hover:bg-[#3b341c] cursor-pointer"}
@@ -252,12 +285,20 @@ export default function Home() {
                         disabled={isLoading || (!description && selectedTags.length === 0)}
                         onClick={handleGetRecommendations}
                     >
-                        {isLoading ? "Getting Recommendations..." : "Get Recommendations"}
+                        {isLoading ? (
+                            <>
+                                <ScaleLoader height={20} color="#ffffff" />
+                                Getting Recommendations...
+                            </>
+                        ) : (
+                            "Get Recommendations"
+                        )}
                     </button>
-                    {isPopupOpen && (
+
+                    {isLimitPopupOpen && (
                         <LimitPopup
                             message="Rate limit reached. Please wait before trying again."
-                            onClose={closePopup}
+                            onClose={closeLimitPopup}
                         />
                     )}
                     {/* {error && ErrorBox({ message: error })} */}
@@ -279,7 +320,7 @@ export default function Home() {
                 </div>
             </div>
 
-            {isBoxOpen && <WaitlistBox onDismiss={closeBox} />}
+            {isWaitlistBoxOpen && <WaitlistBox onDismiss={closeWaitlistBox} />}
             <BottomButton />
 
 
