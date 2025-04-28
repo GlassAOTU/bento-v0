@@ -26,6 +26,9 @@ export default function Home() {
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false)
     const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false)
 
+    const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
+
+
     const handleTagClick = (tag: string) => {
         if (selectedTags.includes(tag)) {   // checks to see if the selectedTags array already included the tag
             setSelectedTags(selectedTags.filter(t => t !== tag))    // removes tag from the selectedTags array
@@ -55,9 +58,9 @@ export default function Home() {
     };
 
     useEffect(() => {
-        // Only runs client-side
         const hasVisited = localStorage.getItem('hasVisitedBefore');
         const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
+        const isStillRateLimited = localStorage.getItem('rateLimited');
 
         if (!hasVisited) {
             setWelcomePopupOpen(true);
@@ -65,6 +68,11 @@ export default function Home() {
 
         if (!hasDismissedWaitlist) {
             setWaitlistBoxOpen(true);
+        }
+
+        if (isStillRateLimited) {
+            setIsRateLimited(true);
+            openLimitPopup();
         }
     }, []);
 
@@ -106,9 +114,10 @@ export default function Home() {
     }
 
     const handleGetRecommendations = async () => {
-        // 1. Prevent sending request if already rate limited
-        if (isRateLimited) {
-            openLimitPopup();
+        if (isButtonDisabled) {
+            if (isRateLimited) {
+                openLimitPopup();
+            }
             return;
         }
 
@@ -122,11 +131,12 @@ export default function Home() {
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
             });
 
-            // 2. Handle server-side rate limit
             if (response.status === 429) {
                 setIsRateLimited(true);
+                localStorage.setItem('rateLimited', 'true'); // <- NEW
                 openLimitPopup();
-                throw new Error("Rate limit reached");
+                setError("Rate limit reached.");
+                return;
             }
 
             if (!response.ok) {
@@ -143,7 +153,6 @@ export default function Home() {
                 const [rawTitle, reason] = rec.split(" ~ ");
                 const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
 
-                // 3. Skip titles already seen
                 if (newSeenTitles.includes(title)) continue;
 
                 try {
@@ -173,6 +182,7 @@ export default function Home() {
             setIsLoading(false);
         }
     };
+
 
 
     return (
@@ -278,11 +288,11 @@ export default function Home() {
 
                     <button
                         className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white flex items-center justify-center gap-2
-    ${isLoading || (!description && selectedTags.length === 0)
+    ${isButtonDisabled
                                 ? "bg-[#000000] cursor-not-allowed"
                                 : "bg-[#4a4023] hover:bg-[#3b341c] cursor-pointer"}
   `}
-                        disabled={isLoading || (!description && selectedTags.length === 0)}
+                        disabled={isButtonDisabled}
                         onClick={handleGetRecommendations}
                     >
                         {isLoading ? (
@@ -294,6 +304,7 @@ export default function Home() {
                             "Get Recommendations"
                         )}
                     </button>
+
 
                     {isLimitPopupOpen && (
                         <LimitPopup
