@@ -1,10 +1,11 @@
 'use client'
 
 interface WaitlistProps {
-    onDismiss: () => void
+    onDismiss: () => void;
+    onJoinWaitlist: () => void;
 }
 
-export default function WaitlistBox({ onDismiss }: WaitlistProps) {
+export default function WaitlistBox({ onDismiss, onJoinWaitlist }: WaitlistProps) {
     return (
         <div className="fixed bottom-0 left-0">
             <div className="bg-[#fffcf8] p-4 sm:p-8 text-sm mb-8 ml-3 mr-3 text-left shadow-xl rounded-md border border-[#4a4023]/50">
@@ -14,7 +15,11 @@ export default function WaitlistBox({ onDismiss }: WaitlistProps) {
                 <p>here is a fun way to find a new anime with the help of AI.</p>
                 <p className="mb-4">stay tuned as we build out a more personalized experience!</p>
                 <div className="flex flex-row gap-4 text-xs sm:text-sm text-[#4a4023]">
-                    <a href="" className="px-4 py-2 rounded-full font-mono border-2 text-md border-[#4a4023]/50 transition-all">Join the Waitlist</a>
+                    {/* <a href="" className="px-4 py-2 rounded-full font-mono border-2 text-md border-[#4a4023]/50 transition-all">Join the Waitlist</a> */}
+                    <button onClick={onJoinWaitlist} className="px-4 py-2 rounded-full font-mono border-2 text-md border-[#4a4023]/50 transition-all">
+                        Join the Waitlist
+                    </button>
+
                     <a href="https://docs.google.com/forms/d/e/1FAIpQLSecLWUADxKNFscCTMY52JTaviNy7L3H-0Rg9xzFgM9Lpp_l7w/viewform?usp=dialog" target="blank_" className="px-4 py-2 rounded-full font-mono border text-md border-[#4a4023]/50 transition-all">Leave Feedback</a>
                 </div>
             </div>

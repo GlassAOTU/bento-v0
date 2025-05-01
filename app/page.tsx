@@ -11,6 +11,7 @@ import BottomButton from "@/components/bottom-button"
 import ErrorBox from "@/components/error-box"
 import LimitPopup from "@/components/limit-popup"
 import WaitlistBox from "@/components/waitlist-box"
+import WaitlistPopup from "@/components/waitlist-popup"
 
 export default function Home() {
 
@@ -25,6 +26,9 @@ export default function Home() {
     const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false)
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false)
     const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false)
+    const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
+
+
 
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
 
@@ -194,7 +198,7 @@ export default function Home() {
                         <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
                             <div className="relative">
                                 <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} />
-                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full font-mono border-2 text-xs sm:text-md border-[#4a4023]/50 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className=""><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full font-mono border-2 text-xs sm:text-md border-[#4a4023]/50 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>
                             </div>
                         </div>
                     )}
@@ -331,7 +335,15 @@ export default function Home() {
                 </div>
             </div>
 
-            {isWaitlistBoxOpen && <WaitlistBox onDismiss={closeWaitlistBox} />}
+            {isWaitlistBoxOpen &&
+                <WaitlistBox
+                    onDismiss={closeWaitlistBox}
+                    onJoinWaitlist={() => setWaitlistPopupOpen(true)}
+                />}
+            {isWaitlistPopupOpen && (
+                <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
+            )}
+
             <BottomButton />
 
 
