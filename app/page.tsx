@@ -204,6 +204,10 @@ export default function Home() {
                     )}
                 </div>
 
+
+                {/* aligning and centering page */}
+                <div className="max-w-5xl flex flex-col mx-auto gap-8 px-10">
+
                 {/* banner */}
                 <section className="w-full flex justify-center">
                     <div className="relative w-full max-w-[1200px]">
@@ -222,10 +226,6 @@ export default function Home() {
 
                     </div>
                 </section>
-
-                {/* aligning and centering page */}
-                <div className="max-w-4xl flex flex-col mx-auto gap-8 px-10">
-
                     {/* user description section */}
                     <section className="">
                         <p className="mb-2 text-xl">Share a short description of what you're looking for / choose some tags.</p>
