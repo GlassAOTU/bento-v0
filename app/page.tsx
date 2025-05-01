@@ -191,7 +191,7 @@ export default function Home() {
 
     return (
         <div className="bg-[#fffcf8]">
-            <div className="min-h-screen bg-[#fffcf8] text-[#4a4023] pb-16 font-sans">
+            <div className="min-h-screen bg-white text-[#3c3c3c] pb-16 font-sans">
 
                 <div>
                     {isWelcomePopupOpen && (
@@ -228,8 +228,8 @@ export default function Home() {
                 </section>
                     {/* user description section */}
                     <section className="">
-                        <p className="mb-2 text-xl">Share a short description of what you're looking for / choose some tags.</p>
-                        <p className="mb-4 text-xl">We take care of the rest</p>
+                        <p className="mb-2 text-xl">Share a short description of what you’re looking for or choose some tags.</p>
+                        <p className="mb-4 text-xl">We’ll handle the rest.</p>
 
                         {/* user input */}
                         <input
