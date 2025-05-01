@@ -5,6 +5,7 @@ export const metadata: Metadata = {
     title: 'Bento Anime',
     description: 'A new way to anime',
     generator: 'v0.dev',
+    metadataBase: new URL('https://bentoanime.com'),
     openGraph: {
         title: "Bento Anime",
         description: "A new way to anime",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "/preview.png",
+                url: "/og-image.png",
                 width: 1200,
                 height: 630,
                 alt: "Bento Site Preview",
