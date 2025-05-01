@@ -16,17 +16,17 @@ export default function WaitlistPopup({ onClose }: { onClose: () => void }) {
 
                     <div className="flex flex-col">
                         <label htmlFor="name">Name</label>
-                        <input type="text" id="name" name="name" placeholder="Name" autoComplete="false" className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors" required />
+                        <input type="text" id="name" name="name" placeholder="Name" autoComplete="false" className="text-sm  px-2 py-1.5 rounded-md border border-[#4a4023]/50 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors" required />
                     </div>
 
                     <div className="flex flex-col">
                         <label htmlFor="email">E-Mail</label>
-                        <input type="text" id="email" name="email" placeholder="user@domain.com" autoComplete="false" className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors" required />
+                        <input type="text" id="email" name="email" placeholder="user@domain.com" autoComplete="false" className="text-sm  px-2 py-1.5 rounded-md border border-[#4a4023]/50 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors" required />
                     </div>
 
                     <div className="flex flex-col">
                         <label htmlFor="message">Message</label>
-                        <textarea name="message" id="message" placeholder="Any comments..." autoComplete="false" className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors resize-none" required></textarea>
+                        <textarea name="message" id="message" placeholder="Any comments..." autoComplete="false" className="text-sm  px-2 py-1.5 rounded-md border border-[#4a4023]/50 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors resize-none" required></textarea>
                     </div>
 
                     <button formTarget="" className="w-full bg-[#4a4023] text-white p-2 rounded-lg">Submit</button>

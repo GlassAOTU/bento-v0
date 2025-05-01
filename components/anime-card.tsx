@@ -29,7 +29,7 @@ export default function AnimeCard({ item }: { item: { title: string; reason: str
                 {item.externalLinks && (
                     <div className="self-start">
                         <a href={item.externalLinks.url} target="_blank" rel="noopener noreferrer" className="inline-block">
-                            <button className="px-4 py-1 rounded-md border font-mono border-[#4a4023]/50 hover:bg-[#e6e3df] hover:border-[#4a4023] transition-colors font-medium text-sm">{item.externalLinks.site}</button>
+                            <button className="px-4 py-1 rounded-md border  border-[#4a4023]/50 hover:bg-[#e6e3df] hover:border-[#4a4023] transition-colors font-medium text-sm">{item.externalLinks.site}</button>
                         </a>
                     </div>
                 )}

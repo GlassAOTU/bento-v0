@@ -9,32 +9,8 @@
 }
 
 @font-face {
-    font-family: 'Geist Mono';
-    src: url('/fonts/mono/GeistMono-Regular.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Geist Sans';
-    src: url('/fonts/sans/GeistSans-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Geist Sans';
-    src: url('/fonts/sans/GeistSans-Medium.woff2') format('woff2');
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Geist Sans';
-    src: url('/fonts/sans/GeistSans-SemiBold.woff2') format('woff2');
+    font-family: 'Instrument Sans';
+    src: url('/fonts/InstrumentSans-Regular.woff2') format('woff2');
     font-weight: 900;
     font-style: normal;
     font-display: swap;
@@ -42,8 +18,7 @@
 
 @layer base {
     :root {
-        --font-geist-sans: 'Geist Sans', sans-serif;
-        --font-geist-mono: 'Geist Mono', monospace;
+        --font-instrument-sans: 'Instrument Sans', sans-serif;
         --background: 0 0% 100%;
         --foreground: 0 0% 3.9%;
         --card: 0 0% 100%;

@@ -198,7 +198,7 @@ export default function Home() {
                         <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
                             <div className="relative">
                                 <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} />
-                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full font-mono border-2 text-xs sm:text-md border-[#4a4023]/50 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>
+                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-[#4a4023]/50 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>
                             </div>
                         </div>
                     )}
@@ -234,7 +234,7 @@ export default function Home() {
                         {/* user input */}
                         <input
                             placeholder="Write your description..."
-                            className="w-full rounded-md border font-mono border-[#4a4023]/50 px-4 py-6 bg-white focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
+                            className="w-full rounded-md border  border-[#4a4023]/50 px-4 py-6 bg-white focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
                             value={description} onChange={(e) => setDescription(e.target.value)}
                         />
                     </section>
@@ -279,7 +279,7 @@ export default function Home() {
                                         value={customTag}
                                         onChange={handleInputChange}
                                         onKeyDown={handleInputKeyDown}
-                                        className="text-sm font-mono px-2 py-1.5 rounded-md border border-[#4a4023]/50 w-48 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
+                                        className="text-sm  px-2 py-1.5 rounded-md border border-[#4a4023]/50 w-48 focus:outline-none focus:border-[#4a4023] hover:border-[#4a4023] transition-colors"
                                     />
                                 )}
                             </div>
@@ -291,7 +291,7 @@ export default function Home() {
                     {/* Search Button */}
 
                     <button
-                        className={`w-full mx-auto py-4 rounded-lg font-mono transition-colors text-white flex items-center justify-center gap-2
+                        className={`w-full mx-auto py-4 rounded-lg  transition-colors text-white flex items-center justify-center gap-2
     ${isButtonDisabled
                                 ? "bg-[#000000] cursor-not-allowed"
                                 : "bg-[#4a4023] hover:bg-[#3b341c] cursor-pointer"}

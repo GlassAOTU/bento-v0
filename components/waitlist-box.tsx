@@ -15,12 +15,12 @@ export default function WaitlistBox({ onDismiss, onJoinWaitlist }: WaitlistProps
                 <p>here is a fun way to find a new anime with the help of AI.</p>
                 <p className="mb-4">stay tuned as we build out a more personalized experience!</p>
                 <div className="flex flex-row gap-4 text-xs sm:text-sm text-[#4a4023]">
-                    {/* <a href="" className="px-4 py-2 rounded-full font-mono border-2 text-md border-[#4a4023]/50 transition-all">Join the Waitlist</a> */}
-                    <button onClick={onJoinWaitlist} className="px-4 py-2 rounded-full font-mono border-2 text-md border-[#4a4023]/50 transition-all">
+                    {/* <a href="" className="px-4 py-2 rounded-full  border-2 text-md border-[#4a4023]/50 transition-all">Join the Waitlist</a> */}
+                    <button onClick={onJoinWaitlist} className="px-4 py-2 rounded-full  border-2 text-md border-[#4a4023]/50 transition-all">
                         Join the Waitlist
                     </button>
 
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSecLWUADxKNFscCTMY52JTaviNy7L3H-0Rg9xzFgM9Lpp_l7w/viewform?usp=dialog" target="blank_" className="px-4 py-2 rounded-full font-mono border text-md border-[#4a4023]/50 transition-all">Leave Feedback</a>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSecLWUADxKNFscCTMY52JTaviNy7L3H-0Rg9xzFgM9Lpp_l7w/viewform?usp=dialog" target="blank_" className="px-4 py-2 rounded-full  border text-md border-[#4a4023]/50 transition-all">Leave Feedback</a>
                 </div>
             </div>
         </div>
