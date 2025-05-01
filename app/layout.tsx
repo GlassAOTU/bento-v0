@@ -13,12 +13,13 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "/og-image.png",
+                url: "https://bentoanime.com/og-image.png", // full URL!
                 width: 1200,
                 height: 630,
                 alt: "Bento Site Preview",
             },
         ],
+
     }
 }
 
