@@ -190,8 +190,8 @@ export default function Home() {
 
 
     return (
-        <div className="bg-[#fffcf8]">
-            <div className="min-h-screen bg-white text-mySecondary pb-16 font-sans">
+        <div className="bg-white">
+            <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
 
                 <div>
                     {isWelcomePopupOpen && (
@@ -205,29 +205,31 @@ export default function Home() {
                 </div>
 
 
-                {/* aligning and centering page */}
-                <div className="max-w-5xl flex flex-col mx-auto gap-8 px-10">
 
-                {/* banner */}
-                <section className="w-full flex justify-center">
-                    <div className="relative w-full max-w-[1200px]">
-                        <Image
-                            src="/images/header-image.png"
-                            alt="Banner"
-                            width={600}
-                            height={300}
-                            className="w-full h-auto mb-10 [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
-                        />
-                        {/* <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+
+                {/* aligning and centering page */}
+                <div className="max-w-5xl flex flex-col mx-auto gap-8">
+
+                    {/* banner */}
+                    <section className=" flex justify-center md:px-10 md:mb-10">
+                        <div className="relative max-w-[1200px]">
+                            <Image
+                                src="/images/header-image.png"
+                                alt="Banner"
+                                width={600}
+                                height={300}
+                                className="w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                            />
+                            {/* <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
                             <button className="absolute left-[1%] top-[60%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
                                 Waitlist
                             </button>
                         </a> */}
 
-                    </div>
-                </section>
+                        </div>
+                    </section>
                     {/* user description section */}
-                    <section className="">
+                    <section className="px-10">
                         <p className="mb-2 text-xl">Share a short description of what you’re looking for or choose some tags.</p>
                         <p className="mb-4 text-xl">We’ll handle the rest.</p>
 
@@ -239,10 +241,12 @@ export default function Home() {
                         />
                     </section>
 
-                    <hr />
+                    <div className="px-10">
+                        <hr />
+                    </div>
 
                     {/* Tags Section */}
-                    <section className="">
+                    <section className="px-10">
                         <div className="flex flex-col justify-between gap-3">
                             <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
                             <div className="flex flex-wrap gap-x-3 gap-y-2">
@@ -286,28 +290,33 @@ export default function Home() {
                         </div>
                     </section>
 
-                    <hr />
+                    <div className="px-10">
+                        <hr />
+                    </div>
 
                     {/* Search Button */}
 
-                    <button
-                        className={`w-full mx-auto py-4 rounded-lg  transition-colors text-white flex items-center justify-center gap-2
+                    <div className="px-10">
+
+                        <button
+                            className={`w-full mx-auto py-4 rounded-lg  transition-colors text-white flex items-center justify-center gap-2
     ${isButtonDisabled
-                                ? "bg-[#000000] cursor-not-allowed"
-                                : "bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer"}
+                                    ? "bg-[#000000] cursor-not-allowed"
+                                    : "bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer"}
   `}
-                        disabled={isButtonDisabled}
-                        onClick={handleGetRecommendations}
-                    >
-                        {isLoading ? (
-                            <>
-                                <ScaleLoader height={20} color="#ffffff" />
-                                Getting Recommendations...
-                            </>
-                        ) : (
-                            "Get Recommendations"
-                        )}
-                    </button>
+                            disabled={isButtonDisabled}
+                            onClick={handleGetRecommendations}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <ScaleLoader height={20} color="#ffffff" />
+                                    Getting Recommendations...
+                                </>
+                            ) : (
+                                "Get Recommendations"
+                            )}
+                        </button>
+                    </div>
 
 
                     {isLimitPopupOpen && (
@@ -318,10 +327,12 @@ export default function Home() {
                     )}
                     {/* {error && ErrorBox({ message: error })} */}
 
-                    <hr />
+                    <div className="px-10">
+                        <hr />
+                    </div>
 
                     {/* recommendation cards */}
-                    <section className="flex flex-col">
+                    <section className="flex flex-col px-10">
                         {recommendations.map((item, index) => (
                             <div key={index}>
                                 <AnimeCard item={item} />
