@@ -197,8 +197,8 @@ export default function Home() {
                     {isWelcomePopupOpen && (
                         <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
                             <div className="relative">
-                                <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} />
-                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-mySecondary/50 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>
+                                <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} className="rounded-xl drop-shadow" />
+                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-mySecondary/50 hover:border-mySecondary transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>
                             </div>
                         </div>
                     )}
@@ -211,14 +211,21 @@ export default function Home() {
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">
 
                     {/* banner */}
-                    <section className=" flex justify-center md:px-10 md:mb-10">
+                    <section className=" flex justify-center sm:px-10 md:mb-10">
                         <div className="relative max-w-[1200px]">
                             <Image
                                 src="/images/header-image.png"
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="hidden sm:inline w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                            />
+                            <Image
+                                src="/images/header-image-mobile.png"
+                                alt="Banner"
+                                width={600}
+                                height={300}
+                                className="sm:hidden first-letter:w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                             />
                             {/* <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
                             <button className="absolute left-[1%] top-[60%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
