@@ -10,9 +10,9 @@ export default function TagButton({ label, isSelected, onClick }: TagButtonProps
     return (
         <button
             onClick={onClick}
-            className={`px-4 py-1 rounded-lg  border border-[#4a4023]/50 transition-all ${isSelected
-                    ? "bg-[#4a4023] text-white shadow-sm hover:bg-[#3b341c]"
-                    : "text-[#3c3c3c] hover:bg-[#e6e3df] hover:border-[#4a4023] shadow-sm"
+            className={`px-4 py-1 rounded-lg  border border-mySecondary/50 transition-all ${isSelected
+                    ? "bg-mySecondary text-white shadow-sm hover:bg-[#303030]"
+                    : "text-mySecondary hover:bg-mySecondary/10 hover:border-mySecondary shadow-sm"
                 }`}
         >
             {label}

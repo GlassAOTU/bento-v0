@@ -23,6 +23,9 @@ const config = {
                 sans: ['var(--font-instrument-sans)'],
             },
             colors: {
+                
+                mySecondary: '#3c3c3c',
+
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
