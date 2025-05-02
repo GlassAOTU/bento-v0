@@ -11,7 +11,7 @@ export default function WaitlistPopup({ onClose }: { onClose: () => void }) {
                     <input
                         type="hidden"
                         name="_redirect"
-                        value="https://www.youtube.com/"
+                        value="https://www.bentoanime.com/"
                     />
 
                     <div className="flex flex-col">
