@@ -8,9 +8,9 @@ interface WaitlistProps {
 export default function WaitlistBox({ onDismiss, onJoinWaitlist }: WaitlistProps) {
     return (
         <div className="fixed bottom-0 left-0 z-10">
-            <div className="bg-white p-4 sm:p-8 text-sm mb-8 ml-3 mr-3 text-left shadow-xl rounded-md border border-mySecondary/50">
-                <button onClick={onDismiss} className="hover:rotate-45 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3Z"></path></svg>
+            <div className="bg-white p-4 sm:p-8 text-sm mb-8 ml-3 mr-3 text-left shadow-xl relative rounded-md border border-mySecondary/50">
+                <button onClick={onDismiss} className="absolute top-3 right-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                 </ button>
                 <p>here is a fun way to find a new anime with the help of AI.</p>
                 <p className="mb-4">stay tuned as we build out a more personalized experience!</p>
