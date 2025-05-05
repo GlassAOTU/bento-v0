@@ -13,6 +13,8 @@ import LimitPopup from "@/components/limit-popup"
 import WaitlistBox from "@/components/waitlist-box"
 import WaitlistPopup from "@/components/waitlist-popup"
 
+import posthog from 'posthog-js';
+
 export default function Home() {
 
     const [selectedTags, setSelectedTags] = useState<string[]>([])  // state of empty array of string, initalized to an empty array
@@ -32,14 +34,30 @@ export default function Home() {
 
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
 
-
     const handleTagClick = (tag: string) => {
-        if (selectedTags.includes(tag)) {   // checks to see if the selectedTags array already included the tag
-            setSelectedTags(selectedTags.filter(t => t !== tag))    // removes tag from the selectedTags array
-        } else if (selectedTags.length < 5) {   // if there is space for more tags
-            setSelectedTags([...selectedTags, tag])     // adds tag to the end selectedTags array
+        const isRemoving = selectedTags.includes(tag);
+
+        // Create a new array with the updated tags
+        let updatedTags;
+        if (isRemoving) {
+            updatedTags = selectedTags.filter(t => t !== tag);
+        } else if (selectedTags.length < 5) {
+            updatedTags = [...selectedTags, tag];
+        } else {
+            updatedTags = selectedTags;
         }
-    }
+
+        // Update the state
+        setSelectedTags(updatedTags);
+
+        // Send event to PostHog with the updated tags
+        posthog.capture('tag_selection', {
+            tag: tag,
+            action: isRemoving ? 'removed' : 'added',
+            current_tags: updatedTags,
+        });
+    };
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCustomTag(e.target.value);
@@ -79,6 +97,16 @@ export default function Home() {
             openLimitPopup();
         }
     }, []);
+
+    useEffect(() => {
+        if (isLoading) {
+            posthog.capture('submit_recommendations', {
+                selected_tags: selectedTags,
+                description: description.trim(),
+            });
+        }
+    }, [isLoading]);
+
 
     const handleWelcomePopup = () => {
         setWelcomePopupOpen(false);
@@ -128,6 +156,12 @@ export default function Home() {
         setIsLoading(true);
         setError("");
 
+        // Track the recommendation request with the current tags and description
+        posthog.capture('submit_recommendations', {
+            selected_tags: selectedTags,
+            description: description.trim(),
+        });
+
         try {
             const response = await fetch("/api/openai", {
                 method: "POST",
@@ -135,9 +169,10 @@ export default function Home() {
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
             });
 
+            // Rest of your function remains the same...
             if (response.status === 429) {
                 setIsRateLimited(true);
-                localStorage.setItem('rateLimited', 'true'); // <- NEW
+                localStorage.setItem('rateLimited', 'true');
                 openLimitPopup();
                 setError("Rate limit reached.");
                 return;
@@ -186,8 +221,6 @@ export default function Home() {
             setIsLoading(false);
         }
     };
-
-
 
     return (
         <div className="bg-white">
