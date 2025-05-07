@@ -51,11 +51,11 @@ export default function Home() {
         setSelectedTags(updatedTags);
 
         // Send event to PostHog with the updated tags
-        posthog.capture('tag_selection', {
-            tag: tag,
-            action: isRemoving ? 'removed' : 'added',
-            current_tags: updatedTags,
-        });
+        // posthog.capture('tag_selection', {
+        //     tag: tag,
+        //     action: isRemoving ? 'removed' : 'added',
+        //     current_tags: updatedTags,
+        // });
     };
 
 
@@ -98,14 +98,14 @@ export default function Home() {
         }
     }, []);
 
-    useEffect(() => {
-        if (isLoading) {
-            posthog.capture('submit_recommendations', {
-                selected_tags: selectedTags,
-                description: description.trim(),
-            });
-        }
-    }, [isLoading]);
+    // useEffect(() => {
+    //     if (isLoading) {
+    //         posthog.capture('submit_recommendations', {
+    //             selected_tags: selectedTags,
+    //             description: description.trim(),
+    //         });
+    //     }
+    // }, [isLoading]);
 
 
     const handleWelcomePopup = () => {

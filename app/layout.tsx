@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
-import PostHogInit from '@/util/posthog-provider'; // update path as needed
+import PostHogProvider from '@/util/posthog-provider'; // Keep your existing import path
 
 export const metadata: Metadata = {
     title: 'Bento Anime',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "https://bentoanime.com/images/og-image.png", // full URL!
+                url: "https://bentoanime.com/images/og-image.png",
                 width: 1200,
                 height: 630,
                 alt: "Bento Site Preview",
@@ -34,10 +34,11 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <PostHogInit />
-                {children}
-                <Analytics />
-                <SpeedInsights />
+                <PostHogProvider>
+                    {children}
+                    <Analytics />
+                    <SpeedInsights />
+                </PostHogProvider>
             </body>
         </html>
     )
