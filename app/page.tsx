@@ -1,83 +1,36 @@
 'use client'
 
 import Image from "next/image"
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { ScaleLoader } from "react-spinners"
-import { fetchAnimeDetails } from "@/lib/anilist"
-import { TAGS } from "@/lib/constants"
-import TagButton from "@/components/tag-button"
 import AnimeCard from "@/components/anime-card"
 import BottomButton from "@/components/bottom-button"
-import ErrorBox from "@/components/error-box"
 import LimitPopup from "@/components/limit-popup"
 import WaitlistBox from "@/components/waitlist-box"
 import WaitlistPopup from "@/components/waitlist-popup"
+import TagSelector from "@/components/tag-selector"
+import { useRecommendations } from "@/lib/hooks/useRecommendations"
 
 import posthog from 'posthog-js';
 
 export default function Home() {
-
-    const [selectedTags, setSelectedTags] = useState<string[]>([])  // state of empty array of string, initalized to an empty array
-    const [customTag, setCustomTag] = useState("")   // stores user tag input
-    const [description, setDescription] = useState("")
-    const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>([]);
-    const [seenTitles, setSeenTitles] = useState<string[]>([]); // stores titles of games already seen
-    const [isLoading, setIsLoading] = useState(false)
-    const [isRateLimited, setIsRateLimited] = useState(false);
-    const [error, setError] = useState("")
-    const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false)
-    const [isLimitPopupOpen, setLimitPopupOpen] = useState(false)
-    const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false)
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [description, setDescription] = useState("");
+    const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false);
+    const [isLimitPopupOpen, setLimitPopupOpen] = useState(false);
+    const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
+    const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
 
-
+    const {
+        recommendations,
+        isLoading,
+        isRateLimited,
+        error,
+        getRecommendations
+    } = useRecommendations();
 
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
-
-    const handleTagClick = (tag: string) => {
-        const isRemoving = selectedTags.includes(tag);
-
-        // Create a new array with the updated tags
-        let updatedTags;
-        if (isRemoving) {
-            updatedTags = selectedTags.filter(t => t !== tag);
-        } else if (selectedTags.length < 5) {
-            updatedTags = [...selectedTags, tag];
-        } else {
-            updatedTags = selectedTags;
-        }
-
-        // Update the state
-        setSelectedTags(updatedTags);
-
-        // Send event to PostHog with the updated tags
-        // posthog.capture('tag_selection', {
-        //     tag: tag,
-        //     action: isRemoving ? 'removed' : 'added',
-        //     current_tags: updatedTags,
-        // });
-    };
-
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCustomTag(e.target.value);
-    };
-
-    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            e.preventDefault();  // Prevent accidental form submission
-
-            const trimmedTag = customTag.trim();
-            if (!trimmedTag) return; // Ignore empty input
-
-            // Check for duplicates and tag limit
-            if (!selectedTags.includes(trimmedTag) && selectedTags.length < 5) {
-                setSelectedTags([...selectedTags, trimmedTag]); // Add new tag
-            }
-
-            setCustomTag(""); // Clear input
-        }
-    };
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedBefore');
@@ -93,20 +46,9 @@ export default function Home() {
         }
 
         if (isStillRateLimited) {
-            setIsRateLimited(true);
             openLimitPopup();
         }
     }, []);
-
-    // useEffect(() => {
-    //     if (isLoading) {
-    //         posthog.capture('submit_recommendations', {
-    //             selected_tags: selectedTags,
-    //             description: description.trim(),
-    //         });
-    //     }
-    // }, [isLoading]);
-
 
     const handleWelcomePopup = () => {
         setWelcomePopupOpen(false);
@@ -130,21 +72,6 @@ export default function Home() {
         localStorage.setItem('waitlistDismissed', 'true')
     };
 
-    type AnimeRecommendation = {
-        title: string;
-        reason: string;
-        description: string;
-        image: string;
-        externalLinks: { url: string; site: string } | null;
-    };
-
-    // Check if the title is already in the seenTitles array
-    const addSeenTitle = (title: string) => {
-        setSeenTitles((prev) =>
-            prev.includes(title) ? prev : [...prev, title]
-        );
-    }
-
     const handleGetRecommendations = async () => {
         if (isButtonDisabled) {
             if (isRateLimited) {
@@ -153,97 +80,32 @@ export default function Home() {
             return;
         }
 
-        setIsLoading(true);
-        setError("");
-
-        try {
-            const response = await fetch("/api/openai", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
-            });
-
-            // Rest of your function remains the same...
-            if (response.status === 429) {
-                setIsRateLimited(true);
-                localStorage.setItem('rateLimited', 'true');
-                openLimitPopup();
-                setError("Rate limit reached.");
-                return;
-            }
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch recommendations");
-            }
-
-            const data = await response.json();
-            const newSeenTitles = [...seenTitles];
-            const animeFinish: AnimeRecommendation[] = [];
-
-            const recommendations = data.recommendations.split(" | ");
-
-            for (const rec of recommendations) {
-                const [rawTitle, reason] = rec.split(" ~ ");
-                const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
-
-                if (newSeenTitles.includes(title)) continue;
-
-                try {
-                    const { description, bannerImage, externalLinks } = await fetchAnimeDetails(title);
-
-                    animeFinish.push({
-                        title,
-                        reason: reason?.trim() || "No reason provided",
-                        description,
-                        image: bannerImage,
-                        externalLinks,
-                    });
-
-                    newSeenTitles.push(title);
-                } catch (e) {
-                    console.warn(`Failed to fetch details for: ${title}`, e);
-                }
-            }
-
-            setSeenTitles(newSeenTitles);
-            setRecommendations(prev => [...animeFinish, ...prev]);
-
-            // Track the recommendation request with the current tags and description AFTER we get the results
-            posthog.capture('submit_recommendations', {
-                selected_tags: selectedTags,
-                description: description.trim(),
-                recommendations: animeFinish.map(rec => rec.title)
-            });
-
-        } catch (err) {
-            console.error(err);
-            setError("Failed to get recommendations. Please try again later.");
-        } finally {
-            setIsLoading(false);
+        const result = await getRecommendations(description, selectedTags);
+        if (result.error === "Rate limit reached") {
+            openLimitPopup();
         }
     };
 
     return (
         <div className="bg-white">
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-
-                <div>
-                    {isWelcomePopupOpen && (
-                        <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
-                            <div className="relative">
-                                <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} className="rounded-xl drop-shadow" />
-                                <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-mySecondary/50 hover:border-mySecondary transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=""><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></button>
-                            </div>
+                {isWelcomePopupOpen && (
+                    <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
+                        <div className="relative">
+                            <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} className="rounded-xl drop-shadow" />
+                            <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-mySecondary/50 hover:border-mySecondary transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 6 6 18" />
+                                    <path d="m6 6 12 12" />
+                                </svg>
+                            </button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
-
-                {/* aligning and centering page */}
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">
-
-                    {/* banner */}
-                    <section className=" flex justify-center sm:px-10 md:mb-10">
+                    {/* Banner */}
+                    <section className="flex justify-center sm:px-10 md:mb-10">
                         <div className="relative max-w-[1200px]">
                             <Image
                                 src="/images/header-image.png"
@@ -259,26 +121,18 @@ export default function Home() {
                                 height={300}
                                 className="sm:hidden first-letter:w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                             />
-                            {/* <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
-                            <button className="absolute left-[1%] top-[60%] sm:left-[9%] md:left-[10%] lg:left-[12%] px-6 py-2 bg-black text-white rounded-md">
-                                Waitlist
-                            </button>
-                        </a> */}
-
                         </div>
                     </section>
 
-
-                    {/* user description section */}
+                    {/* User Description Section */}
                     <section className="px-10">
                         <p className="mb-2 text-xl">Share a short description of what you're looking for or choose some tags.</p>
                         <p className="mb-4 text-xl">We'll handle the rest.</p>
-
-                        {/* user input */}
                         <input
                             placeholder="Write your description..."
-                            className="w-full rounded-md border  border-mySecondary/50 px-4 py-6 bg-white focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
-                            value={description} onChange={(e) => setDescription(e.target.value)}
+                            className="w-full rounded-md border border-mySecondary/50 px-4 py-6 bg-white focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </section>
 
@@ -286,65 +140,24 @@ export default function Home() {
                         <hr />
                     </div>
 
-
                     {/* Tags Section */}
-                    <section className="px-10">
-                        <div className="flex flex-col justify-between gap-3">
-                            <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
-                            <div className="flex flex-wrap gap-x-3 gap-y-2">
-                                {TAGS.map((tag) => {
-                                    const isSelected = selectedTags.includes(tag);
-                                    return (
-                                        <TagButton
-                                            key={tag}
-                                            label={tag}
-                                            isSelected={selectedTags.includes(tag)}
-                                            onClick={() => handleTagClick(tag)}
-                                        />
-                                    );
-                                })}
-
-                                {/* Render custom tags that weren't in the original list */}
-                                {selectedTags
-                                    .filter((tag) => !TAGS.includes(tag)) // Only show truly custom tags
-                                    .map((tag) => (
-                                        <TagButton
-                                            key={tag}
-                                            label={tag}
-                                            isSelected={selectedTags.includes(tag)}
-                                            onClick={() => handleTagClick(tag)}
-                                        />
-
-                                    ))}
-
-                                {/* Custom tag input (only if less than 5 tags are selected) */}
-                                {selectedTags.length < 5 && (
-                                    <input
-                                        type="text"
-                                        placeholder="Type a tag..."
-                                        value={customTag}
-                                        onChange={handleInputChange}
-                                        onKeyDown={handleInputKeyDown}
-                                        className="text-sm  px-2 py-1.5 rounded-md border border-mySecondary/50 w-48 focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    </section>
+                    <TagSelector
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                    />
 
                     <div className="px-10">
                         <hr />
                     </div>
 
-
                     {/* Search Button */}
                     <div className="px-10">
                         <button
-                            className={`w-full mx-auto py-4 rounded-lg  transition-colors text-white flex items-center justify-center gap-2
-    ${isButtonDisabled
+                            className={`w-full mx-auto py-4 rounded-lg transition-colors text-white flex items-center justify-center gap-2
+                                ${isButtonDisabled
                                     ? "bg-[#000000] cursor-not-allowed"
-                                    : "bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer"}
-  `}
+                                    : "bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer"
+                                }`}
                             disabled={isButtonDisabled}
                             onClick={handleGetRecommendations}
                         >
@@ -359,47 +172,70 @@ export default function Home() {
                         </button>
                     </div>
 
-
                     {isLimitPopupOpen && (
                         <LimitPopup
                             message="Rate limit reached. Please wait before trying again."
                             onClose={closeLimitPopup}
                         />
                     )}
-                    {/* {error && ErrorBox({ message: error })} */}
 
                     <div className="px-10">
                         <hr />
                     </div>
 
+                    {/* Trailer Popup */}
+                    {activeTrailer && (
+                        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+                            <div className="relative bg-white p-4 rounded-lg">
+                                <button
+                                    onClick={() => setActiveTrailer(null)}
+                                    className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M18 6 6 18" />
+                                        <path d="m6 6 12 12" />
+                                    </svg>
+                                </button>
+                                <iframe
+                                    width="560"
+                                    height="315"
+                                    src={`https://www.youtube.com/embed/${activeTrailer}`}
+                                    title="YouTube video player"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* recommendation cards */}
+                    {/* Recommendation Cards */}
                     <section className="flex flex-col px-10">
                         {recommendations.map((item, index) => (
                             <div key={index}>
-                                <AnimeCard item={item} />
+                                <AnimeCard
+                                    item={item}
+                                    onTrailerClick={(trailerId) => setActiveTrailer(trailerId)}
+                                />
                                 {index !== recommendations.length - 1 && (
                                     <hr className="my-5 border-t border-stone-300" />
                                 )}
                             </div>
                         ))}
                     </section>
-
                 </div>
             </div>
 
-            {isWaitlistBoxOpen &&
+            {isWaitlistBoxOpen && (
                 <WaitlistBox
                     onDismiss={closeWaitlistBox}
                     onJoinWaitlist={() => setWaitlistPopupOpen(true)}
-                />}
+                />
+            )}
             {isWaitlistPopupOpen && (
                 <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
             )}
 
             <BottomButton />
-
-
         </div>
-    )
+    );
 }

@@ -11,6 +11,10 @@ export async function fetchAnimeDetails(animeTitle: string) {
             site
         }
         description(asHtml: false)
+        trailer {
+            id
+            site
+        }
       }
     }`
 
@@ -41,6 +45,10 @@ export async function fetchAnimeDetails(animeTitle: string) {
             .replace(/<[^>]+>/g, "")
             .replace(/\(Source:.*?\)/gi, "")
             .replace(/\s*\n\s*/g, "\n")
-            .trim()
+            .trim(),
+        trailer: data?.data?.Media?.trailer ? {
+            id: data.data.Media.trailer.id,
+            site: data.data.Media.trailer.site
+        } : null
     }
 }
