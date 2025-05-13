@@ -90,7 +90,12 @@ export default function Home() {
         <div className="bg-white">
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
                 {isWelcomePopupOpen && (
-                    <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
+                    <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
+                        // Only close if clicking on the overlay, not inside the modal
+                        if (e.target === e.currentTarget) {
+                            handleWelcomePopup();
+                        }
+                    }}>
                         <div className="relative">
                             <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} className="rounded-xl drop-shadow" />
                             <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-mySecondary/50 hover:border-mySecondary transition-all">
@@ -185,8 +190,13 @@ export default function Home() {
 
                     {/* Trailer Popup */}
                     {activeTrailer && (
-                        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-                            <div className="relative bg-white p-4 rounded-lg">
+                        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
+                            // Only close if clicking on the overlay, not inside the modal
+                            if (e.target === e.currentTarget) {
+                                setActiveTrailer(null);
+                            }
+                        }}>
+                            <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]" >
                                 <button
                                     onClick={() => setActiveTrailer(null)}
                                     className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
@@ -196,14 +206,16 @@ export default function Home() {
                                         <path d="m6 6 12 12" />
                                     </svg>
                                 </button>
-                                <iframe
-                                    width="560"
-                                    height="315"
-                                    src={`https://www.youtube.com/embed/${activeTrailer}`}
-                                    title="YouTube video player"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                ></iframe>
+                                <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+                                    <iframe
+                                        className="absolute top-0 left-0 w-full h-full"
+                                        src={`https://www.youtube.com/embed/${activeTrailer}`}
+                                        title="YouTube video player"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    ></iframe>
+                                </div>
+
                             </div>
                         </div>
                     )}
