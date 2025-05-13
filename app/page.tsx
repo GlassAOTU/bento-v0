@@ -156,12 +156,6 @@ export default function Home() {
         setIsLoading(true);
         setError("");
 
-        // Track the recommendation request with the current tags and description
-        posthog.capture('submit_recommendations', {
-            selected_tags: selectedTags,
-            description: description.trim(),
-        });
-
         try {
             const response = await fetch("/api/openai", {
                 method: "POST",
@@ -214,6 +208,13 @@ export default function Home() {
             setSeenTitles(newSeenTitles);
             setRecommendations(prev => [...animeFinish, ...prev]);
 
+            // Track the recommendation request with the current tags and description AFTER we get the results
+            posthog.capture('submit_recommendations', {
+                selected_tags: selectedTags,
+                description: description.trim(),
+                recommendations: animeFinish.map(rec => rec.title)
+            });
+
         } catch (err) {
             console.error(err);
             setError("Failed to get recommendations. Please try again later.");
@@ -236,8 +237,6 @@ export default function Home() {
                         </div>
                     )}
                 </div>
-
-
 
 
                 {/* aligning and centering page */}
@@ -268,10 +267,12 @@ export default function Home() {
 
                         </div>
                     </section>
+
+
                     {/* user description section */}
                     <section className="px-10">
-                        <p className="mb-2 text-xl">Share a short description of what you’re looking for or choose some tags.</p>
-                        <p className="mb-4 text-xl">We’ll handle the rest.</p>
+                        <p className="mb-2 text-xl">Share a short description of what you're looking for or choose some tags.</p>
+                        <p className="mb-4 text-xl">We'll handle the rest.</p>
 
                         {/* user input */}
                         <input
@@ -284,6 +285,7 @@ export default function Home() {
                     <div className="px-10">
                         <hr />
                     </div>
+
 
                     {/* Tags Section */}
                     <section className="px-10">
@@ -334,10 +336,9 @@ export default function Home() {
                         <hr />
                     </div>
 
+
                     {/* Search Button */}
-
                     <div className="px-10">
-
                         <button
                             className={`w-full mx-auto py-4 rounded-lg  transition-colors text-white flex items-center justify-center gap-2
     ${isButtonDisabled
@@ -370,6 +371,7 @@ export default function Home() {
                     <div className="px-10">
                         <hr />
                     </div>
+
 
                     {/* recommendation cards */}
                     <section className="flex flex-col px-10">

@@ -20,8 +20,16 @@ export default function PostHogProvider({
                     api_host: 'https://us.i.posthog.com',
                     capture_pageview: true, // Enable automatic page view tracking
                     loaded: (posthog) => {
-                        if (process.env.NODE_ENV === 'development') posthog.debug();
-                    }
+                        if (process.env.NODE_ENV === 'development') {
+                            posthog.debug();
+                            console.log('PostHog initialized successfully');
+                        }
+                    },
+                    persistence: 'localStorage',
+                    autocapture: true,
+                    capture_pageleave: true,
+                    disable_session_recording: false,
+                    debug: process.env.NODE_ENV === 'development'
                 });
             } else {
                 console.warn('PostHog API key is missing. Add NEXT_PUBLIC_POSTHOG_KEY to your .env.local file.');
