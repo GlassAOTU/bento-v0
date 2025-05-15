@@ -50,7 +50,7 @@ export default function TagSelector({ selectedTags, onTagsChange }: TagSelectorP
     return (
         <section className="px-10">
             <div className="flex flex-col justify-between gap-3">
-                <p className="text-xl">Tags (Choose up to {5 - selectedTags.length})</p>
+                <p className="text-xl">Tags (Choose up to 5)</p>
                 <div className="flex flex-wrap gap-x-3 gap-y-2">
                     {TAGS.map((tag) => (
                         <TagButton
