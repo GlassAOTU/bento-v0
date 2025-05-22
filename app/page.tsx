@@ -1,7 +1,9 @@
 'use client'
 
+import '@/app/globals.css'
+
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { SetStateAction, useEffect, useState } from "react"
 import { ScaleLoader } from "react-spinners"
 import AnimeCard from "@/components/anime-card"
 import BottomButton from "@/components/bottom-button"
@@ -12,6 +14,7 @@ import TagSelector from "@/components/tag-selector"
 import { useRecommendations } from "@/lib/hooks/useRecommendations"
 
 import posthog from 'posthog-js';
+import AnimeSet from '@/components/anime-set'
 
 export default function Home() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -21,34 +24,14 @@ export default function Home() {
     const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
-
+    const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[] }[]>([]);
     const {
         recommendations,
         isLoading,
         isRateLimited,
         error,
         getRecommendations
-    } = useRecommendations();
-
-    const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
-
-    useEffect(() => {
-        const hasVisited = localStorage.getItem('hasVisitedBefore');
-        const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
-        const isStillRateLimited = localStorage.getItem('rateLimited');
-
-        if (!hasVisited) {
-            setWelcomePopupOpen(true);
-        }
-
-        if (!hasDismissedWaitlist) {
-            setWaitlistBoxOpen(true);
-        }
-
-        if (isStillRateLimited) {
-            openLimitPopup();
-        }
-    }, []);
+    } = useRecommendations()
 
     const handleWelcomePopup = () => {
         setWelcomePopupOpen(false);
@@ -72,23 +55,60 @@ export default function Home() {
         localStorage.setItem('waitlistDismissed', 'true')
     };
 
+    const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
+
+    useEffect(() => {
+        const hasVisited = localStorage.getItem('hasVisitedBefore');
+        const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
+        const isStillRateLimited = localStorage.getItem('rateLimited');
+
+        if (!hasVisited) {
+            setWelcomePopupOpen(true);
+        }
+
+        if (!hasDismissedWaitlist) {
+            setWaitlistBoxOpen(true);
+        }
+
+        if (isStillRateLimited) {
+            openLimitPopup();
+        }
+    }, []);
+
+
     const handleGetRecommendations = async () => {
         if (isButtonDisabled) {
-            if (isRateLimited) {
-                openLimitPopup();
-            }
+            if (isRateLimited) openLimitPopup();
             return;
         }
 
+        // Store the current search query
+        const currentQuery = { description, tags: selectedTags };
+
+        // Add search to history BEFORE making the API call
+        setSearchHistory(prev => [...prev, currentQuery]);
+
         const result = await getRecommendations(description, selectedTags);
+
+        function isSuccessResult(result: any): result is { success: true; data: any[] } {
+            return result && result.success && Array.isArray(result.data);
+        }
+
         if (result.error === "Rate limit reached") {
             openLimitPopup();
+            return;
+        }
+
+        if (isSuccessResult(result)) {
+            setSearchHistory(prev => [...prev, { description, tags: selectedTags }]);
         }
     };
 
     return (
         <div className="bg-white">
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
+
+                {/* Welcome Popup */}
                 {isWelcomePopupOpen && (
                     <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
                         // Only close if clicking on the overlay, not inside the modal
@@ -151,10 +171,6 @@ export default function Home() {
                         onTagsChange={setSelectedTags}
                     />
 
-                    <div className="px-10">
-                        <hr />
-                    </div>
-
                     {/* Search Button */}
                     <div className="px-10">
                         <button
@@ -171,71 +187,143 @@ export default function Home() {
                                     <ScaleLoader height={20} color="#ffffff" />
                                     Getting Recommendations...
                                 </>
-                            ) : (
-                                "Get Recommendations"
-                            )}
+                            ) : ("Get Recommendations")}
                         </button>
                     </div>
 
-                    {isLimitPopupOpen && (
+                    {/* {isLimitPopupOpen && (
                         <LimitPopup
                             message="Rate limit reached. Please wait before trying again."
                             onClose={closeLimitPopup}
                         />
-                    )}
+                    )} */}
 
-                    <div className="px-10">
+                    {/* <div className="px-10">
                         <hr />
-                    </div>
-
-                    {/* Trailer Popup */}
-                    {activeTrailer && (
-                        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
-                            // Only close if clicking on the overlay, not inside the modal
-                            if (e.target === e.currentTarget) {
-                                setActiveTrailer(null);
-                            }
-                        }}>
-                            <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]" >
-                                <button
-                                    onClick={() => setActiveTrailer(null)}
-                                    className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M18 6 6 18" />
-                                        <path d="m6 6 12 12" />
-                                    </svg>
-                                </button>
-                                <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
-                                    <iframe
-                                        className="absolute top-0 left-0 w-full h-full"
-                                        src={`https://www.youtube.com/embed/${activeTrailer}`}
-                                        title="YouTube video player"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    ></iframe>
-                                </div>
-
-                            </div>
-                        </div>
-                    )}
+                    </div> */}
 
                     {/* Recommendation Cards */}
                     <section className="flex flex-col px-10">
-                        {recommendations.map((item, index) => (
-                            <div key={index}>
-                                <AnimeCard
-                                    item={item}
-                                    onTrailerClick={(trailerId) => setActiveTrailer(trailerId)}
-                                />
-                                {index !== recommendations.length - 1 && (
-                                    <hr className="my-5 border-t border-stone-300" />
-                                )}
-                            </div>
-                        ))}
+                        {(() => {
+                            const setSize = 5;
+                            const sets = [];
+                            for (let i = 0; i < recommendations.length; i += setSize) {
+                                sets.push(recommendations.slice(i, i + setSize));
+                            }
+
+                            return (
+                                <>
+                                    {/* Show loading placeholder only for the newest set */}
+                                    {isLoading && (
+                                        <div className=''>
+                                            {/* placeholder tags */}
+                                            <div className=''>
+                                                {selectedTags.length > 0 && (
+                                                    <div className='flex flex-col border-y py-5 mb-5 border-dotted border-stone-800 gap-2'>
+                                                        <p className='text-xl'>{description}</p>
+                                                        <div className='flex flex-row gap-2'>
+                                                            {selectedTags.map((tag, i) => (
+                                                                <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
+                                                                    {tag}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {/* placeholder for the cards */}
+                                            <div className="flex flex-col gap-10">
+                                                {[1, 2, 3, 4, 5].map((_, i) => (
+                                                    <div key={i} className="rounded-lg overflow-hidden pb-5">
+                                                        <div className="h-72 bg-gray-200 animate-pulse"></div>
+                                                        <div className="p-4 space-y-2">
+                                                            <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                                            <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Show existing sets */}
+                                    {sets.map((set, setIdx) => {
+                                        const historyIdx = searchHistory.length - 1 - setIdx;
+                                        const history = searchHistory[historyIdx];
+                                        const showHeader = set.length === setSize && history;
+                                        return (
+                                            <div key={setIdx}>
+                                                {showHeader && (
+                                                    <div>
+                                                        {history.tags.length > 0 && (
+                                                            <div className='flex flex-col border-y mb-5 py-5 border-dotted border-stone-800 gap-2'>
+                                                                {/* render description if there is one */}
+                                                                {history.description.length !== 0 &&
+                                                                    <span className='text-xl'>{history.description}</span>
+                                                                }
+                                                                {/* render tags if there are */}
+                                                                {history.tags.length !== 0 &&
+                                                                    <div className='flex flex-row gap-2'>
+                                                                        {history.tags.map((tag, i) =>
+                                                                            <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
+                                                                                {tag}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <AnimeSet
+                                                    description={history?.description || ""}
+                                                    selectedTags={history?.tags || []}
+                                                    searchHistory={searchHistory}
+                                                    key={setIdx}
+                                                    set={set}
+                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                </>
+                            );
+                        })()}
                     </section>
                 </div>
             </div>
+
+            {/* Trailer Popup */}
+            {activeTrailer && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
+                    // Only close if clicking on the overlay, not inside the modal
+                    if (e.target === e.currentTarget) {
+                        setActiveTrailer(null);
+                    }
+                }}>
+                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]" >
+                        <button
+                            onClick={() => setActiveTrailer(null)}
+                            className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </svg>
+                        </button>
+                        <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+                            <iframe
+                                className="absolute top-0 left-0 w-full h-full"
+                                src={`https://www.youtube.com/embed/${activeTrailer}`}
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+
+                    </div>
+                </div>
+            )}
 
             {isWaitlistBoxOpen && (
                 <WaitlistBox
@@ -250,4 +338,8 @@ export default function Home() {
             <BottomButton />
         </div>
     );
-}
+
+
+};
+
+
