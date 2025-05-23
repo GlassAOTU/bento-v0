@@ -215,12 +215,15 @@ export default function Home() {
                                 <>
                                     {/* Show loading placeholder only for the newest set */}
                                     {isLoading && (
-                                        <div className=''>
+                                        <div>
                                             {/* placeholder tags */}
-                                            <div className=''>
-                                                {selectedTags.length > 0 && (
-                                                    <div className='flex flex-col border-y py-5 mb-5 border-dotted border-stone-800 gap-2'>
+                                            <div>
+                                                {/* {(selectedTags.length > 0 || description.length > 0) && ( */}
+                                                <div className='flex flex-col border-y py-5 mb-5 border-dotted border-stone-800 gap-2'>
+                                                    {description.length > 0 &&
                                                         <p className='text-xl'>{description}</p>
+                                                    }
+                                                    {selectedTags.length > 0 &&
                                                         <div className='flex flex-row gap-2'>
                                                             {selectedTags.map((tag, i) => (
                                                                 <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
@@ -228,8 +231,9 @@ export default function Home() {
                                                                 </div>
                                                             ))}
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    }
+                                                </div>
+                                                {/* )} */}
                                             </div>
                                             {/* placeholder for the cards */}
                                             <div className="flex flex-col gap-10">
@@ -255,24 +259,24 @@ export default function Home() {
                                             <div key={setIdx}>
                                                 {showHeader && (
                                                     <div>
-                                                        {history.tags.length > 0 && (
-                                                            <div className='flex flex-col border-y mb-5 py-5 border-dotted border-stone-800 gap-2'>
-                                                                {/* render description if there is one */}
-                                                                {history.description.length !== 0 &&
-                                                                    <span className='text-xl'>{history.description}</span>
-                                                                }
-                                                                {/* render tags if there are */}
-                                                                {history.tags.length !== 0 &&
-                                                                    <div className='flex flex-row gap-2'>
-                                                                        {history.tags.map((tag, i) =>
-                                                                            <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
-                                                                                {tag}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        )}
+                                                        {/* {(history.tags.length > 0 || history.description.length > 0) && ( */}
+                                                        <div className='flex flex-col border-y mb-5 py-5 border-dotted border-stone-800 gap-2'>
+                                                            {/* render description if there is one */}
+                                                            {history.description.length !== 0 &&
+                                                                <span className='text-xl'>{history.description}</span>
+                                                            }
+                                                            {/* render tags if there are */}
+                                                            {history.tags.length !== 0 &&
+                                                                <div className='flex flex-row gap-2'>
+                                                                    {history.tags.map((tag, i) =>
+                                                                        <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
+                                                                            {tag}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        {/* )} */}
                                                     </div>
                                                 )}
                                                 <AnimeSet
