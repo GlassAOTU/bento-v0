@@ -29,6 +29,9 @@ export default function PostHogProvider({
                     autocapture: true,
                     capture_pageleave: true,
                     disable_session_recording: false,
+                    session_recording: {
+                        blockClass: 'ph-no-capture', // add this to iframe or wrapper
+                    },
                     debug: process.env.NODE_ENV === 'development'
                 });
             } else {

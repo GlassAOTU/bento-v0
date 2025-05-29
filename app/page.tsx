@@ -337,7 +337,7 @@ export default function Home() {
                                 <path d="m6 6 12 12" />
                             </svg>
                         </button>
-                        <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+                        <div className="relative w-full ph-no-capture" style={{ paddingTop: '56.25%' }}>
                             <iframe
                                 className="absolute top-0 left-0 w-full h-full"
                                 src={`https://www.youtube.com/embed/${activeTrailer}`}
