@@ -24,7 +24,7 @@ export default function Home() {
     const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
-    const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[] }[]>([]);
+    const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
     const {
         recommendations,
         isLoading,
@@ -75,7 +75,6 @@ export default function Home() {
         }
     }, []);
 
-
     const handleGetRecommendations = async () => {
         if (isButtonDisabled) {
             if (isRateLimited) openLimitPopup();
@@ -83,7 +82,7 @@ export default function Home() {
         }
 
         // Store the current search query
-        const currentQuery = { description, tags: selectedTags };
+        const currentQuery = { description, tags: selectedTags, timestamp: Date.now() };
 
         // Add search to history BEFORE making the API call
         setSearchHistory(prev => [...prev, currentQuery]);
@@ -100,7 +99,7 @@ export default function Home() {
         }
 
         if (isSuccessResult(result)) {
-            setSearchHistory(prev => [...prev, { description, tags: selectedTags }]);
+            setSearchHistory(prev => [...prev, { description, tags: selectedTags, timestamp: Date.now() }]);
         }
     };
 
@@ -216,24 +215,35 @@ export default function Home() {
                                     {/* Show loading placeholder only for the newest set */}
                                     {isLoading && (
                                         <div>
-                                            {/* placeholder tags */}
-                                            <div>
-                                                {/* {(selectedTags.length > 0 || description.length > 0) && ( */}
-                                                <div className='flex flex-col border-y py-5 mb-5 border-dotted border-stone-800 gap-2'>
+                                            {/* background and padding */}
+                                            <div className='bg-gray-100 flex justify-center border-y p-4 mb-8'>
+                                                {/* turns conent into a column */}
+                                                <div className='flex flex-col gap-1 items-center'>
+                                                    {/* time of search */}
+                                                    <span className='text-center font-bold text-black'>
+                                                        {new Date().toLocaleTimeString([], {
+                                                            hour: 'numeric',
+                                                            minute: '2-digit',
+                                                            hour12: true
+                                                        })}
+                                                    </span>
+
+                                                    {/* description of search */}
                                                     {description.length > 0 &&
-                                                        <p className='text-xl'>{description}</p>
+                                                        <p className='text-black'>{description.charAt(0).toUpperCase() + description.slice(1)}</p>
                                                     }
+
+                                                    {/* tags used in search */}
                                                     {selectedTags.length > 0 &&
                                                         <div className='flex flex-row gap-2'>
                                                             {selectedTags.map((tag, i) => (
-                                                                <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
+                                                                <div key={i} className='px-2 border text-sm border-black text-black bg-white'>
                                                                     {tag}
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     }
                                                 </div>
-                                                {/* )} */}
                                             </div>
                                             {/* placeholder for the cards */}
                                             <div className="flex flex-col gap-10">
@@ -258,27 +268,39 @@ export default function Home() {
                                         return (
                                             <div key={setIdx}>
                                                 {showHeader && (
-                                                    <div>
-                                                        {/* {(history.tags.length > 0 || history.description.length > 0) && ( */}
-                                                        <div className='flex flex-col border-y mb-5 py-5 border-dotted border-stone-800 gap-2'>
-                                                            {/* render description if there is one */}
-                                                            {history.description.length !== 0 &&
-                                                                <span className='text-xl'>{history.description}</span>
-                                                            }
-                                                            {/* render tags if there are */}
-                                                            {history.tags.length !== 0 &&
+                                                    // background and padding
+                                                    <div className='bg-gray-100 flex justify-center border-y p-4 mb-8'>
+                                                        {/* turning content into a column */}
+                                                        <div className='flex flex-col gap-1 items-center'>
+                                                            {/* time of search */}
+                                                            <span className='text-center font-bold text-black'>
+                                                                {new Date(history.timestamp).toLocaleTimeString([], {
+                                                                    hour: 'numeric',
+                                                                    minute: '2-digit',
+                                                                    hour12: true
+                                                                })}
+                                                            </span>
+
+                                                            {/* description of search */}
+                                                            {history.description.length !== 0 && (
+                                                                <span className='text-black'>{history.description.charAt(0).toUpperCase() + history.description.slice(1)}</span>
+                                                            )}
+
+                                                            {/* tags used in search */}
+                                                            {history.tags.length !== 0 && (
+                                                                // turns all tags into a row
                                                                 <div className='flex flex-row gap-2'>
                                                                     {history.tags.map((tag, i) =>
-                                                                        <div key={i} className='px-4 py-1 rounded-lg border border-mySecondary/50'>
+                                                                        <div key={i} className='px-2 border text-sm border-black text-black bg-white'>
                                                                             {tag}
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                            }
+                                                            )}
                                                         </div>
-                                                        {/* )} */}
                                                     </div>
                                                 )}
+
                                                 <AnimeSet
                                                     description={history?.description || ""}
                                                     selectedTags={history?.tags || []}
