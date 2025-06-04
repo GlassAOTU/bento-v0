@@ -269,7 +269,7 @@ export default function Home() {
                                             <div key={setIdx}>
                                                 {showHeader && (
                                                     // background and padding
-                                                    <div className='bg-gray-100 flex justify-center border-y p-4 mb-8'>
+                                                    <div className='bg-[#f8f8f8] flex justify-center  p-4 mb-8'>
                                                         {/* turning content into a column */}
                                                         <div className='flex flex-col gap-1 items-center'>
                                                             {/* time of search */}
