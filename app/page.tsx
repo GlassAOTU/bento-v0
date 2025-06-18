@@ -216,35 +216,7 @@ export default function Home() {
                                     {isLoading && (
                                         <div>
                                             {/* background and padding */}
-                                            <div className='bg-gray-100 flex justify-center border-y p-4 mb-8'>
-                                                {/* turns conent into a column */}
-                                                <div className='flex flex-col gap-1 items-center'>
-                                                    {/* time of search */}
-                                                    <span className='text-center font-bold text-black'>
-                                                        {new Date().toLocaleTimeString([], {
-                                                            hour: 'numeric',
-                                                            minute: '2-digit',
-                                                            hour12: true
-                                                        })}
-                                                    </span>
-
-                                                    {/* description of search */}
-                                                    {description.length > 0 &&
-                                                        <p className='text-black'>{description.charAt(0).toUpperCase() + description.slice(1)}</p>
-                                                    }
-
-                                                    {/* tags used in search */}
-                                                    {selectedTags.length > 0 &&
-                                                        <div className='flex flex-row gap-2'>
-                                                            {selectedTags.map((tag, i) => (
-                                                                <div key={i} className='px-2 border text-sm border-black text-black bg-white'>
-                                                                    {tag}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </div>
+                                            
                                             {/* placeholder for the cards */}
                                             <div className="flex flex-col gap-10">
                                                 {[1, 2, 3, 4, 5].map((_, i) => (
@@ -291,7 +263,7 @@ export default function Home() {
                                                                 // turns all tags into a row
                                                                 <div className='flex flex-row gap-2'>
                                                                     {history.tags.map((tag, i) =>
-                                                                        <div key={i} className='px-2 border text-sm border-black text-black bg-white'>
+                                                                        <div key={i} className='px-2 border text-sm border-black text-black bg-white border-opacity-25'>
                                                                             {tag}
                                                                         </div>
                                                                     )}
