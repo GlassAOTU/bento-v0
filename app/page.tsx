@@ -21,7 +21,6 @@ export default function Home() {
     const [description, setDescription] = useState("");
     const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false);
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false);
-    const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
     const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
@@ -46,28 +45,14 @@ export default function Home() {
         setLimitPopupOpen(false);
     };
 
-    const openWaitlistBox = () => {
-        setWaitlistBoxOpen(true);
-    };
-
-    const closeWaitlistBox = () => {
-        setWaitlistBoxOpen(false);
-        localStorage.setItem('waitlistDismissed', 'true')
-    };
-
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedBefore');
-        const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
         const isStillRateLimited = localStorage.getItem('rateLimited');
 
         if (!hasVisited) {
             setWelcomePopupOpen(true);
-        }
-
-        if (!hasDismissedWaitlist) {
-            setWaitlistBoxOpen(true);
         }
 
         if (isStillRateLimited) {
@@ -323,12 +308,6 @@ export default function Home() {
                 </div>
             )}
 
-            {isWaitlistBoxOpen && (
-                <WaitlistBox
-                    onDismiss={closeWaitlistBox}
-                    onJoinWaitlist={() => setWaitlistPopupOpen(true)}
-                />
-            )}
             {isWaitlistPopupOpen && (
                 <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
             )}
