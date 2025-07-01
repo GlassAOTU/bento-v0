@@ -4,7 +4,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 import PostHogProvider from '@/util/posthog-provider'; // Keep your existing import path
-import Navbar from '@/components/navbar';
 
 export const metadata: Metadata = {
     title: 'Bento Anime',
@@ -36,7 +35,6 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 <PostHogProvider>
-                    <Navbar />
                     {children}
                     <Analytics />
                     <SpeedInsights />

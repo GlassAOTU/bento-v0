@@ -8,19 +8,21 @@ import { ScaleLoader } from "react-spinners"
 import AnimeCard from "@/components/anime-card"
 import BottomButton from "@/components/bottom-button"
 import LimitPopup from "@/components/limit-popup"
-import WaitlistBox from "@/components/waitlist-box"
+// import WaitlistBox from "@/components/waitlist-box"
 import WaitlistPopup from "@/components/waitlist-popup"
 import TagSelector from "@/components/tag-selector"
 import { useRecommendations } from "@/lib/hooks/useRecommendations"
 
 import posthog from 'posthog-js';
 import AnimeSet from '@/components/anime-set'
+import Navbar from '@/components/navbar'
 
 export default function Home() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
     const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false);
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false);
+    // const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
     const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
@@ -45,15 +47,29 @@ export default function Home() {
         setLimitPopupOpen(false);
     };
 
+    // const openWaitlistBox = () => {
+    //     setWaitlistBoxOpen(true);
+    // };
+
+    // const closeWaitlistBox = () => {
+    //     setWaitlistBoxOpen(false);
+    //     localStorage.setItem('waitlistDismissed', 'true')
+    // };
+
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedBefore');
+        // const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
         const isStillRateLimited = localStorage.getItem('rateLimited');
 
         if (!hasVisited) {
             setWelcomePopupOpen(true);
         }
+
+        // if (!hasDismissedWaitlist) {
+        //     setWaitlistBoxOpen(true);
+        // }
 
         if (isStillRateLimited) {
             openLimitPopup();
@@ -90,6 +106,7 @@ export default function Home() {
 
     return (
         <div className="bg-white">
+            <Navbar onJoinWaitlist={() => setWaitlistPopupOpen(true)} />
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
 
                 {/* Welcome Popup */}
@@ -307,7 +324,13 @@ export default function Home() {
                     </div>
                 </div>
             )}
-
+{/* 
+            {isWaitlistBoxOpen && (
+                <WaitlistBox
+                    onDismiss={closeWaitlistBox}
+                    onJoinWaitlist={() => setWaitlistPopupOpen(true)}
+                />
+            )} */}
             {isWaitlistPopupOpen && (
                 <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
             )}
