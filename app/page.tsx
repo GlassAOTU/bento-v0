@@ -47,15 +47,6 @@ export default function Home() {
         setLimitPopupOpen(false);
     };
 
-    // const openWaitlistBox = () => {
-    //     setWaitlistBoxOpen(true);
-    // };
-
-    // const closeWaitlistBox = () => {
-    //     setWaitlistBoxOpen(false);
-    //     localStorage.setItem('waitlistDismissed', 'true')
-    // };
-
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
 
     useEffect(() => {
@@ -67,10 +58,6 @@ export default function Home() {
             setWelcomePopupOpen(true);
         }
 
-        // if (!hasDismissedWaitlist) {
-        //     setWaitlistBoxOpen(true);
-        // }
-
         if (isStillRateLimited) {
             openLimitPopup();
         }
@@ -78,7 +65,8 @@ export default function Home() {
 
     const handleGetRecommendations = async () => {
         if (isButtonDisabled) {
-            if (isRateLimited) openLimitPopup();
+            if (isRateLimited) 
+                openLimitPopup();
             return;
         }
 
@@ -192,17 +180,6 @@ export default function Home() {
                         </button>
                     </div>
 
-                    {/* {isLimitPopupOpen && (
-                        <LimitPopup
-                            message="Rate limit reached. Please wait before trying again."
-                            onClose={closeLimitPopup}
-                        />
-                    )} */}
-
-                    {/* <div className="px-10">
-                        <hr />
-                    </div> */}
-
                     {/* Recommendation Cards */}
                     <section className="flex flex-col px-10">
                         {(() => {
@@ -275,6 +252,7 @@ export default function Home() {
                                                     </div>
                                                 )}
 
+                                                {/* the actual set of anime recommendations and the cards */}
                                                 <AnimeSet
                                                     description={history?.description || ""}
                                                     selectedTags={history?.tags || []}
@@ -324,13 +302,7 @@ export default function Home() {
                     </div>
                 </div>
             )}
-{/* 
-            {isWaitlistBoxOpen && (
-                <WaitlistBox
-                    onDismiss={closeWaitlistBox}
-                    onJoinWaitlist={() => setWaitlistPopupOpen(true)}
-                />
-            )} */}
+
             {isWaitlistPopupOpen && (
                 <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
             )}

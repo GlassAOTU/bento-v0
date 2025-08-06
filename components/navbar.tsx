@@ -7,6 +7,11 @@ export default function Navbar( {onJoinWaitlist} : any) {
                 join the waitlist
             </button>
             <div className="flex-row gap-12 hidden md:flex md:justify-center">
+
+                <a href="/chat">
+                    chat
+                </a>
+
                 <a href="/" className="font-semibold">
                     recommendations
                 </a>
