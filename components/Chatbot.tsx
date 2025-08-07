@@ -7,7 +7,7 @@ type Message = {
 
 const Chatbot: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([
-        { role: "assistant", content: "Hi! How can I help you today?" }
+        { role: "assistant", content: "Which anime series would you like to discuss? And what episode are you currently on?" }
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
@@ -46,7 +46,7 @@ const Chatbot: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-md mx-auto border rounded-lg shadow p-4 bg-white flex flex-col h-[500px]">
+        <div className=" mx-auto border rounded-lg shadow p-4 bg-white flex flex-col h-[900px]">
             <div className="flex-1 overflow-y-auto mb-4">
                 {messages.map((msg, idx) => (
                     <div

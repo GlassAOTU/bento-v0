@@ -4,12 +4,12 @@ import Chatbot from "@/components/Chatbot";
 import Navbar from "@/components/navbar";
 
 export default function ChatbotPage() {
-
     return (
         <>
             <Navbar />
-            <Chatbot />
+            <div className="max-w-5xl mx-auto px-4">
+                <Chatbot />
+            </div>
         </>
     )
-
 }
