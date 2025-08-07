@@ -5,6 +5,21 @@ type Message = {
     content: string;
 };
 
+const SendIcon = () => (
+    <svg 
+        className="w-5 h-5"
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+    >
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+    </svg>
+);
+
 const LoadingBubble = () => (
     <div className="flex justify-start mb-2">
         <div className="px-4 py-2 rounded-lg bg-gray-200 text-gray-900">
@@ -89,10 +104,10 @@ const Chatbot: React.FC = () => {
                 />
                 <button
                     type="submit"
-                    className="bg-mySecondary text-white px-1 py-2 rounded disabled:opacity-50"
+                    className="bg-mySecondary text-white p-2 rounded disabled:opacity-50 min-w-[40px] flex items-center justify-center"
                     disabled={loading || !input.trim()}
                 >
-                    {loading ? "..." : "Send"}
+                    {loading ? "..." : <SendIcon />}
                 </button>
             </form>
         </div>
