@@ -65,7 +65,7 @@ export default function Home() {
 
     const handleGetRecommendations = async () => {
         if (isButtonDisabled) {
-            if (isRateLimited) 
+            if (isRateLimited)
                 openLimitPopup();
             return;
         }
@@ -195,7 +195,7 @@ export default function Home() {
                                     {isLoading && (
                                         <div>
                                             {/* background and padding */}
-                                            
+
                                             {/* placeholder for the cards */}
                                             <div className="flex flex-col gap-10">
                                                 {[1, 2, 3, 4, 5].map((_, i) => (
@@ -218,6 +218,18 @@ export default function Home() {
                                         const showHeader = set.length === setSize && history;
                                         return (
                                             <div key={setIdx}>
+
+
+                                                {/* the actual set of anime recommendations and the cards */}
+                                                <AnimeSet
+                                                    description={history?.description || ""}
+                                                    selectedTags={history?.tags || []}
+                                                    searchHistory={searchHistory}
+                                                    key={setIdx}
+                                                    set={set}
+                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
+                                                />
+
                                                 {showHeader && (
                                                     // background and padding
                                                     <div className='bg-[#f8f8f8] flex justify-center  p-4 mb-8'>
@@ -251,16 +263,6 @@ export default function Home() {
                                                         </div>
                                                     </div>
                                                 )}
-
-                                                {/* the actual set of anime recommendations and the cards */}
-                                                <AnimeSet
-                                                    description={history?.description || ""}
-                                                    selectedTags={history?.tags || []}
-                                                    searchHistory={searchHistory}
-                                                    key={setIdx}
-                                                    set={set}
-                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
-                                                />
                                             </div>
                                         );
                                     })}
