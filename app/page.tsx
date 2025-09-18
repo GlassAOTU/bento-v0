@@ -16,6 +16,7 @@ import { useRecommendations } from "@/lib/hooks/useRecommendations"
 import posthog from 'posthog-js';
 import AnimeSet from '@/components/anime-set'
 import Navbar from '@/components/navbar'
+import Footer from '@/components/Footer'
 
 export default function Home() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -272,6 +273,7 @@ export default function Home() {
                     </section>
                 </div>
             </div>
+            <Footer />
 
             {/* Trailer Popup */}
             {activeTrailer && (
@@ -309,7 +311,7 @@ export default function Home() {
                 <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
             )}
 
-            <BottomButton />
+            {/* <BottomButton /> */}
         </div>
     );
 
