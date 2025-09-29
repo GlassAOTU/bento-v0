@@ -52,7 +52,6 @@ export default function Home() {
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedBefore');
-        // const hasDismissedWaitlist = localStorage.getItem('waitlistDismissed');
         const isStillRateLimited = localStorage.getItem('rateLimited');
 
         if (!hasVisited) {
@@ -64,17 +63,14 @@ export default function Home() {
         }
     }, []);
 
-    const handleGetRecommendations = async () => {
+    const handleGetRecommendations = async (append = false) => {
         if (isButtonDisabled) {
             if (isRateLimited)
                 openLimitPopup();
             return;
         }
 
-        // Store the current search query
         const currentQuery = { description, tags: selectedTags, timestamp: Date.now() };
-
-        // Add search to history BEFORE making the API call
         setSearchHistory(prev => [...prev, currentQuery]);
 
         const result = await getRecommendations(description, selectedTags);
@@ -87,21 +83,22 @@ export default function Home() {
             openLimitPopup();
             return;
         }
+    };
 
-        if (isSuccessResult(result)) {
-            setSearchHistory(prev => [...prev, { description, tags: selectedTags, timestamp: Date.now() }]);
-        }
+    const handleSeeMore = () => {
+        handleGetRecommendations(true);
     };
 
     return (
         <div className="bg-white">
+
             <Navbar onJoinWaitlist={() => setWaitlistPopupOpen(true)} />
+
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
 
                 {/* Welcome Popup */}
                 {isWelcomePopupOpen && (
                     <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
-                        // Only close if clicking on the overlay, not inside the modal
                         if (e.target === e.currentTarget) {
                             handleWelcomePopup();
                         }
@@ -118,7 +115,9 @@ export default function Home() {
                     </div>
                 )}
 
+                {/* Page content */}
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">
+                    
                     {/* Banner */}
                     <section className="flex justify-center sm:px-10 md:mb-10">
                         <div className="relative max-w-[1200px]">
@@ -134,7 +133,7 @@ export default function Home() {
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="sm:hidden first-letter:w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="sm:hidden w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                             />
                         </div>
                     </section>
@@ -170,7 +169,7 @@ export default function Home() {
                                     : "bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer"
                                 }`}
                             disabled={isButtonDisabled}
-                            onClick={handleGetRecommendations}
+                            onClick={() => handleGetRecommendations(false)}
                         >
                             {isLoading ? (
                                 <>
@@ -190,14 +189,61 @@ export default function Home() {
                                 sets.push(recommendations.slice(i, i + setSize));
                             }
 
+                            // Reverse sets to show oldest first
+                            const reversedSets = [...sets].reverse();
+                            const reversedHistory = [...searchHistory].reverse();
+
                             return (
                                 <>
-                                    {/* Show loading placeholder only for the newest set */}
+                                    {/* Show existing sets */}
+                                    {reversedSets.map((set, setIdx) => {
+                                        const historyIdx = setIdx;
+                                        const history = reversedHistory[historyIdx];
+                                        const showHeader = set.length === setSize && history;
+
+                                        return (
+                                            <div key={setIdx}>
+                                                {showHeader && (
+                                                    <div className='bg-[#f8f8f8] flex justify-center p-4 mb-8'>
+                                                        <div className='flex flex-col gap-1 items-center'>
+                                                            <span className='text-center font-bold text-black'>
+                                                                {new Date(history.timestamp).toLocaleTimeString([], {
+                                                                    hour: 'numeric',
+                                                                    minute: '2-digit',
+                                                                    hour12: true
+                                                                })}
+                                                            </span>
+                                                            {history.description.length !== 0 && (
+                                                                <span className='text-black'>{history.description.charAt(0).toUpperCase() + history.description.slice(1)}</span>
+                                                            )}
+                                                            {history.tags.length !== 0 && (
+                                                                <div className='flex flex-row gap-2'>
+                                                                    {history.tags.map((tag, i) =>
+                                                                        <div key={i} className='px-2 border text-sm border-black text-black bg-white border-opacity-25'>
+                                                                            {tag}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                <AnimeSet
+                                                    description={history?.description || ""}
+                                                    selectedTags={history?.tags || []}
+                                                    searchHistory={searchHistory}
+                                                    key={setIdx}
+                                                    set={set}
+                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+
+                                    {/* Show loading placeholder at the bottom */}
                                     {isLoading && (
                                         <div>
-                                            {/* background and padding */}
-
-                                            {/* placeholder for the cards */}
                                             <div className="flex flex-col gap-10">
                                                 {[1, 2, 3, 4, 5].map((_, i) => (
                                                     <div key={i} className="rounded-lg overflow-hidden pb-5">
@@ -212,65 +258,18 @@ export default function Home() {
                                         </div>
                                     )}
 
-                                    {/* Show existing sets */}
-                                    {sets.map((set, setIdx) => {
-                                        const historyIdx = searchHistory.length - 1 - setIdx;
-                                        const history = searchHistory[historyIdx];
-                                        const showHeader = set.length === setSize && history;
-
-                                        return (
-                                            <div key={setIdx}>
-
-                                                {/* the actual set of anime recommendations and the cards */}
-                                                <AnimeSet
-                                                    description={history?.description || ""}
-                                                    selectedTags={history?.tags || []}
-                                                    searchHistory={searchHistory}
-                                                    key={setIdx}
-                                                    set={set}
-                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
-                                                />
-
-                                                {showHeader && (
-                                                    // background and padding
-                                                    <div className='bg-[#f8f8f8] flex justify-center  p-4 mb-8'>
-                                                        {/* turning content into a column */}
-                                                        <div className='flex flex-col gap-1 items-center'>
-                                                            {/* time of search */}
-                                                            <span className='text-center font-bold text-black'>
-                                                                {new Date(history.timestamp).toLocaleTimeString([], {
-                                                                    hour: 'numeric',
-                                                                    minute: '2-digit',
-                                                                    hour12: true
-                                                                })}
-                                                            </span>
-
-                                                            {/* description of search */}
-                                                            {history.description.length !== 0 && (
-                                                                <span className='text-black'>{history.description.charAt(0).toUpperCase() + history.description.slice(1)}</span>
-                                                            )}
-
-                                                            {/* tags used in search */}
-                                                            {history.tags.length !== 0 && (
-                                                                // turns all tags into a row
-                                                                <div className='flex flex-row gap-2'>
-                                                                    {history.tags.map((tag, i) =>
-                                                                        <div key={i} className='px-2 border text-sm border-black text-black bg-white border-opacity-25'>
-                                                                            {tag}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                            </div>
-                                        );
-
-                                    })}
+                                    {/* See More Button */}
+                                    {recommendations.length > 0 && !isLoading && !isRateLimited && (
+                                        <div className="px-10 mt-8">
+                                            <button
+                                                className="w-full mx-auto py-4 rounded-lg transition-colors text-white bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer flex items-center justify-center gap-2"
+                                                onClick={handleSeeMore}
+                                            >
+                                                See More
+                                            </button>
+                                        </div>
+                                    )}
                                 </>
-
                             );
                         })()}
                     </section>
@@ -282,12 +281,11 @@ export default function Home() {
             {/* Trailer Popup */}
             {activeTrailer && (
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
-                    // Only close if clicking on the overlay, not inside the modal
                     if (e.target === e.currentTarget) {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]" >
+                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
                             className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
@@ -306,7 +304,6 @@ export default function Home() {
                                 allowFullScreen
                             ></iframe>
                         </div>
-
                     </div>
                 </div>
             )}
@@ -318,8 +315,4 @@ export default function Home() {
             {/* <BottomButton /> */}
         </div>
     );
-
-
-};
-
-
+}
