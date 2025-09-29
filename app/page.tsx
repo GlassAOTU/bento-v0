@@ -15,7 +15,7 @@ import { useRecommendations } from "../lib/hooks/useRecommendations"
 
 import posthog from 'posthog-js';
 import AnimeSet from '../components/AnimeSet'
-// import Navbar from '../components/Navbar'
+import NavigationBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 
 export default function Home() {
@@ -92,7 +92,7 @@ export default function Home() {
     return (
         <div className="bg-white">
 
-            {/* <Navbar onJoinWaitlist={() => setWaitlistPopupOpen(true)} /> */}
+            <NavigationBar onJoinWaitlist={() => setWaitlistPopupOpen(true)} />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
 
