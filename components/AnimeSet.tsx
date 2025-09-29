@@ -1,5 +1,5 @@
 import { AnimeRecommendation } from "@/lib/hooks/useRecommendations";
-import AnimeCard from "./anime-card";
+import AnimeCard from "./AnimeCard";
 
 export default function AnimeSet({ description, selectedTags, searchHistory, set, onTrailerClick }: { description: String, selectedTags: string[], searchHistory: { description: string; tags: string[]; }[], set: AnimeRecommendation[], onTrailerClick: any }) {
     return (

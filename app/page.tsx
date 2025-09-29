@@ -5,17 +5,17 @@ import '@/app/globals.css'
 import Image from "next/image"
 import { SetStateAction, useEffect, useState } from "react"
 import { ScaleLoader } from "react-spinners"
-import AnimeCard from "@/components/anime-card"
-import BottomButton from "@/components/bottom-button"
-import LimitPopup from "@/components/limit-popup"
+import AnimeCard from "@/components/AnimeCard"
+import BottomButton from "@/components/BottomButton"
+import LimitPopup from "@/components/LimitPopup"
 // import WaitlistBox from "@/components/waitlist-box"
-import WaitlistPopup from "@/components/waitlist-popup"
-import TagSelector from "@/components/tag-selector"
+import WaitlistPopup from "@/components/WaitlistPopup"
+import TagSelector from "@/components/TagSelector"
 import { useRecommendations } from "@/lib/hooks/useRecommendations"
 
 import posthog from 'posthog-js';
-import AnimeSet from '@/components/anime-set'
-import Navbar from '@/components/navbar'
+import AnimeSet from '@/components/AnimeSet'
+import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export default function Home() {
@@ -217,9 +217,9 @@ export default function Home() {
                                         const historyIdx = searchHistory.length - 1 - setIdx;
                                         const history = searchHistory[historyIdx];
                                         const showHeader = set.length === setSize && history;
+
                                         return (
                                             <div key={setIdx}>
-
 
                                                 {/* the actual set of anime recommendations and the cards */}
                                                 <AnimeSet
@@ -264,15 +264,19 @@ export default function Home() {
                                                         </div>
                                                     </div>
                                                 )}
+
                                             </div>
                                         );
+
                                     })}
                                 </>
+
                             );
                         })()}
                     </section>
                 </div>
             </div>
+
             <Footer />
 
             {/* Trailer Popup */}

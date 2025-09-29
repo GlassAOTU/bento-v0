@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TAGS } from "@/lib/constants";
-import TagButton from "@/components/tag-button";
+import TagButton from "@/components/TagButton";
 
 interface TagSelectorProps {
     selectedTags: string[];

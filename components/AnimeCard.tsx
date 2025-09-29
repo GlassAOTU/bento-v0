@@ -17,7 +17,6 @@ export default function AnimeCard({ item, onTrailerClick }: {
             {/* <div className="w-40 h-52 max-w-[950px] max-h-[208px] rounded-md overflow-hidden shadow-md bg-red-600"> */}
             <div className="rounded-md overflow-hidden flex items-center justify-center">
 
-
                 <Image
                     src={item.image || 'images/banner-not-available.png'} alt={item.title}
                     width={1900}
@@ -26,7 +25,9 @@ export default function AnimeCard({ item, onTrailerClick }: {
                     priority={true}
                     loading="eager"
                 />
+                
             </div>
+
             {/* </div> */}
             <div className="flex flex-col justify-between flex-1">
                 <h3 className="text-xl font-bold text-mySecondary mb-2 tracking-tighter">
@@ -48,7 +49,7 @@ export default function AnimeCard({ item, onTrailerClick }: {
 
                     {item.trailer && item.trailer.id && item.trailer.site && (
                         <div className="self-start">
-                            <button 
+                            <button
                                 onClick={() => item.trailer?.id && onTrailerClick?.(item.trailer.id)}
                                 className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
                             >
