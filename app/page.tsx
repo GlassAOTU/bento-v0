@@ -1,22 +1,22 @@
 'use client'
 
-import '@/app/globals.css'
+import '../app/globals.css'
 
 import Image from "next/image"
 import { SetStateAction, useEffect, useState } from "react"
 import { ScaleLoader } from "react-spinners"
-import AnimeCard from "@/components/AnimeCard"
-import BottomButton from "@/components/BottomButton"
-import LimitPopup from "@/components/LimitPopup"
-// import WaitlistBox from "@/components/waitlist-box"
-import WaitlistPopup from "@/components/WaitlistPopup"
-import TagSelector from "@/components/TagSelector"
-import { useRecommendations } from "@/lib/hooks/useRecommendations"
+import AnimeCard from "../components/AnimeCard"
+import BottomButton from "../components/BottomButton"
+import LimitPopup from "../components/LimitPopup"
+// import WaitlistBox from "../components/waitlist-box"
+import WaitlistPopup from "../components/WaitlistPopup"
+import TagSelector from "../components/TagSelector"
+import { useRecommendations } from "../lib/hooks/useRecommendations"
 
 import posthog from 'posthog-js';
-import AnimeSet from '@/components/AnimeSet'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import AnimeSet from '../components/AnimeSet'
+// import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 export default function Home() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -92,7 +92,7 @@ export default function Home() {
     return (
         <div className="bg-white">
 
-            <Navbar onJoinWaitlist={() => setWaitlistPopupOpen(true)} />
+            {/* <Navbar onJoinWaitlist={() => setWaitlistPopupOpen(true)} /> */}
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
 
