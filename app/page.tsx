@@ -92,7 +92,7 @@ export default function Home() {
     return (
         <div className="bg-white">
 
-            <NavigationBar onJoinWaitlist={() => setWaitlistPopupOpen(true)} />
+            <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
 
