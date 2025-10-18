@@ -1,51 +1,38 @@
-import { createClient } from "@/lib/supabase/browser-client";
+"use server";
 
-interface FormData {
-    email: string;
-    password: string;
-}
+import { createClient } from "@/lib/supabase/server-client";
+import { redirect } from "next/navigation";
 
 // Sign up user
-export async function signup(data: FormData) {
+export async function signup(formData: FormData) {
     const supabase = await createClient();
     const { data: user, error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
     });
 
-    if (user) {
-        return {
-            status: 200,
-            data: user,
-        };
+    if (error) {
+        console.error('Signup error:', error.message);
+    } else if (user) {
+        redirect('/');
     }
-    return {
-        status: 400,
-        data: null,
-        error: error?.message,
-    };
 }
 
 // Sign in user
-export async function signin(data: FormData) {
+export async function signin(formData: FormData) {
     const supabase = await createClient();
     const {
         data: { user },
         error,
     } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
     });
     if (user) {
-        return {
-            status: 200,
-            data: user,
-        };
+        redirect('/');
     }
 
-    return {
-        status: 400,
-        data: null,
-        error: error?.message,
-    };
+    if (error) {
+        console.error('Signin error:', error.message);
+    }
 }
