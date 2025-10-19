@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const public_routes = ["/", "/login", "/join"]; // for non-authenticated users
+const public_routes = ["/", "/login", "/join", "/recommendation"]; // for non-authenticated users
 
 export function isPublicRoute(request: NextRequest) {
     return public_routes.includes(request.nextUrl.pathname);
@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     // redirect authenticated users away from login/join pages to main page
     if (user) {
         const path = request.nextUrl.pathname;
-        if (public_routes.includes(path) && path !== "/") {
+        if (public_routes.includes(path) && path !== "/" && path !== "/recommendation") {
             return NextResponse.redirect(new URL("/", request.url));
         }
     }

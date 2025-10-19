@@ -52,9 +52,12 @@ export default function NavigationBar() {
                 {/* Navigation Links */}
                 <div className="flex-row gap-12 hidden md:flex md:justify-center">
                     <a href="/" className="font-semibold">
+                        discover
+                    </a>
+                    <a href="/recommendation" className="font-semibold">
                         recommendations
                     </a>
-                    {/* Add other links like chat, watchlist, discover as needed */}
+                    {/* Add other links like chat, watchlist as needed */}
                 </div>
 
                 {/* Auth Buttons */}
