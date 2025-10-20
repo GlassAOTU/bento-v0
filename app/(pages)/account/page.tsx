@@ -1,7 +1,16 @@
 import NavigationBar from "@/components/NavigationBar";
 import Image from "next/image";
+import ChangePasswordForm from '@/components/ChangePasswordForm';
+import SignOutButton from '@/components/SignOutButton';
+import { createClient } from '@/lib/supabase/server-client';
+import { redirect } from 'next/navigation';
 
-export default function AccountPage() {
+export default async function AccountPage() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        redirect('/login');
+    }
     return (
         <main className="bg-white">
             <NavigationBar />
@@ -25,6 +34,21 @@ export default function AccountPage() {
                                 height={300}
                                 className="sm:hidden w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
                             />
+                        </div>
+                    </section>
+
+                    <section>
+                        <div className="py-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <ChangePasswordForm />
+                            </div>
+                            <div className="flex items-start">
+                                <div className="w-full p-4 bg-white rounded-md border shadow-sm">
+                                    <h3 className="text-lg font-semibold mb-4">Account</h3>
+                                    <p className="text-sm mb-4">Manage your account settings and sign out.</p>
+                                    <SignOutButton />
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>
