@@ -1,15 +1,17 @@
 // components/NavigationBar.tsx
-'use client';
+"use client";
 
 import { createClient } from '@/lib/supabase/browser-client';
 import { useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
-import WaitlistPopup from './WaitlistPopup'; // Import the popup component
+import WaitlistPopup from './WaitlistPopup';
+import { useRouter } from 'next/navigation';
 
 export default function NavigationBar() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false); // Local state for waitlist popup
+    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const initAuth = async () => {
@@ -32,10 +34,18 @@ export default function NavigationBar() {
         initAuth();
     }, []);
 
+    // Keep sign out logic here for reuse by a dedicated SignOutButton on the account page
     const handleSignOut = async () => {
         const supabase = await createClient();
         await supabase.auth.signOut();
-        setUser(null); // Immediately update UI
+        setUser(null);
+        try {
+            await fetch('/api/auth/signout', { method: 'POST' });
+        } catch (e) {
+            // ignore
+        }
+
+        router.replace('/');
     };
 
     return (
@@ -54,7 +64,6 @@ export default function NavigationBar() {
                     <a href="/" className="font-semibold">
                         recommendations
                     </a>
-                    {/* Add other links like chat, watchlist, discover as needed */}
                 </div>
 
                 {/* Auth Buttons */}
@@ -69,12 +78,6 @@ export default function NavigationBar() {
                             >
                                 Account
                             </a>
-                            <button
-                                onClick={handleSignOut}
-                                className="text-sm p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-50 transition-colors"
-                            >
-                                Sign out
-                            </button>
                         </div>
                     ) : (
                         <div className="flex gap-2">
