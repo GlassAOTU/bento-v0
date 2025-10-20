@@ -82,13 +82,13 @@ export default function NavigationBar() {
                     ) : (
                         <div className="flex gap-2">
                             <a
-                                href="/login"
+                                href="/sign-in"
                                 className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors"
                             >
                                 Login
                             </a>
                             <a
-                                href="/join"
+                                href="/sign-up"
                                 className="text-sm p-2 rounded-md bg-mySecondary text-white hover:bg-[#2b2b2b] transition-colors"
                             >
                                 Join

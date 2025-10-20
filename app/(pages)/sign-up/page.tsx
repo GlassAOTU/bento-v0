@@ -4,7 +4,7 @@ import NavigationBar from "@/components/NavigationBar";
 import Image from "next/image";
 import { useState } from 'react';
 
-export default function JoinPage() {
+export default function SignUpPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,7 +30,7 @@ export default function JoinPage() {
 
         setLoading(true);
         try {
-            const res = await fetch('/api/auth/signup', {
+            const res = await fetch('/api/auth/sign-up', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password }),

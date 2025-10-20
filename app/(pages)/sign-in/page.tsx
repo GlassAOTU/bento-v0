@@ -4,7 +4,7 @@ import NavigationBar from "@/components/NavigationBar";
 import Image from "next/image";
 import { useState } from "react";
 
-export default function LoginPage() {
+export default function SignInPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function LoginPage() {
 
         setLoading(true);
         try {
-            const res = await fetch('/api/auth/signin', {
+            const res = await fetch('/api/auth/sign-in', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -125,7 +125,7 @@ export default function LoginPage() {
                             >
                                 {loading ? 'Signing in...' : 'Sign in'}
                             </button>
-                            <p className="text-sm text-gray-500 mt-2">Don't have an account? <a href="/join" className="text-mySecondary font-semibold">Create one</a></p>
+                            <p className="text-sm text-gray-500 mt-2">Don't have an account? <a href="/sign-up" className="text-mySecondary font-semibold">Create one</a></p>
                             <div className="mt-3">
                                 <button type="button" onClick={() => setShowReset(s => !s)} className="text-sm text-mySecondary underline">Forgot password?</button>
                             </div>

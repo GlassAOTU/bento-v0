@@ -9,7 +9,7 @@ export default async function AccountPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-        redirect('/login');
+        redirect('/sign-in');
     }
     return (
         <main className="bg-white">

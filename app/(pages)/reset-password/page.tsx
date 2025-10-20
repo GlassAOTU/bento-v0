@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from '@/lib/supabase/browser-client';
 import { useRouter } from 'next/navigation';
 
-export default function ResetPage() {
+export default function ResetPasswordPage() {
     const [password, setPassword] = useState('');
     const [confirm, setConfirm] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -31,29 +31,29 @@ export default function ResetPage() {
                 };
 
                 const { access_token, refresh_token } = parseTokens();
-                    if (access_token) {
-                        try {
-                            // @ts-ignore - setSession exists on the client
-                            await supabase.auth.setSession({ access_token, refresh_token });
-                            // Clean URL to avoid leaking tokens
-                            window.history.replaceState({}, document.title, window.location.pathname + window.location.search.replace(/(#.*$)/, ''));
-                        } catch (e) {
-                            // ignore
-                        }
-                    }
-
-                    // Verify authenticated user exists after attempting to set session from URL tokens.
+                if (access_token) {
                     try {
-                        const { data: { user } } = await supabase.auth.getUser();
-                        if (!user) {
-                            // No valid session — redirect to home where users can request a reset.
-                            router.replace('/');
-                            return;
-                        }
-                    } catch {
+                        // @ts-ignore - setSession exists on the client
+                        await supabase.auth.setSession({ access_token, refresh_token });
+                        // Clean URL to avoid leaking tokens
+                        window.history.replaceState({}, document.title, window.location.pathname + window.location.search.replace(/(#.*$)/, ''));
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+
+                // Verify authenticated user exists after attempting to set session from URL tokens.
+                try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                        // No valid session — redirect to home where users can request a reset.
                         router.replace('/');
                         return;
                     }
+                } catch {
+                    router.replace('/');
+                    return;
+                }
             } catch (e) {
                 // ignore
             }
