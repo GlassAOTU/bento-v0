@@ -224,7 +224,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
 
                         <button
                             onClick={onClose}
-                            className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors font-medium"
+                            className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
                         >
                             Got it
                         </button>
@@ -267,7 +267,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             />
                             <button
                                 type="submit"
-                                className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors font-medium"
+                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
                             >
                                 Sign in
                             </button>
@@ -411,7 +411,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             <button
                                 type="submit"
                                 disabled={(signupEmail.length > 0 || password.length > 0) && !isFormValid}
-                                className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Sign up
                             </button>
