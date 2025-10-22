@@ -69,6 +69,8 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
     const [emailTouched, setEmailTouched] = useState(false)
     const [password, setPassword] = useState('')
     const [passwordFocused, setPasswordFocused] = useState(false)
+    const [signinEmail, setSigninEmail] = useState('')
+    const [signinPassword, setSigninPassword] = useState('')
     const [resetEmail, setResetEmail] = useState('')
     const [resetLoading, setResetLoading] = useState(false)
 
@@ -99,6 +101,8 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
             setEmailTouched(false)
             setPassword('') // Clear password when modal opens
             setPasswordFocused(false)
+            setSigninEmail('') // Clear signin email when modal opens
+            setSigninPassword('') // Clear signin password when modal opens
         }
     }, [isOpen, initialView])
 
@@ -109,6 +113,8 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
         setEmailTouched(false)
         setPassword('')
         setPasswordFocused(false)
+        setSigninEmail('')
+        setSigninPassword('')
         // Don't clear resetEmail when showing the confirmation screen
         if (view !== 'password-reset-sent') {
             setResetEmail('')
@@ -311,6 +317,8 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                                     type="email"
                                     name="email"
                                     required
+                                    value={signinEmail}
+                                    onChange={(e) => setSigninEmail(e.target.value)}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -325,6 +333,8 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                                     type="password"
                                     name="password"
                                     required
+                                    value={signinPassword}
+                                    onChange={(e) => setSigninPassword(e.target.value)}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -404,11 +414,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             <button
                                 onClick={() => {
                                     setView('signup')
-                                    setError(null) // Clear error when switching views
-                                    setSignupEmail('') // Clear signup email when switching views
-                                    setEmailTouched(false)
-                                    setPassword('') // Clear password when switching views
-                                    setPasswordFocused(false)
                                 }}
                                 className="text-mySecondary hover:underline font-medium"
                             >
@@ -612,11 +617,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             <button
                                 onClick={() => {
                                     setView('signin')
-                                    setError(null) // Clear error when switching views
-                                    setSignupEmail('') // Clear signup email when switching views
-                                    setEmailTouched(false)
-                                    setPassword('') // Clear password when switching views
-                                    setPasswordFocused(false)
                                 }}
                                 className="text-mySecondary hover:underline font-medium"
                             >
