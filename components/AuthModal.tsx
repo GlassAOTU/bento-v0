@@ -60,7 +60,7 @@ function getErrorMessage(error: string, isSignup: boolean = false): string {
 }
 
 export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: AuthModalProps) {
-    const [view, setView] = useState<'signin' | 'signup' | 'confirmation'>(initialView)
+    const [view, setView] = useState<'signin' | 'signup' | 'confirmation' | 'forgot-password' | 'password-reset-sent'>(initialView)
     const [email, setEmail] = useState('')
     const [resendLoading, setResendLoading] = useState(false)
     const [resendSuccess, setResendSuccess] = useState(false)
@@ -69,10 +69,13 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
     const [emailTouched, setEmailTouched] = useState(false)
     const [password, setPassword] = useState('')
     const [passwordFocused, setPasswordFocused] = useState(false)
+    const [resetEmail, setResetEmail] = useState('')
+    const [resetLoading, setResetLoading] = useState(false)
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const isEmailValid = signupEmail.length === 0 || emailRegex.test(signupEmail)
+    const isResetEmailValid = resetEmail.length === 0 || emailRegex.test(resetEmail)
 
     // Password validation rules
     const passwordValidation = {
@@ -98,6 +101,20 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
             setPasswordFocused(false)
         }
     }, [isOpen, initialView])
+
+    // Clear form state when view changes
+    useEffect(() => {
+        setError(null)
+        setSignupEmail('')
+        setEmailTouched(false)
+        setPassword('')
+        setPasswordFocused(false)
+        // Don't clear resetEmail when showing the confirmation screen
+        if (view !== 'password-reset-sent') {
+            setResetEmail('')
+        }
+        setResetLoading(false)
+    }, [view])
 
     const handleSignup = async (formData: FormData) => {
         console.log('[AuthModal] handleSignup called')
@@ -172,6 +189,39 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
         }
     }
 
+    const handlePasswordReset = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        if (!isResetEmailValid || resetEmail.length === 0) {
+            setError('Please enter a valid email address')
+            return
+        }
+
+        setResetLoading(true)
+        setError(null)
+
+        try {
+            const supabase = await createClient()
+            const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+                redirectTo: `${window.location.origin}/auth/reset-password`,
+            })
+
+            setResetLoading(false)
+
+            if (error) {
+                console.error('[AuthModal] Password reset error:', error.message)
+                setError(error.message)
+            } else {
+                console.log('[AuthModal] Password reset email sent to:', resetEmail)
+                setView('password-reset-sent')
+            }
+        } catch (err) {
+            setResetLoading(false)
+            setError('Failed to send password reset email')
+            console.error('[AuthModal] Password reset error:', err)
+        }
+    }
+
     if (!isOpen) return null
 
     return (
@@ -232,9 +282,9 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                 ) : view === 'signin' ? (
                     // Sign In Form
                     <div>
-                        <h2 className="text-2xl font-bold mb-2 text-center">Sign in</h2>
-                        <p className="text-sm text-gray-600 mb-6 text-center">
-                            Welcome back! Sign in to your account
+                        <h2 className="text-4xl font-bold mb-2 text-center">Sign In</h2>
+                        <p className="text-base text-gray-400 mb-8 text-center">
+                            Welcome back!
                         </p>
 
                         {/* Error Message */}
@@ -250,35 +300,115 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             console.log('[AuthModal] Sign in form submitted')
                             const formData = new FormData(e.currentTarget)
                             await handleSignin(formData)
-                        }} className="flex flex-col gap-4">
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Email"
-                                required
-                                className="px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                required
-                                className="px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                        }} className="flex flex-col gap-5">
+                            {/* Email Field */}
+                            <div>
+                                <label htmlFor="signin-email" className="block text-base font-normal mb-2">
+                                    Email
+                                </label>
+                                <input
+                                    id="signin-email"
+                                    type="email"
+                                    name="email"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            {/* Password Field */}
+                            <div>
+                                <label htmlFor="signin-password" className="block text-base font-normal mb-2">
+                                    Password
+                                </label>
+                                <input
+                                    id="signin-password"
+                                    type="password"
+                                    name="password"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            {/* Sign In Button */}
                             <button
                                 type="submit"
-                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
+                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-base mt-2"
                             >
-                                Sign in
+                                Sign In
                             </button>
                         </form>
 
+                        {/* Divider */}
+                        <div className="flex items-center gap-4 my-6">
+                            <div className="flex-1 border-t border-gray-300"></div>
+                            <span className="text-sm text-gray-500">or</span>
+                            <div className="flex-1 border-t border-gray-300"></div>
+                        </div>
+
+                        {/* OAuth Buttons */}
+                        <div className="flex flex-col gap-3">
+                            {/* Google */}
+                            <button
+                                type="button"
+                                onClick={() => console.log('Google OAuth - to be implemented')}
+                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.64 9.20454C17.64 8.56636 17.5827 7.95272 17.4764 7.36363H9V10.845H13.8436C13.635 11.97 13.0009 12.9231 12.0477 13.5613V15.8195H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.20454Z" fill="#4285F4"/>
+                                    <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5613C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8372 3.96409 10.71H0.957275V13.0418C2.43818 15.9831 5.48182 18 9 18Z" fill="#34A853"/>
+                                    <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957275C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957275 13.0418L3.96409 10.71Z" fill="#FBBC05"/>
+                                    <path d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
+                                </svg>
+                                Continue with Google
+                            </button>
+
+                            {/* Facebook */}
+                            <button
+                                type="button"
+                                onClick={() => console.log('Facebook OAuth - to be implemented')}
+                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9C0 13.4922 3.29115 17.2155 7.59375 17.8907V11.6016H5.30859V9H7.59375V7.01719C7.59375 4.76156 8.93742 3.51562 10.9932 3.51562C11.9776 3.51562 13.0078 3.69141 13.0078 3.69141V5.90625H11.873C10.755 5.90625 10.4062 6.60001 10.4062 7.3125V9H12.9023L12.5033 11.6016H10.4062V17.8907C14.7088 17.2155 18 13.4922 18 9Z" fill="#1877F2"/>
+                                </svg>
+                                Continue with Facebook
+                            </button>
+
+                            {/* Apple */}
+                            <button
+                                type="button"
+                                onClick={() => console.log('Apple OAuth - to be implemented')}
+                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.6483 15.1666C13.9444 16.1427 13.1812 17.1134 12.0858 17.1313C11.0099 17.1492 10.6689 16.489 9.44507 16.489C8.22125 16.489 7.84262 17.1134 6.82419 17.1492C5.76716 17.185 4.90045 16.0912 4.19198 15.1206C2.73851 13.1311 1.61661 9.43095 3.10768 6.85714C3.84766 5.57739 5.17329 4.75893 6.61283 4.74107C7.65093 4.72321 8.62662 5.44494 9.2523 5.44494C9.87798 5.44494 11.0816 4.55804 12.3473 4.68304C12.8876 4.70536 14.3205 4.90179 15.2367 6.33036C15.1571 6.37946 13.6839 7.26637 13.7008 9.09107C13.7205 11.2857 15.5395 12.0522 15.5605 12.0626C15.5437 12.1116 15.2563 13.125 14.6483 15.1666ZM11.8826 3.14732C12.4774 2.42857 12.8813 1.42411 12.7611 0.416668C11.9136 0.452381 10.8899 0.977679 10.2783 1.69643C9.73137 2.33036 9.25083 3.35357 9.38908 4.33482C10.3389 4.4094 11.3087 3.86607 11.8826 3.14732Z" fill="black"/>
+                                </svg>
+                                Continue with Apple
+                            </button>
+                        </div>
+
+                        {/* Forgot Password Link */}
+                        <div className="mt-6 text-center">
+                            <button
+                                type="button"
+                                onClick={() => setView('forgot-password')}
+                                className="text-sm text-black underline hover:text-gray-700"
+                            >
+                                Forgot password?
+                            </button>
+                        </div>
+
+                        {/* Sign Up Link */}
                         <div className="mt-4 text-center text-sm">
                             <span className="text-gray-600">Don't have an account? </span>
                             <button
                                 onClick={() => {
                                     setView('signup')
                                     setError(null) // Clear error when switching views
+                                    setSignupEmail('') // Clear signup email when switching views
+                                    setEmailTouched(false)
+                                    setPassword('') // Clear password when switching views
+                                    setPasswordFocused(false)
                                 }}
                                 className="text-mySecondary hover:underline font-medium"
                             >
@@ -286,11 +416,11 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             </button>
                         </div>
                     </div>
-                ) : (
+                ) : view === 'signup' ? (
                     // Sign Up Form
                     <div>
-                        <h2 className="text-2xl font-bold mb-2 text-center">Create an account</h2>
-                        <p className="text-sm text-gray-600 mb-6 text-center">
+                        <h2 className="text-4xl font-bold mb-2 text-center">Create an account</h2>
+                        <p className="text-base text-gray-400 mb-8 text-center">
                             Join Bento to get personalized recommendations
                         </p>
 
@@ -319,12 +449,16 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
 
                             const formData = new FormData(e.currentTarget)
                             await handleSignup(formData)
-                        }} className="flex flex-col gap-4">
+                        }} className="flex flex-col gap-5">
+                            {/* Email Field */}
                             <div>
+                                <label htmlFor="signup-email" className="block text-base font-normal mb-2">
+                                    Email
+                                </label>
                                 <input
+                                    id="signup-email"
                                     type="email"
                                     name="email"
-                                    placeholder="Email"
                                     required
                                     value={signupEmail}
                                     onChange={(e) => setSignupEmail(e.target.value)}
@@ -342,11 +476,16 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                                     <p className="mt-1 text-xs text-red-600">Please enter a valid email address</p>
                                 )}
                             </div>
+
+                            {/* Password Field */}
                             <div>
+                                <label htmlFor="signup-password" className="block text-base font-normal mb-2">
+                                    Password
+                                </label>
                                 <input
+                                    id="signup-password"
                                     type="password"
                                     name="password"
-                                    placeholder="Password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -408,16 +547,67 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                                     </div>
                                 )}
                             </div>
+                            {/* Sign Up Button */}
                             <button
                                 type="submit"
                                 disabled={(signupEmail.length > 0 || password.length > 0) && !isFormValid}
-                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Sign up
                             </button>
                         </form>
 
-                        <div className="mt-4 text-center text-sm">
+                        {/* Divider */}
+                        <div className="flex items-center gap-4 my-6">
+                            <div className="flex-1 border-t border-gray-300"></div>
+                            <span className="text-sm text-gray-500">or</span>
+                            <div className="flex-1 border-t border-gray-300"></div>
+                        </div>
+
+                        {/* OAuth Buttons */}
+                        <div className="flex flex-col gap-3">
+                            {/* Google */}
+                            <button
+                                type="button"
+                                onClick={() => console.log('Google OAuth - to be implemented')}
+                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.64 9.20454C17.64 8.56636 17.5827 7.95272 17.4764 7.36363H9V10.845H13.8436C13.635 11.97 13.0009 12.9231 12.0477 13.5613V15.8195H14.9564C16.6582 14.2527 17.64 11.9454 17.64 9.20454Z" fill="#4285F4"/>
+                                    <path d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5613C11.2418 14.1013 10.2109 14.4204 9 14.4204C6.65591 14.4204 4.67182 12.8372 3.96409 10.71H0.957275V13.0418C2.43818 15.9831 5.48182 18 9 18Z" fill="#34A853"/>
+                                    <path d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957275C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957275 13.0418L3.96409 10.71Z" fill="#FBBC05"/>
+                                    <path d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/>
+                                </svg>
+                                Continue with Google
+                            </button>
+
+                            {/* Facebook */}
+                            <button
+                                type="button"
+                                onClick={() => console.log('Facebook OAuth - to be implemented')}
+                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 9C18 4.02944 13.9706 0 9 0C4.02944 0 0 4.02944 0 9C0 13.4922 3.29115 17.2155 7.59375 17.8907V11.6016H5.30859V9H7.59375V7.01719C7.59375 4.76156 8.93742 3.51562 10.9932 3.51562C11.9776 3.51562 13.0078 3.69141 13.0078 3.69141V5.90625H11.873C10.755 5.90625 10.4062 6.60001 10.4062 7.3125V9H12.9023L12.5033 11.6016H10.4062V17.8907C14.7088 17.2155 18 13.4922 18 9Z" fill="#1877F2"/>
+                                </svg>
+                                Continue with Facebook
+                            </button>
+
+                            {/* Apple */}
+                            <button
+                                type="button"
+                                onClick={() => console.log('Apple OAuth - to be implemented')}
+                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
+                            >
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.6483 15.1666C13.9444 16.1427 13.1812 17.1134 12.0858 17.1313C11.0099 17.1492 10.6689 16.489 9.44507 16.489C8.22125 16.489 7.84262 17.1134 6.82419 17.1492C5.76716 17.185 4.90045 16.0912 4.19198 15.1206C2.73851 13.1311 1.61661 9.43095 3.10768 6.85714C3.84766 5.57739 5.17329 4.75893 6.61283 4.74107C7.65093 4.72321 8.62662 5.44494 9.2523 5.44494C9.87798 5.44494 11.0816 4.55804 12.3473 4.68304C12.8876 4.70536 14.3205 4.90179 15.2367 6.33036C15.1571 6.37946 13.6839 7.26637 13.7008 9.09107C13.7205 11.2857 15.5395 12.0522 15.5605 12.0626C15.5437 12.1116 15.2563 13.125 14.6483 15.1666ZM11.8826 3.14732C12.4774 2.42857 12.8813 1.42411 12.7611 0.416668C11.9136 0.452381 10.8899 0.977679 10.2783 1.69643C9.73137 2.33036 9.25083 3.35357 9.38908 4.33482C10.3389 4.4094 11.3087 3.86607 11.8826 3.14732Z" fill="black"/>
+                                </svg>
+                                Continue with Apple
+                            </button>
+                        </div>
+
+                        {/* Sign In Link */}
+                        <div className="mt-6 text-center text-sm">
                             <span className="text-gray-600">Already have an account? </span>
                             <button
                                 onClick={() => {
@@ -434,7 +624,87 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             </button>
                         </div>
                     </div>
-                )}
+                ) : view === 'forgot-password' ? (
+                    // Forgot Password Form
+                    <div>
+                        <h2 className="text-4xl font-bold mb-2 text-center">Reset password</h2>
+                        <p className="text-base text-gray-400 mb-8 text-center">
+                            Enter your email and we'll send you a link to reset your password
+                        </p>
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
+                                <span className="text-red-600 text-sm">⚠️</span>
+                                <p className="text-sm text-red-600">{error}</p>
+                            </div>
+                        )}
+
+                        <form onSubmit={handlePasswordReset} className="flex flex-col gap-5">
+                            {/* Email Field */}
+                            <div>
+                                <label htmlFor="reset-email" className="block text-base font-normal mb-2">
+                                    Email
+                                </label>
+                                <input
+                                    id="reset-email"
+                                    type="email"
+                                    name="email"
+                                    required
+                                    value={resetEmail}
+                                    onChange={(e) => setResetEmail(e.target.value)}
+                                    className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 ${
+                                        error
+                                            ? 'border-red-300 focus:ring-red-500'
+                                            : 'border-gray-300 focus:ring-blue-500'
+                                    }`}
+                                />
+                            </div>
+
+                            {/* Send Reset Link Button */}
+                            <button
+                                type="submit"
+                                disabled={resetLoading || !isResetEmailValid || resetEmail.length === 0}
+                                className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {resetLoading ? 'Sending...' : 'Send reset link'}
+                            </button>
+                        </form>
+
+                        {/* Back to Sign In Link */}
+                        <div className="mt-6 text-center text-sm">
+                            <button
+                                onClick={() => setView('signin')}
+                                className="text-mySecondary hover:underline font-medium"
+                            >
+                                ← Back to sign in
+                            </button>
+                        </div>
+                    </div>
+                ) : view === 'password-reset-sent' ? (
+                    // Password Reset Sent Confirmation
+                    <div className="text-center py-8">
+                        <h2 className="text-3xl font-bold mb-4">Check your email</h2>
+                        <p className="text-gray-600 mb-2">
+                            If an account exists for
+                        </p>
+                        {resetEmail && (
+                            <p className="text-gray-600 mb-4">
+                                <span className="font-medium">{resetEmail}</span>
+                            </p>
+                        )}
+                        <p className="text-sm text-gray-500 mb-6">
+                            you will receive a password reset link. Click the link in the email to reset your password.
+                        </p>
+
+                        <button
+                            onClick={() => setView('signin')}
+                            className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
+                        >
+                            Back to sign in
+                        </button>
+                    </div>
+                ) : null}
             </div>
         </div>
     )
