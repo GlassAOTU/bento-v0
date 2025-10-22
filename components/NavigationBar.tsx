@@ -4,12 +4,15 @@
 import { createClient } from '@/lib/supabase/browser-client';
 import { useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
-import WaitlistPopup from './WaitlistPopup'; // Import the popup component
+import WaitlistPopup from './WaitlistPopup';
+import AuthModal from './AuthModal';
 
 export default function NavigationBar() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false); // Local state for waitlist popup
+    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
 
     useEffect(() => {
         const initAuth = async () => {
@@ -20,10 +23,36 @@ export default function NavigationBar() {
             setUser(user);
             setLoading(false);
 
+            // Log user details to console
+            if (user) {
+                console.log('Current user:', {
+                    id: user.id,
+                    email: user.email,
+                    email_confirmed_at: user.email_confirmed_at,
+                    confirmed_at: user.confirmed_at,
+                    created_at: user.created_at,
+                    last_sign_in_at: user.last_sign_in_at,
+                    is_email_confirmed: !!user.email_confirmed_at,
+                });
+            }
+
             // Listen for auth changes
             const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
                 setUser(session?.user ?? null);
                 setLoading(false);
+
+                // Log on auth state change
+                if (session?.user) {
+                    console.log('Auth state changed:', {
+                        id: session.user.id,
+                        email: session.user.email,
+                        email_confirmed_at: session.user.email_confirmed_at,
+                        is_email_confirmed: !!session.user.email_confirmed_at,
+                    });
+
+                    // Close auth modal when user signs in
+                    setIsAuthModalOpen(false);
+                }
             });
 
             return () => subscription.unsubscribe();
@@ -81,18 +110,24 @@ export default function NavigationBar() {
                         </div>
                     ) : (
                         <div className="flex gap-2">
-                            <a
-                                href="/login"
+                            <button
+                                onClick={() => {
+                                    setAuthModalView('signin');
+                                    setIsAuthModalOpen(true);
+                                }}
                                 className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors"
                             >
                                 Login
-                            </a>
-                            <a
-                                href="/join"
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setAuthModalView('signup');
+                                    setIsAuthModalOpen(true);
+                                }}
                                 className="text-sm p-2 rounded-md bg-mySecondary text-white hover:bg-[#2b2b2b] transition-colors"
                             >
                                 Join
-                            </a>
+                            </button>
                         </div>
                     )}
                 </div>
@@ -100,6 +135,13 @@ export default function NavigationBar() {
 
             {/* Waitlist Popup */}
             {isWaitlistOpen && <WaitlistPopup onClose={() => setIsWaitlistOpen(false)} />}
+
+            {/* Auth Modal */}
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                initialView={authModalView}
+            />
         </div>
     );
 }
