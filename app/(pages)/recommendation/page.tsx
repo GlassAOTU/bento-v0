@@ -4,6 +4,7 @@ import '../../../app/globals.css'
 
 import Image from "next/image"
 import { SetStateAction, useEffect, useState } from "react"
+import { useSearchParams } from 'next/navigation'
 import { ScaleLoader } from "react-spinners"
 import AnimeCard from "../../../components/AnimeCard"
 import BottomButton from "../../../components/BottomButton"
@@ -17,8 +18,10 @@ import posthog from 'posthog-js';
 import AnimeSet from '../../../components/AnimeSet'
 import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
+import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
 
 export default function RecommendationPage() {
+    const searchParams = useSearchParams()
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
     const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false);
@@ -61,7 +64,19 @@ export default function RecommendationPage() {
         if (isStillRateLimited) {
             openLimitPopup();
         }
-    }, []);
+
+        // Pre-fill from URL parameters (from recent searches)
+        const urlDescription = searchParams.get('description')
+        const urlTags = searchParams.get('tags')
+
+        if (urlDescription) {
+            setDescription(urlDescription)
+        }
+
+        if (urlTags) {
+            setSelectedTags(urlTags.split(','))
+        }
+    }, [searchParams]);
 
     const handleGetRecommendations = async (append = false) => {
         if (isButtonDisabled) {
@@ -82,6 +97,26 @@ export default function RecommendationPage() {
         if (result.error === "Rate limit reached") {
             openLimitPopup();
             return;
+        }
+
+        // Save successful search to localStorage
+        if (isSuccessResult(result) && result.data.length > 0) {
+            const recentSearchResults: RecentSearchResult[] = result.data.map(anime => ({
+                title: anime.title,
+                image: anime.image,
+                reason: anime.reason,
+                description: anime.description
+            }));
+
+            console.log('Saving search to localStorage:', {
+                description,
+                tags: selectedTags,
+                resultsCount: recentSearchResults.length,
+                results: recentSearchResults
+            });
+
+            saveRecentSearch(description, selectedTags, recentSearchResults);
+            console.log('Search saved successfully');
         }
     };
 

@@ -1,5 +1,8 @@
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
+import WatchlistModal from "./WatchlistModal"
+import { slugify } from "@/lib/utils/slugify"
 
 export default function AnimeCard({ item, onTrailerClick }: {
     item: {
@@ -12,11 +15,11 @@ export default function AnimeCard({ item, onTrailerClick }: {
     };
     onTrailerClick?: (trailerId: string) => void;
 }) {
+    const [isWatchlistModalOpen, setIsWatchlistModalOpen] = useState(false)
     return (
         <div className="flex gap-6 mb-5 rounded-lg flex-col hover:scale-[102%] transition-all">
             {/* <div className="w-40 h-52 max-w-[950px] max-h-[208px] rounded-md overflow-hidden shadow-md bg-red-600"> */}
-            <div className="rounded-md overflow-hidden flex items-center justify-center">
-
+            <Link href={`/anime/${slugify(item.title)}`} className="rounded-md overflow-hidden flex items-center justify-center cursor-pointer">
                 <Image
                     src={item.image || 'images/banner-not-available.png'} alt={item.title}
                     width={1900}
@@ -25,42 +28,55 @@ export default function AnimeCard({ item, onTrailerClick }: {
                     priority={true}
                     loading="eager"
                 />
-                
-            </div>
+            </Link>
 
             {/* </div> */}
             <div className="flex flex-col justify-between flex-1">
-                <h3 className="text-xl font-bold text-mySecondary mb-2 tracking-tighter">
-                    {item.title}
-                </h3>
+                <Link href={`/anime/${slugify(item.title)}`} className="hover:text-gray-700 transition-colors">
+                    <h3 className="text-xl font-bold text-mySecondary mb-2 tracking-tighter">
+                        {item.title}
+                    </h3>
+                </Link>
                 <b className="italic mb-3">{item.reason}</b>
                 <p className="text-md text-mySecondary mb-4 tracking-tighter leading-relaxed">
                     {item.description}
                 </p>
 
-                <div className="flex flex-row justify-between">
-                    {item.externalLinks && (
-                        <div className="self-start">
+                <div className="flex flex-row justify-between items-center">
+                    {/* Left side buttons */}
+                    <div className="flex gap-3">
+                        {item.externalLinks && (
                             <a href={item.externalLinks.url} target="_blank" rel="noopener noreferrer" className="inline-block">
-                                <button className="px-4 py-1 rounded-md border  border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">{item.externalLinks.site}</button>
+                                <button className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">{item.externalLinks.site}</button>
                             </a>
-                        </div>
-                    )}
+                        )}
 
-                    {item.trailer && item.trailer.id && item.trailer.site && (
-                        <div className="self-start">
+                        {item.trailer && item.trailer.id && item.trailer.site && (
                             <button
                                 onClick={() => item.trailer?.id && onTrailerClick?.(item.trailer.id)}
                                 className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
                             >
                                 Watch Trailer
                             </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
+                    {/* Right side button */}
+                    <button
+                        onClick={() => setIsWatchlistModalOpen(true)}
+                        className="px-4 py-1 rounded-md bg-[#F9F9F9] text-black border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-sm"
+                    >
+                        Add to Watchlist
+                    </button>
                 </div>
             </div>
 
+            {/* Watchlist Modal */}
+            <WatchlistModal
+                isOpen={isWatchlistModalOpen}
+                onClose={() => setIsWatchlistModalOpen(false)}
+                anime={item}
+            />
         </div>
     )
 }

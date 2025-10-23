@@ -16,7 +16,7 @@ export default function NavigationBar() {
 
     useEffect(() => {
         const initAuth = async () => {
-            const supabase = await createClient();
+            const supabase = createClient();
 
             // Get initial session
             const { data: { user } } = await supabase.auth.getUser();
@@ -62,7 +62,7 @@ export default function NavigationBar() {
     }, []);
 
     const handleSignOut = async () => {
-        const supabase = await createClient();
+        const supabase = createClient();
         await supabase.auth.signOut();
         setUser(null); // Immediately update UI
     };
@@ -86,7 +86,11 @@ export default function NavigationBar() {
                     <a href="/recommendation" className="font-semibold">
                         recommendations
                     </a>
-                    {/* Add other links like chat, watchlist as needed */}
+                    {user && (
+                        <a href="/watchlists?tab=watchlist" className="font-semibold">
+                            watchlist
+                        </a>
+                    )}
                 </div>
 
                 {/* Auth Buttons */}
@@ -96,7 +100,7 @@ export default function NavigationBar() {
                     ) : user ? (
                         <div className="flex gap-2">
                             <a
-                                href="/account"
+                                href="/watchlists?tab=recent-searches"
                                 className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors"
                             >
                                 Account
