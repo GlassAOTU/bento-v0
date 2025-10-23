@@ -3,7 +3,7 @@
 import '../../../app/globals.css'
 
 import Image from "next/image"
-import { SetStateAction, useEffect, useState } from "react"
+import { SetStateAction, useEffect, useState, Suspense } from "react"
 import { useSearchParams } from 'next/navigation'
 import { ScaleLoader } from "react-spinners"
 import AnimeCard from "../../../components/AnimeCard"
@@ -20,7 +20,7 @@ import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
 import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
 
-export default function RecommendationPage() {
+function RecommendationContent() {
     const searchParams = useSearchParams()
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
@@ -349,5 +349,17 @@ export default function RecommendationPage() {
 
             {/* <BottomButton /> */}
         </div>
+    );
+}
+
+export default function RecommendationPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-gray-600">Loading...</div>
+            </div>
+        }>
+            <RecommendationContent />
+        </Suspense>
     );
 }

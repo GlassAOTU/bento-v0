@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/browser-client'
@@ -29,7 +29,7 @@ interface Watchlist {
     items: WatchlistItem[]
 }
 
-export default function WatchlistsPage() {
+function WatchlistsContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [loading, setLoading] = useState(true)
@@ -332,4 +332,16 @@ export default function WatchlistsPage() {
             )}
         </div>
     )
+}
+
+export default function WatchlistsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-gray-600">Loading...</div>
+            </div>
+        }>
+            <WatchlistsContent />
+        </Suspense>
+    );
 }
