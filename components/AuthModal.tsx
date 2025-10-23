@@ -228,6 +228,33 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
         }
     }
 
+    const handleOAuthSignIn = async (provider: 'google' | 'facebook' | 'apple') => {
+        try {
+            console.log(`[AuthModal] Starting ${provider} OAuth sign in`)
+            const supabase = await createClient()
+
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: provider,
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                }
+            })
+
+            if (error) {
+                console.error(`[AuthModal] ${provider} OAuth error:`, error.message)
+                setError(`Failed to sign in with ${provider}. Please try again.`)
+            } else {
+                console.log(`[AuthModal] ${provider} OAuth initiated successfully`)
+                // User will be redirected to provider's auth page
+                // After auth, they'll be redirected back to /auth/callback
+                // The callback will handle the session and redirect to home
+            }
+        } catch (err) {
+            console.error(`[AuthModal] ${provider} OAuth error:`, err)
+            setError(`Failed to sign in with ${provider}. Please try again.`)
+        }
+    }
+
     if (!isOpen) return null
 
     return (
@@ -360,7 +387,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             {/* Google */}
                             <button
                                 type="button"
-                                onClick={() => console.log('Google OAuth - to be implemented')}
+                                onClick={() => handleOAuthSignIn('google')}
                                 className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
                             >
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -375,7 +402,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             {/* Facebook */}
                             <button
                                 type="button"
-                                onClick={() => console.log('Facebook OAuth - to be implemented')}
+                                onClick={() => handleOAuthSignIn('facebook')}
                                 className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
                             >
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -384,17 +411,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                                 Continue with Facebook
                             </button>
 
-                            {/* Apple */}
-                            <button
-                                type="button"
-                                onClick={() => console.log('Apple OAuth - to be implemented')}
-                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
-                            >
-                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14.6483 15.1666C13.9444 16.1427 13.1812 17.1134 12.0858 17.1313C11.0099 17.1492 10.6689 16.489 9.44507 16.489C8.22125 16.489 7.84262 17.1134 6.82419 17.1492C5.76716 17.185 4.90045 16.0912 4.19198 15.1206C2.73851 13.1311 1.61661 9.43095 3.10768 6.85714C3.84766 5.57739 5.17329 4.75893 6.61283 4.74107C7.65093 4.72321 8.62662 5.44494 9.2523 5.44494C9.87798 5.44494 11.0816 4.55804 12.3473 4.68304C12.8876 4.70536 14.3205 4.90179 15.2367 6.33036C15.1571 6.37946 13.6839 7.26637 13.7008 9.09107C13.7205 11.2857 15.5395 12.0522 15.5605 12.0626C15.5437 12.1116 15.2563 13.125 14.6483 15.1666ZM11.8826 3.14732C12.4774 2.42857 12.8813 1.42411 12.7611 0.416668C11.9136 0.452381 10.8899 0.977679 10.2783 1.69643C9.73137 2.33036 9.25083 3.35357 9.38908 4.33482C10.3389 4.4094 11.3087 3.86607 11.8826 3.14732Z" fill="black"/>
-                                </svg>
-                                Continue with Apple
-                            </button>
                         </div>
 
                         {/* Forgot Password Link */}
@@ -574,7 +590,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             {/* Google */}
                             <button
                                 type="button"
-                                onClick={() => console.log('Google OAuth - to be implemented')}
+                                onClick={() => handleOAuthSignIn('google')}
                                 className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
                             >
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -589,7 +605,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                             {/* Facebook */}
                             <button
                                 type="button"
-                                onClick={() => console.log('Facebook OAuth - to be implemented')}
+                                onClick={() => handleOAuthSignIn('facebook')}
                                 className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
                             >
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -598,17 +614,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                                 Continue with Facebook
                             </button>
 
-                            {/* Apple */}
-                            <button
-                                type="button"
-                                onClick={() => console.log('Apple OAuth - to be implemented')}
-                                className="w-full py-4 bg-white text-black rounded-[6px] border-[0.5px] border-gray-300 hover:bg-gray-50 transition-colors font-normal text-base flex items-center justify-center gap-3"
-                            >
-                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14.6483 15.1666C13.9444 16.1427 13.1812 17.1134 12.0858 17.1313C11.0099 17.1492 10.6689 16.489 9.44507 16.489C8.22125 16.489 7.84262 17.1134 6.82419 17.1492C5.76716 17.185 4.90045 16.0912 4.19198 15.1206C2.73851 13.1311 1.61661 9.43095 3.10768 6.85714C3.84766 5.57739 5.17329 4.75893 6.61283 4.74107C7.65093 4.72321 8.62662 5.44494 9.2523 5.44494C9.87798 5.44494 11.0816 4.55804 12.3473 4.68304C12.8876 4.70536 14.3205 4.90179 15.2367 6.33036C15.1571 6.37946 13.6839 7.26637 13.7008 9.09107C13.7205 11.2857 15.5395 12.0522 15.5605 12.0626C15.5437 12.1116 15.2563 13.125 14.6483 15.1666ZM11.8826 3.14732C12.4774 2.42857 12.8813 1.42411 12.7611 0.416668C11.9136 0.452381 10.8899 0.977679 10.2783 1.69643C9.73137 2.33036 9.25083 3.35357 9.38908 4.33482C10.3389 4.4094 11.3087 3.86607 11.8826 3.14732Z" fill="black"/>
-                                </svg>
-                                Continue with Apple
-                            </button>
                         </div>
 
                         {/* Sign In Link */}
