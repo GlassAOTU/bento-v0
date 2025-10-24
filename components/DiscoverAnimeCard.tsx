@@ -1,4 +1,6 @@
 import Image from 'next/image'
+import Link from 'next/link'
+import { slugify } from '@/lib/utils/slugify'
 
 type DiscoverAnimeCardProps = {
     anime: {
@@ -11,7 +13,7 @@ type DiscoverAnimeCardProps = {
 
 export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
     return (
-        <div className="flex flex-col gap-2 group cursor-pointer">
+        <Link href={`/anime/${slugify(anime.title)}`} className="flex flex-col gap-2 group cursor-pointer">
             <div className="relative w-full aspect-[309/455] overflow-hidden rounded-md">
                 <Image
                     src={anime.image}
@@ -22,7 +24,7 @@ export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
                 />
             </div>
             <div className="flex flex-col gap-2">
-                <h3 className="text-xs font-semibold uppercase tracking-tight line-clamp-2">
+                <h3 className="text-xs font-semibold uppercase tracking-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
                     {anime.title}
                 </h3>
                 <div className="inline-flex items-center gap-1 self-start px-2 py-0.5 rounded-full bg-[#EEEEEE]/15 border border-black/[0.46]">
@@ -30,6 +32,6 @@ export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
                     <span className="text-xs">☆</span>
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
