@@ -93,7 +93,7 @@ export function useRecommendations() {
                 recommendations: animeFinish.map(rec => rec.title)
             });
 
-            return { success: true };
+            return { success: true, data: animeFinish };
         } catch (err) {
             console.error(err);
             setError("Failed to get recommendations. Please try again later.");

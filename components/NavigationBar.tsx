@@ -1,28 +1,254 @@
-export default function NavigationBar({ onJoinWaitlist }: any) {
+// components/NavigationBar.tsx
+'use client';
+
+import { createClient } from '@/lib/supabase/browser-client';
+import { useEffect, useState } from 'react';
+import { User } from '@supabase/supabase-js';
+import WaitlistPopup from './WaitlistPopup';
+import AuthModal from './AuthModal';
+
+export default function NavigationBar() {
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    useEffect(() => {
+        const initAuth = async () => {
+            const supabase = createClient();
+
+            // Get initial session
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+            setLoading(false);
+
+            // Log user details to console
+            if (user) {
+                console.log('Current user:', {
+                    id: user.id,
+                    email: user.email,
+                    email_confirmed_at: user.email_confirmed_at,
+                    confirmed_at: user.confirmed_at,
+                    created_at: user.created_at,
+                    last_sign_in_at: user.last_sign_in_at,
+                    is_email_confirmed: !!user.email_confirmed_at,
+                });
+            }
+
+            // Listen for auth changes
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null);
+                setLoading(false);
+
+                // Log on auth state change
+                if (session?.user) {
+                    console.log('Auth state changed:', {
+                        id: session.user.id,
+                        email: session.user.email,
+                        email_confirmed_at: session.user.email_confirmed_at,
+                        is_email_confirmed: !!session.user.email_confirmed_at,
+                    });
+
+                    // Close auth modal when user signs in
+                    setIsAuthModalOpen(false);
+                }
+            });
+
+            return () => subscription.unsubscribe();
+        };
+
+        initAuth();
+    }, []);
+
+    const handleSignOut = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        setUser(null); // Immediately update UI
+    };
+
     return (
-        <div className="flex justify-center">
+        <>
+            <div className="flex justify-center">
+                <div className="w-full px-10 m-4 items-center bg-white flex flex-row max-w-5xl justify-between">
+                    {/* Waitlist Button */}
+                    <button
+                        onClick={() => setIsWaitlistOpen(true)}
+                        className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors"
+                    >
+                        join the waitlist
+                    </button>
 
-            <div className="w-full px-10 m-4 items-center bg-white flex flex-row max-w-5xl justify-center md:justify-between">
-                <button onClick={onJoinWaitlist} className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors">
-                    join the waitlist
-                </button>
-                <div className="flex-row gap-12 hidden md:flex md:justify-center">
+                    {/* Desktop Navigation Links */}
+                    <div className="flex-row gap-12 hidden md:flex md:justify-center">
+                        <a href="/" className="font-semibold">
+                            discover
+                        </a>
+                        <a href="/recommendation" className="font-semibold">
+                            recommendations
+                        </a>
+                        {user && (
+                            <a href="/watchlists?tab=watchlist" className="font-semibold">
+                                watchlist
+                            </a>
+                        )}
+                    </div>
 
-                    <a href="/chat">
-                        chat
-                    </a>
+                    {/* Desktop Auth Buttons */}
+                    <div className="hidden md:flex gap-2">
+                        {loading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : user ? (
+                            <div className="flex gap-2">
+                                <a
+                                    href="/watchlists?tab=recent-searches"
+                                    className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors"
+                                >
+                                    Account
+                                </a>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="text-sm p-2 rounded-md border border-red-500 text-red-500 hover:bg-red-50 transition-colors"
+                                >
+                                    Sign out
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        setAuthModalView('signin');
+                                        setIsAuthModalOpen(true);
+                                    }}
+                                    className="text-sm p-2 rounded-md border border-mySecondary hover:border-mySecondary transition-colors"
+                                >
+                                    Login
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setAuthModalView('signup');
+                                        setIsAuthModalOpen(true);
+                                    }}
+                                    className="text-sm p-2 rounded-md bg-mySecondary text-white hover:bg-[#2b2b2b] transition-colors"
+                                >
+                                    Join
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
-                    <a href="/" className="font-semibold">
-                        recommendations
-                    </a>
-                    <a href="/">
-                        watchlist
-                    </a>
-                    <a href="/">
-                        discover
-                    </a>
+                    {/* Mobile Hamburger Menu Button */}
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+                        aria-label="Toggle menu"
+                    >
+                        {isMobileMenuOpen ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </svg>
+                        ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="3" y1="12" x2="21" y2="12" />
+                                <line x1="3" y1="6" x2="21" y2="6" />
+                                <line x1="3" y1="18" x2="21" y2="18" />
+                            </svg>
+                        )}
+                    </button>
                 </div>
             </div>
-        </div>
-    )
+
+            {/* Mobile Menu Dropdown */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+                    <div className="max-w-5xl mx-auto px-10 py-6 space-y-4">
+                        {/* Navigation Links */}
+                        <a
+                            href="/"
+                            className="block py-2 font-semibold hover:text-gray-600 transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            discover
+                        </a>
+                        <a
+                            href="/recommendation"
+                            className="block py-2 font-semibold hover:text-gray-600 transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            recommendations
+                        </a>
+                        {user && (
+                            <a
+                                href="/watchlists?tab=watchlist"
+                                className="block py-2 font-semibold hover:text-gray-600 transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                watchlist
+                            </a>
+                        )}
+
+                        <div className="pt-4 border-t border-gray-200 space-y-3">
+                            {loading ? (
+                                <div className="text-sm text-gray-500">Loading...</div>
+                            ) : user ? (
+                                <>
+                                    <a
+                                        href="/watchlists?tab=recent-searches"
+                                        className="block w-full text-center py-2 px-4 rounded-md border border-mySecondary hover:bg-gray-50 transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Account
+                                    </a>
+                                    <button
+                                        onClick={() => {
+                                            handleSignOut();
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="block w-full text-center py-2 px-4 rounded-md border border-red-500 text-red-500 hover:bg-red-50 transition-colors"
+                                    >
+                                        Sign out
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={() => {
+                                            setAuthModalView('signin');
+                                            setIsAuthModalOpen(true);
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="block w-full text-center py-2 px-4 rounded-md border border-mySecondary hover:bg-gray-50 transition-colors"
+                                    >
+                                        Login
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setAuthModalView('signup');
+                                            setIsAuthModalOpen(true);
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="block w-full text-center py-2 px-4 rounded-md bg-mySecondary text-white hover:bg-[#2b2b2b] transition-colors"
+                                    >
+                                        Join
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Waitlist Popup */}
+            {isWaitlistOpen && <WaitlistPopup onClose={() => setIsWaitlistOpen(false)} />}
+
+            {/* Auth Modal */}
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                initialView={authModalView}
+            />
+        </>
+    );
 }

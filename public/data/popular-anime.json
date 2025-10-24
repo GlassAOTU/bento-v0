@@ -1,0 +1,106 @@
+{
+  "mostPopular": [
+    {
+      "id": 16498,
+      "title": "Shingeki no Kyojin",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx16498-buvcRTBx4NSm.jpg",
+      "rating": 85
+    },
+    {
+      "id": 101922,
+      "title": "Kimetsu no Yaiba",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg",
+      "rating": 82
+    },
+    {
+      "id": 1535,
+      "title": "DEATH NOTE",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1535-kUgkcrfOrkUM.jpg",
+      "rating": 84
+    },
+    {
+      "id": 113415,
+      "title": "Jujutsu Kaisen",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-LHBAeoZDIsnF.jpg",
+      "rating": 84
+    }
+  ],
+  "shonen": [
+    {
+      "id": 16498,
+      "title": "Shingeki no Kyojin",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx16498-buvcRTBx4NSm.jpg",
+      "rating": 85
+    },
+    {
+      "id": 101922,
+      "title": "Kimetsu no Yaiba",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg",
+      "rating": 82
+    },
+    {
+      "id": 113415,
+      "title": "Jujutsu Kaisen",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-LHBAeoZDIsnF.jpg",
+      "rating": 84
+    },
+    {
+      "id": 21459,
+      "title": "Boku no Hero Academia",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21459-nYh85uj2Fuwr.jpg",
+      "rating": 76
+    }
+  ],
+  "isekai": [
+    {
+      "id": 11757,
+      "title": "Sword Art Online",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11757-SxYDUzdr9rh2.jpg",
+      "rating": 69
+    },
+    {
+      "id": 21355,
+      "title": "Re:Zero kara Hajimeru Isekai Seikatsu",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21355-wRVUrGxpvIQQ.jpg",
+      "rating": 81
+    },
+    {
+      "id": 19815,
+      "title": "No Game No Life",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b19815-sEOQ9yQaPKlk.jpg",
+      "rating": 77
+    },
+    {
+      "id": 21202,
+      "title": "Kono Subarashii Sekai ni Shukufuku wo!",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21202-qQoJeKz76vRT.png",
+      "rating": 79
+    }
+  ],
+  "foundFamily": [
+    {
+      "id": 21,
+      "title": "ONE PIECE",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg",
+      "rating": 88
+    },
+    {
+      "id": 11757,
+      "title": "Sword Art Online",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11757-SxYDUzdr9rh2.jpg",
+      "rating": 69
+    },
+    {
+      "id": 20,
+      "title": "NARUTO",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20-dE6UHbFFg1A5.jpg",
+      "rating": 80
+    },
+    {
+      "id": 101759,
+      "title": "Yakusoku no Neverland",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101759-8UR7r9MNVpz2.jpg",
+      "rating": 83
+    }
+  ]
+}
