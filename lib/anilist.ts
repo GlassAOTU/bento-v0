@@ -98,6 +98,53 @@ export async function fetchPopularAnime(count: number = 4) {
 }
 
 /**
+ * Search for anime by query string
+ */
+export async function searchAnime(searchQuery: string, limit: number = 24) {
+    const query = `
+    query ($search: String, $perPage: Int) {
+      Page(perPage: $perPage) {
+        media(search: $search, type: ANIME, sort: SEARCH_MATCH) {
+          id
+          title {
+            romaji
+          }
+          coverImage {
+            large
+          }
+          averageScore
+        }
+      }
+    }`
+
+    const variables = { search: searchQuery, perPage: limit }
+    const response = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query, variables }),
+    })
+
+    if (!response.ok) {
+        throw new Error("AniList API returned an error: " + response.status);
+    }
+
+    const data = await response.json()
+
+    if (!data?.data?.Page?.media) {
+        return []
+    }
+
+    return data.data.Page.media.map((anime: any) => ({
+        id: anime.id,
+        title: anime.title.romaji,
+        image: anime.coverImage.large,
+        rating: anime.averageScore
+    }))
+}
+
+/**
  * Fetch comprehensive anime details for the detail page
  */
 export async function fetchFullAnimeDetails(searchTerm: string) {
