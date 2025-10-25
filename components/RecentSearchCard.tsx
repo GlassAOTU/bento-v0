@@ -1,6 +1,6 @@
 'use client'
 
-import { RecentSearch, formatSearchTimestamp } from '@/lib/utils/localStorage'
+import { RecentSearch } from '@/lib/utils/localStorage'
 import AnimeCard from './AnimeCard'
 
 interface RecentSearchCardProps {
@@ -11,25 +11,32 @@ interface RecentSearchCardProps {
 export default function RecentSearchCard({ search, onTrailerClick }: RecentSearchCardProps) {
     return (
         <div className="mb-16">
-            {/* Search Header - Similar to recommendation page */}
-            <div className='bg-[#f8f8f8] flex justify-center p-4 mb-8'>
-                <div className='flex flex-col gap-1 items-center'>
-                    <span className='text-center font-bold text-black'>
-                        {formatSearchTimestamp(search.timestamp)}
-                    </span>
-                    {search.description && search.description.length !== 0 && (
-                        <span className='text-black'>{search.description.charAt(0).toUpperCase() + search.description.slice(1)}</span>
-                    )}
-                    {search.tags.length !== 0 && (
-                        <div className='flex flex-row gap-2'>
-                            {search.tags.map((tag, i) =>
-                                <div key={i} className='px-2 border text-sm border-black text-black bg-white border-opacity-25'>
-                                    {tag}
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
+            {/* Search Header - Matches new recommendations page design */}
+            <div className='flex flex-col gap-1 mb-4'>
+                {/* Query Description */}
+                {search.description && search.description.length !== 0 && (
+                    <p className='text-xl font-normal text-black'>
+                        {search.description.charAt(0).toLowerCase() + search.description.slice(1)}
+                    </p>
+                )}
+
+                {/* Tags or "no tags selected" */}
+                {search.tags.length > 0 ? (
+                    <p className='text-sm text-black'>
+                        {search.tags.join(', ')}
+                    </p>
+                ) : (
+                    <p className='text-sm text-black'>no tags selected</p>
+                )}
+
+                {/* Timestamp */}
+                <p className='text-sm text-gray-400'>
+                    {new Date(search.timestamp).toLocaleDateString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: '2-digit'
+                    }).replace(/\//g, '.')}
+                </p>
             </div>
 
             {/* Anime Results - Similar to AnimeSet */}

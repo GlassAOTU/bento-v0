@@ -11,8 +11,8 @@ export type AnimeRecommendation = {
     trailer: { id: string, site: string }| null;
 };
 
-export function useRecommendations() {
-    const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>([]);
+export function useRecommendations(initialRecommendations: AnimeRecommendation[] = []) {
+    const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>(initialRecommendations);
     const [seenTitles, setSeenTitles] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isRateLimited, setIsRateLimited] = useState(false);
@@ -110,6 +110,8 @@ export function useRecommendations() {
         isRateLimited,
         error,
         getRecommendations,
-        addSeenTitle
+        addSeenTitle,
+        setRecommendations,
+        setSeenTitles
     };
 } 
