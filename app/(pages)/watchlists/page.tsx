@@ -9,6 +9,7 @@ import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import ProfileHeader from '@/components/ProfileHeader'
 import RecentSearchCard from '@/components/RecentSearchCard'
+import EditWatchlistModal from '@/components/EditWatchlistModal'
 import { slugify } from '@/lib/utils/slugify'
 import { getRecentSearches, RecentSearch } from '@/lib/utils/localStorage'
 
@@ -37,6 +38,8 @@ function WatchlistsContent() {
     const [expandedWatchlists, setExpandedWatchlists] = useState<Set<string>>(new Set())
     const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([])
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [editingWatchlist, setEditingWatchlist] = useState<Watchlist | null>(null)
 
     // Get active tab from URL params, default to 'watchlist'
     const activeTab = searchParams.get('tab') || 'watchlist'
@@ -51,7 +54,30 @@ function WatchlistsContent() {
             console.log('First search example:', searches[0])
         }
         setRecentSearches(searches)
-    }, [])
+
+        // Listen for auth changes (sign out)
+        let authSubscription: { unsubscribe: () => void } | null = null
+
+        const initAuthListener = async () => {
+            const supabase = createClient()
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT' || !session) {
+                    // Redirect to home if user signs out
+                    router.push('/')
+                }
+            })
+            authSubscription = subscription
+        }
+
+        initAuthListener()
+
+        // Cleanup subscription on unmount
+        return () => {
+            if (authSubscription) {
+                authSubscription.unsubscribe()
+            }
+        }
+    }, [router])
 
     const switchTab = (tab: 'watchlist' | 'recent-searches') => {
         router.push(`/watchlists?tab=${tab}`)
@@ -137,10 +163,10 @@ function WatchlistsContent() {
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-                <div className="max-w-5xl flex flex-col mx-auto gap-8">
+                <div className="max-w-5xl flex flex-col mx-auto gap-2">
 
                     {/* Banner */}
-                    <section className="flex justify-center sm:px-10 md:mb-10">
+                    <section className="flex justify-center sm:px-10">
                         <div className="relative max-w-[1200px]">
                             <Image
                                 src="/images/header-image.png"
@@ -165,32 +191,26 @@ function WatchlistsContent() {
                         <ProfileHeader />
 
                         {/* Tab Navigation */}
-                        <div className="flex justify-center gap-8 mb-12 border-b border-gray-300">
+                        <div className="flex justify-center gap-0 mb-12">
                             <button
                                 onClick={() => switchTab('recent-searches')}
-                                className={`pb-4 px-4 font-semibold transition-colors relative ${
+                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 ${
                                     activeTab === 'recent-searches'
-                                        ? 'text-black'
-                                        : 'text-gray-400 hover:text-gray-600'
+                                        ? 'bg-[#F9F9F9] text-black'
+                                        : 'bg-white text-gray-400 hover:text-gray-600'
                                 }`}
                             >
                                 recent searches
-                                {activeTab === 'recent-searches' && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black" />
-                                )}
                             </button>
                             <button
                                 onClick={() => switchTab('watchlist')}
-                                className={`pb-4 px-4 font-semibold transition-colors relative ${
+                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 border-r-0 ${
                                     activeTab === 'watchlist'
-                                        ? 'text-black'
-                                        : 'text-gray-400 hover:text-gray-600'
+                                        ? 'bg-[#F9F9F9] text-black'
+                                        : 'bg-white text-gray-400 hover:text-gray-600'
                                 }`}
                             >
                                 watchlist
-                                {activeTab === 'watchlist' && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black" />
-                                )}
                             </button>
                         </div>
 
@@ -219,7 +239,6 @@ function WatchlistsContent() {
                         ) : (
                             /* Watchlist Tab */
                             <div>
-                                <h2 className="text-3xl font-bold mb-6">Your Watchlists</h2>
                                 {/* Watchlists */}
                 {watchlists.length === 0 ? (
                     <div className="text-center py-16">
@@ -235,14 +254,25 @@ function WatchlistsContent() {
 
                             return (
                                 <div key={watchlist.id}>
-                                    {/* Watchlist Title */}
-                                    <div className="mb-6 text-center">
-                                        <h2 className="text-xl font-bold uppercase tracking-wide">
-                                            {watchlist.name}
-                                        </h2>
-                                        {watchlist.description && (
-                                            <p className="text-sm text-gray-500 mt-1">{watchlist.description}</p>
-                                        )}
+                                    {/* Watchlist Title with Edit Button */}
+                                    <div className="mb-6 flex items-start justify-between">
+                                        <div>
+                                            <h2 className="text-3xl font-bold">
+                                                {watchlist.name}
+                                            </h2>
+                                            {watchlist.description && (
+                                                <p className="text-sm text-gray-500 mt-1">{watchlist.description}</p>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setEditingWatchlist(watchlist)
+                                                setIsEditModalOpen(true)
+                                            }}
+                                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                        >
+                                            Edit
+                                        </button>
                                     </div>
 
                                     {/* Anime Grid */}
@@ -300,6 +330,19 @@ function WatchlistsContent() {
             </div>
 
             <Footer />
+
+            {/* Edit Watchlist Modal */}
+            <EditWatchlistModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false)
+                    setEditingWatchlist(null)
+                }}
+                watchlist={editingWatchlist}
+                onSave={() => {
+                    checkAuthAndFetchWatchlists()
+                }}
+            />
 
             {/* Trailer Popup */}
             {activeTrailer && (

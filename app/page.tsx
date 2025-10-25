@@ -3,6 +3,7 @@
 import './globals.css'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser-client'
 import { searchAnime } from '@/lib/anilist'
@@ -26,6 +27,8 @@ type AnimeCategories = {
 }
 
 export default function Home() {
+    const router = useRouter()
+    const searchParams = useSearchParams()
     const [user, setUser] = useState<User | null>(null)
     const [animeData, setAnimeData] = useState<AnimeCategories | null>(null)
 
@@ -35,6 +38,28 @@ export default function Home() {
     const [isSearching, setIsSearching] = useState(false)
     const [hasSearched, setHasSearched] = useState(false)
     const [searchError, setSearchError] = useState<string | null>(null)
+    const [isRestoringFromCache, setIsRestoringFromCache] = useState(false)
+
+    // Restore search from URL params and sessionStorage on mount
+    useEffect(() => {
+        const urlQuery = searchParams.get('q')
+        if (urlQuery && urlQuery.length >= 2) {
+            setSearchQuery(urlQuery)
+
+            // Try to restore from sessionStorage
+            try {
+                const cached = sessionStorage.getItem('discover_search_results')
+                if (cached) {
+                    const parsedResults = JSON.parse(cached)
+                    setSearchResults(parsedResults)
+                    setHasSearched(true)
+                    setIsRestoringFromCache(true)
+                }
+            } catch (error) {
+                console.error('Failed to restore search from cache:', error)
+            }
+        }
+    }, [searchParams])
 
     useEffect(() => {
         const initAuth = async () => {
@@ -69,11 +94,19 @@ export default function Home() {
 
     // Debounced search handler
     useEffect(() => {
+        // Skip if restoring from cache
+        if (isRestoringFromCache) {
+            setIsRestoringFromCache(false)
+            return
+        }
+
         if (searchQuery.trim().length < 2) {
             if (hasSearched) {
                 // Clear search if query is too short
                 setHasSearched(false)
                 setSearchResults([])
+                sessionStorage.removeItem('discover_search_results')
+                router.push('/', { scroll: false })
             }
             return
         }
@@ -86,6 +119,10 @@ export default function Home() {
                 const results = await searchAnime(searchQuery.trim())
                 setSearchResults(results)
                 setHasSearched(true)
+
+                // Save to sessionStorage and update URL
+                sessionStorage.setItem('discover_search_results', JSON.stringify(results))
+                router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`, { scroll: false })
             } catch (error) {
                 console.error('Search error:', error)
                 setSearchError('Failed to search anime. Please try again.')
@@ -96,13 +133,15 @@ export default function Home() {
         }, 300) // 300ms debounce
 
         return () => clearTimeout(debounceTimer)
-    }, [searchQuery, hasSearched])
+    }, [searchQuery, hasSearched, isRestoringFromCache, router])
 
     const handleClearSearch = () => {
         setSearchQuery('')
         setSearchResults([])
         setHasSearched(false)
         setSearchError(null)
+        sessionStorage.removeItem('discover_search_results')
+        router.push('/', { scroll: false })
     }
 
     return (

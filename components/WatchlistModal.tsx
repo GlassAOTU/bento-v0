@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/browser-client'
 import { X } from 'lucide-react'
+import UnauthenticatedWatchlistOverlay from './UnauthenticatedWatchlistOverlay'
+import AuthModal from './AuthModal'
 
 interface Watchlist {
     id: string
@@ -38,6 +40,8 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
     const [success, setSuccess] = useState(false)
     const [successWatchlistName, setSuccessWatchlistName] = useState('')
     const [mounted, setMounted] = useState(false)
+    const [showUnauthOverlay, setShowUnauthOverlay] = useState(false)
+    const [showAuthModal, setShowAuthModal] = useState(false)
 
     // Set mounted state on client side
     useEffect(() => {
@@ -50,6 +54,8 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
             fetchWatchlists()
             setSuccess(false)
             setSuccessWatchlistName('')
+            setShowUnauthOverlay(false)
+            setShowAuthModal(false)
             // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden'
         } else {
@@ -63,6 +69,22 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
         }
     }, [isOpen])
 
+    // Listen for auth state changes
+    useEffect(() => {
+        const supabase = createClient()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user && showAuthModal) {
+                // User successfully signed in, close auth modal and main modal
+                setShowAuthModal(false)
+                setShowUnauthOverlay(false)
+                onClose()
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [showAuthModal, onClose])
+
     const fetchWatchlists = async () => {
         setLoading(true)
         setError(null)
@@ -74,8 +96,8 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {
-                setError('You must be signed in to use watchlists')
                 setLoading(false)
+                setShowUnauthOverlay(true)
                 return
             }
 
@@ -194,6 +216,28 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
         } finally {
             setAdding(false)
         }
+    }
+
+    const handleCreateAccount = () => {
+        // Store current page for OAuth return using a cookie (persists across redirects)
+        // Cookie expires in 10 minutes (enough time for OAuth flow)
+        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=600; SameSite=Lax`
+
+        // Mark auth flow in progress in sessionStorage (for cache restoration logic)
+        sessionStorage.setItem('auth_flow_in_progress', 'true')
+
+        setShowUnauthOverlay(false)
+        setShowAuthModal(true)
+    }
+
+    const handleCloseUnauthOverlay = () => {
+        setShowUnauthOverlay(false)
+        onClose()
+    }
+
+    const handleCloseAuthModal = () => {
+        setShowAuthModal(false)
+        onClose()
     }
 
     if (!isOpen || !mounted) return null
@@ -355,5 +399,29 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
         </div>
     )
 
-    return createPortal(modalContent, document.body)
+    return (
+        <>
+            {/* Unauthenticated Overlay */}
+            {showUnauthOverlay && (
+                <UnauthenticatedWatchlistOverlay
+                    isOpen={showUnauthOverlay}
+                    onClose={handleCloseUnauthOverlay}
+                    onCreateAccount={handleCreateAccount}
+                />
+            )}
+
+            {/* Auth Modal */}
+            {showAuthModal && createPortal(
+                <AuthModal
+                    isOpen={showAuthModal}
+                    onClose={handleCloseAuthModal}
+                    initialView="signup"
+                />,
+                document.body
+            )}
+
+            {/* Regular Watchlist Modal (only show if not showing overlay or auth) */}
+            {!showUnauthOverlay && !showAuthModal && createPortal(modalContent, document.body)}
+        </>
+    )
 }

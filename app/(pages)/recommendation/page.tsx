@@ -10,7 +10,6 @@ import AnimeCard from "../../../components/AnimeCard"
 import BottomButton from "../../../components/BottomButton"
 import LimitPopup from "../../../components/LimitPopup"
 // import WaitlistBox from "../../../components/waitlist-box"
-import WaitlistPopup from "../../../components/WaitlistPopup"
 import TagSelector from "../../../components/TagSelector"
 import { useRecommendations } from "../../../lib/hooks/useRecommendations"
 
@@ -22,21 +21,91 @@ import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
 
 function RecommendationContent() {
     const searchParams = useSearchParams()
+
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
     const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false);
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false);
     // const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
-    const [isWaitlistPopupOpen, setWaitlistPopupOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
     const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
+    const [hasRestoredFromCache, setHasRestoredFromCache] = useState(false);
+
     const {
         recommendations,
+        seenTitles,
         isLoading,
         isRateLimited,
         error,
-        getRecommendations
+        getRecommendations,
+        setRecommendations,
+        setSeenTitles
     } = useRecommendations()
+
+    // Restore from sessionStorage after mount (client-side only)
+    useEffect(() => {
+        if (hasRestoredFromCache) return;
+
+        try {
+            // Check if this is a back/forward navigation
+            const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+            const isBackForward = navEntries.length > 0 && navEntries[0].type === 'back_forward';
+
+            // Check if returning from auth flow (e.g., OAuth from watchlist)
+            const isReturningFromAuth = sessionStorage.getItem('auth_flow_in_progress') === 'true';
+
+            // Restore cache if navigating via back/forward button OR returning from auth flow
+            if (isBackForward || isReturningFromAuth) {
+                const cachedRecs = sessionStorage.getItem('recommendations_data')
+                const cachedHistory = sessionStorage.getItem('recommendations_history')
+                const cachedSeenTitles = sessionStorage.getItem('recommendations_seenTitles')
+                const cachedDescription = sessionStorage.getItem('recommendations_description')
+                const cachedTags = sessionStorage.getItem('recommendations_tags')
+
+                if (cachedRecs) {
+                    const parsedRecs = JSON.parse(cachedRecs)
+                    setRecommendations(parsedRecs)
+                }
+
+                if (cachedHistory) {
+                    const parsedHistory = JSON.parse(cachedHistory)
+                    setSearchHistory(parsedHistory)
+                }
+
+                if (cachedSeenTitles) {
+                    const parsedSeenTitles = JSON.parse(cachedSeenTitles)
+                    setSeenTitles(parsedSeenTitles)
+                }
+
+                if (cachedDescription) {
+                    setDescription(cachedDescription)
+                }
+
+                if (cachedTags) {
+                    const parsedTags = JSON.parse(cachedTags)
+                    setSelectedTags(parsedTags)
+                }
+
+                // Clear auth flow flags after restoration if returning from auth
+                if (isReturningFromAuth) {
+                    sessionStorage.removeItem('auth_flow_in_progress')
+                    sessionStorage.removeItem('auth_return_url')
+                }
+            } else {
+                // Clear cache on fresh navigation or reload
+                sessionStorage.removeItem('recommendations_data');
+                sessionStorage.removeItem('recommendations_history');
+                sessionStorage.removeItem('recommendations_seenTitles');
+                sessionStorage.removeItem('recommendations_description');
+                sessionStorage.removeItem('recommendations_tags');
+            }
+
+            setHasRestoredFromCache(true)
+        } catch (error) {
+            console.error('Failed to restore from cache:', error)
+            setHasRestoredFromCache(true)
+        }
+    }, [hasRestoredFromCache, setRecommendations, setSeenTitles])
 
     const handleWelcomePopup = () => {
         setWelcomePopupOpen(false);
@@ -52,6 +121,27 @@ function RecommendationContent() {
     };
 
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
+
+    // Save recommendations to sessionStorage whenever they change
+    useEffect(() => {
+        if (recommendations.length > 0) {
+            sessionStorage.setItem('recommendations_data', JSON.stringify(recommendations))
+        }
+    }, [recommendations])
+
+    // Save searchHistory to sessionStorage whenever it changes
+    useEffect(() => {
+        if (searchHistory.length > 0) {
+            sessionStorage.setItem('recommendations_history', JSON.stringify(searchHistory))
+        }
+    }, [searchHistory])
+
+    // Save seenTitles to sessionStorage whenever they change
+    useEffect(() => {
+        if (seenTitles.length > 0) {
+            sessionStorage.setItem('recommendations_seenTitles', JSON.stringify(seenTitles))
+        }
+    }, [seenTitles])
 
     useEffect(() => {
         const hasVisited = localStorage.getItem('hasVisitedBefore');
@@ -84,6 +174,22 @@ function RecommendationContent() {
                 openLimitPopup();
             return;
         }
+
+        // Clear all cached state when starting a new search (not appending)
+        if (!append) {
+            sessionStorage.removeItem('recommendations_data');
+            sessionStorage.removeItem('recommendations_history');
+            sessionStorage.removeItem('recommendations_seenTitles');
+            sessionStorage.removeItem('recommendations_description');
+            sessionStorage.removeItem('recommendations_tags');
+            setRecommendations([]);
+            setSearchHistory([]);
+            setSeenTitles([]);
+        }
+
+        // Save current search parameters to sessionStorage
+        sessionStorage.setItem('recommendations_description', description);
+        sessionStorage.setItem('recommendations_tags', JSON.stringify(selectedTags));
 
         const currentQuery = { description, tags: selectedTags, timestamp: Date.now() };
         setSearchHistory(prev => [...prev, currentQuery]);
@@ -185,8 +291,10 @@ function RecommendationContent() {
                         />
                     </section>
 
-                    <div className="px-10">
-                        <hr />
+                    <div className="px-10 flex items-center gap-0">
+                        <div className="w-6 border-t border-mySecondary/50"></div>
+                        <span className="px-2 py-1 text-sm text-mySecondary bg-[#F9F9F9] border border-black/20 rounded">OR</span>
+                        <div className="flex-1 border-t border-mySecondary/50"></div>
                     </div>
 
                     {/* Tags Section */}
@@ -239,28 +347,31 @@ function RecommendationContent() {
                                         return (
                                             <div key={setIdx}>
                                                 {showHeader && (
-                                                    <div className='bg-[#f8f8f8] flex justify-center p-4 mb-8'>
-                                                        <div className='flex flex-col gap-1 items-center'>
-                                                            <span className='text-center font-bold text-black'>
-                                                                {new Date(history.timestamp).toLocaleTimeString([], {
-                                                                    hour: 'numeric',
-                                                                    minute: '2-digit',
-                                                                    hour12: true
-                                                                })}
-                                                            </span>
-                                                            {history.description.length !== 0 && (
-                                                                <span className='text-black'>{history.description.charAt(0).toUpperCase() + history.description.slice(1)}</span>
-                                                            )}
-                                                            {history.tags.length !== 0 && (
-                                                                <div className='flex flex-row gap-2'>
-                                                                    {history.tags.map((tag, i) =>
-                                                                        <div key={i} className='px-2 border text-sm border-black text-black bg-white border-opacity-25'>
-                                                                            {tag}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                    <div className='flex flex-col gap-1 mb-4'>
+                                                        {/* Query Description */}
+                                                        {history.description.length !== 0 && (
+                                                            <p className='text-xl font-normal text-black'>
+                                                                {history.description.charAt(0).toLowerCase() + history.description.slice(1)}
+                                                            </p>
+                                                        )}
+
+                                                        {/* Tags or "no tags selected" */}
+                                                        {history.tags.length > 0 ? (
+                                                            <p className='text-sm text-black'>
+                                                                {history.tags.join(', ')}
+                                                            </p>
+                                                        ) : (
+                                                            <p className='text-sm text-black'>no tags selected</p>
+                                                        )}
+
+                                                        {/* Timestamp */}
+                                                        <p className='text-sm text-gray-400'>
+                                                            {new Date(history.timestamp).toLocaleDateString('en-US', {
+                                                                month: '2-digit',
+                                                                day: '2-digit',
+                                                                year: '2-digit'
+                                                            }).replace(/\//g, '.')}
+                                                        </p>
                                                     </div>
                                                 )}
 
@@ -341,10 +452,6 @@ function RecommendationContent() {
                         </div>
                     </div>
                 </div>
-            )}
-
-            {isWaitlistPopupOpen && (
-                <WaitlistPopup onClose={() => setWaitlistPopupOpen(false)} />
             )}
 
             {/* <BottomButton /> */}

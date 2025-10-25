@@ -109,19 +109,31 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
                 {/* Hero Section with Banner */}
-                <section className="relative w-full h-[400px] md:h-[500px]">
+                <section className="relative w-full h-[300px] md:h-[400px] bg-gray-900">
                     {/* Banner Image */}
                     <div className="absolute inset-0">
                         <Image
                             src={animeDetails.bannerImage}
                             alt={animeDetails.title}
                             fill
-                            className="object-cover"
+                            className="object-contain"
                             priority
                         />
                         {/* Gradient Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                     </div>
+
+                    {/* Back Button */}
+                    <button
+                        onClick={() => router.back()}
+                        className="absolute top-6 left-6 md:left-10 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all backdrop-blur-sm"
+                        aria-label="Go back"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M19 12H5" />
+                            <path d="M12 19l-7-7 7-7" />
+                        </svg>
+                    </button>
 
                     {/* Hero Content */}
                     <div className="relative z-10 h-full flex items-end">

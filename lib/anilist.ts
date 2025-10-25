@@ -57,7 +57,7 @@ export async function fetchPopularAnime(count: number = 4) {
     const query = `
     query ($perPage: Int) {
       Page(perPage: $perPage) {
-        media(type: ANIME, sort: POPULARITY_DESC) {
+        media(type: ANIME, sort: POPULARITY_DESC, isAdult: false) {
           id
           title {
             romaji
@@ -66,6 +66,8 @@ export async function fetchPopularAnime(count: number = 4) {
             large
           }
           averageScore
+          isAdult
+          genres
         }
       }
     }`
@@ -89,22 +91,33 @@ export async function fetchPopularAnime(count: number = 4) {
         throw new Error("Failed to fetch popular anime");
     }
 
-    return data.data.Page.media.map((anime: any) => ({
-        id: anime.id,
-        title: anime.title.romaji,
-        image: anime.coverImage.large,
-        rating: anime.averageScore
-    }))
+    return data.data.Page.media
+        .filter((anime: any) => {
+            // Filter out adult content (hentai, pornographic)
+            if (anime.isAdult) return false
+
+            // Filter out Hentai genre explicitly
+            if (anime.genres?.includes('Hentai')) return false
+
+            return true
+        })
+        .map((anime: any) => ({
+            id: anime.id,
+            title: anime.title.romaji,
+            image: anime.coverImage.large,
+            rating: anime.averageScore
+        }))
 }
 
 /**
  * Search for anime by query string
+ * Filters out adult content (hentai, pornographic)
  */
 export async function searchAnime(searchQuery: string, limit: number = 24) {
     const query = `
     query ($search: String, $perPage: Int) {
       Page(perPage: $perPage) {
-        media(search: $search, type: ANIME, sort: SEARCH_MATCH) {
+        media(search: $search, type: ANIME, sort: SEARCH_MATCH, isAdult: false) {
           id
           title {
             romaji
@@ -113,6 +126,8 @@ export async function searchAnime(searchQuery: string, limit: number = 24) {
             large
           }
           averageScore
+          isAdult
+          genres
         }
       }
     }`
@@ -136,21 +151,32 @@ export async function searchAnime(searchQuery: string, limit: number = 24) {
         return []
     }
 
-    return data.data.Page.media.map((anime: any) => ({
-        id: anime.id,
-        title: anime.title.romaji,
-        image: anime.coverImage.large,
-        rating: anime.averageScore
-    }))
+    return data.data.Page.media
+        .filter((anime: any) => {
+            // Filter out adult content (hentai, pornographic)
+            if (anime.isAdult) return false
+
+            // Filter out Hentai genre explicitly
+            if (anime.genres?.includes('Hentai')) return false
+
+            return true
+        })
+        .map((anime: any) => ({
+            id: anime.id,
+            title: anime.title.romaji,
+            image: anime.coverImage.large,
+            rating: anime.averageScore
+        }))
 }
 
 /**
  * Fetch comprehensive anime details for the detail page
+ * Filters out adult content (hentai, pornographic)
  */
 export async function fetchFullAnimeDetails(searchTerm: string) {
     const query = `
     query ($search: String) {
-      Media(search: $search, type: ANIME) {
+      Media(search: $search, type: ANIME, isAdult: false) {
         id
         title {
           romaji
@@ -192,6 +218,7 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
           url
           site
         }
+        isAdult
       }
     }`
 
@@ -216,6 +243,11 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
     }
 
     const media = data.data.Media
+
+    // Additional safety check - block adult content
+    if (media.isAdult || media.genres?.includes('Hentai')) {
+        throw new Error("This content is not available");
+    }
 
     return {
         id: media.id,
@@ -247,6 +279,7 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
 
 /**
  * Fetch similar/recommended anime from AniList
+ * Filters out adult content (hentai, pornographic)
  */
 export async function fetchSimilarAnime(animeId: number, limit: number = 4) {
     const query = `
@@ -263,6 +296,8 @@ export async function fetchSimilarAnime(animeId: number, limit: number = 4) {
                 large
               }
               averageScore
+              isAdult
+              genres
             }
           }
         }
@@ -290,7 +325,19 @@ export async function fetchSimilarAnime(animeId: number, limit: number = 4) {
     }
 
     return data.data.Media.recommendations.nodes
-        .filter((node: any) => node.mediaRecommendation)
+        .filter((node: any) => {
+            if (!node.mediaRecommendation) return false
+
+            const rec = node.mediaRecommendation
+
+            // Filter out adult content (hentai, pornographic)
+            if (rec.isAdult) return false
+
+            // Filter out Hentai genre explicitly
+            if (rec.genres?.includes('Hentai')) return false
+
+            return true
+        })
         .map((node: any) => ({
             id: node.mediaRecommendation.id,
             title: node.mediaRecommendation.title.romaji,
