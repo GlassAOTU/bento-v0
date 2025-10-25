@@ -2,7 +2,7 @@
 
 import './globals.css'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser-client'
@@ -26,7 +26,7 @@ type AnimeCategories = {
     foundFamily: Anime[]
 }
 
-export default function Home() {
+function DiscoverContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [user, setUser] = useState<User | null>(null)
@@ -283,5 +283,17 @@ export default function Home() {
 
             <Footer />
         </div>
+    );
+}
+
+export default function Home() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-gray-600">Loading...</div>
+            </div>
+        }>
+            <DiscoverContent />
+        </Suspense>
     );
 }
