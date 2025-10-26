@@ -111,7 +111,7 @@ export async function fetchPopularAnime(count: number = 4) {
 
 /**
  * Search for anime by query string
- * Filters out adult content (hentai, pornographic)
+ * Filters out adult content and prioritizes relevant results
  */
 export async function searchAnime(searchQuery: string, limit: number = 24) {
     const query = `
@@ -121,6 +121,7 @@ export async function searchAnime(searchQuery: string, limit: number = 24) {
           id
           title {
             romaji
+            english
           }
           coverImage {
             large
@@ -128,11 +129,18 @@ export async function searchAnime(searchQuery: string, limit: number = 24) {
           averageScore
           isAdult
           genres
+          format
+          popularity
+          status
+          episodes
+          startDate {
+            year
+          }
         }
       }
     }`
 
-    const variables = { search: searchQuery, perPage: limit }
+    const variables = { search: searchQuery, perPage: Math.min(limit * 2, 48) } // Get more results to filter
     const response = await fetch("https://graphql.anilist.co", {
         method: "POST",
         headers: {
@@ -151,22 +159,145 @@ export async function searchAnime(searchQuery: string, limit: number = 24) {
         return []
     }
 
-    return data.data.Page.media
+    // Calculate relevance score for each anime
+    const scoredResults = data.data.Page.media
         .filter((anime: any) => {
             // Filter out adult content (hentai, pornographic)
             if (anime.isAdult) return false
-
-            // Filter out Hentai genre explicitly
             if (anime.genres?.includes('Hentai')) return false
+
+            // Filter out music videos
+            if (anime.format === 'MUSIC') return false
 
             return true
         })
+        .map((anime: any) => {
+            let relevanceScore = 0
+
+            // Format weights
+            const formatWeights: Record<string, number> = {
+                'TV': 100,
+                'MOVIE': 80,
+                'TV_SHORT': 70,
+                'OVA': 60,
+                'ONA': 60,
+                'SPECIAL': 40,
+                'MUSIC': 10
+            }
+            relevanceScore += formatWeights[anime.format] || 50
+
+            // Popularity boost (normalize to 0-100 scale)
+            if (anime.popularity) {
+                relevanceScore += Math.min(anime.popularity / 1000, 100)
+            }
+
+            // Status preference (finished series are more relevant)
+            if (anime.status === 'FINISHED') relevanceScore += 20
+            if (anime.status === 'RELEASING') relevanceScore += 30
+
+            // Episode count (prefer substantial series over one-shots)
+            if (anime.episodes) {
+                if (anime.episodes >= 12) relevanceScore += 30
+                else if (anime.episodes >= 6) relevanceScore += 15
+                else if (anime.episodes === 1) relevanceScore -= 10
+            }
+
+            // Rating boost
+            if (anime.averageScore) {
+                relevanceScore += anime.averageScore / 10
+            }
+
+            // Recency factor (slight boost for newer anime)
+            if (anime.startDate?.year) {
+                const yearsSinceRelease = new Date().getFullYear() - anime.startDate.year
+                if (yearsSinceRelease <= 5) relevanceScore += 10
+                if (yearsSinceRelease <= 2) relevanceScore += 10
+            }
+
+            return {
+                ...anime,
+                relevanceScore
+            }
+        })
+
+    // Sort by relevance score
+    scoredResults.sort((a, b) => b.relevanceScore - a.relevanceScore)
+
+    // Deduplicate similar titles (keep highest scored version)
+    const deduped = deduplicateTitles(scoredResults)
+
+    // Return top results
+    return deduped
+        .slice(0, limit)
         .map((anime: any) => ({
             id: anime.id,
             title: anime.title.romaji,
             image: anime.coverImage.large,
             rating: anime.averageScore
         }))
+}
+
+/**
+ * Remove duplicate/similar anime titles
+ * Keeps the highest scored version of similar titles
+ */
+function deduplicateTitles(results: any[]): any[] {
+    const seen = new Set<string>()
+    const deduped: any[] = []
+
+    for (const anime of results) {
+        const normalizedTitle = normalizeTitle(anime.title.romaji)
+
+        // Check if we've seen a very similar title
+        let isDuplicate = false
+        for (const seenTitle of seen) {
+            if (areTitlesSimilar(normalizedTitle, seenTitle)) {
+                isDuplicate = true
+                break
+            }
+        }
+
+        if (!isDuplicate) {
+            seen.add(normalizedTitle)
+            deduped.push(anime)
+        }
+    }
+
+    return deduped
+}
+
+/**
+ * Normalize title for comparison
+ */
+function normalizeTitle(title: string): string {
+    return title
+        .toLowerCase()
+        .replace(/[^\w\s]/g, '') // Remove special chars
+        .replace(/\s+/g, ' ') // Normalize spaces
+        .trim()
+}
+
+/**
+ * Check if two titles are similar enough to be considered duplicates
+ */
+function areTitlesSimilar(title1: string, title2: string): boolean {
+    // Exact match after normalization
+    if (title1 === title2) return true
+
+    // Check if one title is a substring of the other (handles "One Piece" vs "One Piece Film")
+    const shorter = title1.length < title2.length ? title1 : title2
+    const longer = title1.length < title2.length ? title2 : title1
+
+    // If shorter title is at the start of longer title and difference is small
+    if (longer.startsWith(shorter)) {
+        const remainder = longer.substring(shorter.length).trim()
+        // If remainder is just a number, year, or short word, consider it duplicate
+        if (remainder.match(/^(film|movie|season|part|s\d+|\d+)$/i)) {
+            return false // Keep these as they might be legitimate sequels
+        }
+    }
+
+    return false
 }
 
 /**
