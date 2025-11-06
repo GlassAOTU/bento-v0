@@ -32,11 +32,12 @@ async function fetchAnimeByCategory(category, count = 20) {
 
         case 'shonen':
             query = `
-            query ($perPage: Int, $tag_in: [String], $scoreMin: Int) {
+            query ($perPage: Int, $tag_in: [String], $genre_not_in: [String], $scoreMin: Int) {
               Page(perPage: $perPage) {
                 media(
                   type: ANIME,
                   tag_in: $tag_in,
+                  genre_not_in: $genre_not_in,
                   sort: POPULARITY_DESC,
                   isAdult: false,
                   averageScore_greater: $scoreMin,
@@ -51,16 +52,15 @@ async function fetchAnimeByCategory(category, count = 20) {
                 }
               }
             }`;
-            variables = { perPage: count, tag_in: ['Shounen'], scoreMin: 60 };
+            variables = { perPage: count, tag_in: ['Shounen'], genre_not_in: ['Slice of Life'], scoreMin: 60 };
             break;
 
-        case 'isekai':
+        case 'slice-of-life':
             query = `
-            query ($perPage: Int, $tag_in: [String], $genre_in: [String], $scoreMin: Int) {
+            query ($perPage: Int, $genre_in: [String], $scoreMin: Int) {
               Page(perPage: $perPage) {
                 media(
                   type: ANIME,
-                  tag_in: $tag_in,
                   genre_in: $genre_in,
                   sort: POPULARITY_DESC,
                   isAdult: false,
@@ -76,16 +76,17 @@ async function fetchAnimeByCategory(category, count = 20) {
                 }
               }
             }`;
-            variables = { perPage: count, tag_in: ['Isekai'], genre_in: ['Fantasy', 'Adventure'], scoreMin: 60 };
+            variables = { perPage: count, genre_in: ['Slice of Life'], scoreMin: 60 };
             break;
 
         case 'found-family':
             query = `
-            query ($perPage: Int, $tag_in: [String], $scoreMin: Int) {
+            query ($perPage: Int, $tag_in: [String], $genre_not_in: [String], $scoreMin: Int) {
               Page(perPage: $perPage) {
                 media(
                   type: ANIME,
                   tag_in: $tag_in,
+                  genre_not_in: $genre_not_in,
                   sort: POPULARITY_DESC,
                   isAdult: false,
                   averageScore_greater: $scoreMin,
@@ -100,7 +101,7 @@ async function fetchAnimeByCategory(category, count = 20) {
                 }
               }
             }`;
-            variables = { perPage: count, tag_in: ['Found Family'], scoreMin: 60 };
+            variables = { perPage: count, tag_in: ['Found Family'], genre_not_in: ['Action', 'Adventure'], scoreMin: 60 };
             break;
 
         default:
@@ -175,7 +176,7 @@ async function main() {
     const categories = [
         { key: 'mostPopular', name: 'Most Popular', slug: 'most-popular' },
         { key: 'shonen', name: 'Shonen', slug: 'shonen' },
-        { key: 'isekai', name: 'Isekai (Slice of Life)', slug: 'isekai' },
+        { key: 'sliceOfLife', name: 'Slice of Life', slug: 'slice-of-life' },
         { key: 'foundFamily', name: 'Found Family with No Incest Plotlines', slug: 'found-family' }
     ];
 

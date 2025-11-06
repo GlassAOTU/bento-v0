@@ -267,14 +267,14 @@ function RecommendationContent() {
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="hidden sm:inline w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="hidden sm:inline w-full h-auto"
                             />
                             <Image
                                 src="/images/header-image-mobile.png"
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="sm:hidden w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="sm:hidden w-full h-auto"
                             />
                         </div>
                     </section>
@@ -346,8 +346,17 @@ function RecommendationContent() {
 
                                         return (
                                             <div key={setIdx}>
+                                                <AnimeSet
+                                                    description={history?.description || ""}
+                                                    selectedTags={history?.tags || []}
+                                                    searchHistory={searchHistory}
+                                                    key={setIdx}
+                                                    set={set}
+                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
+                                                />
+
                                                 {showHeader && (
-                                                    <div className='flex flex-col gap-1 mb-4'>
+                                                    <div className='flex flex-col gap-1 mt-8 mb-4'>
                                                         {/* Query Description */}
                                                         {history.description.length !== 0 && (
                                                             <p className='text-xl font-normal text-black'>
@@ -374,15 +383,6 @@ function RecommendationContent() {
                                                         </p>
                                                     </div>
                                                 )}
-
-                                                <AnimeSet
-                                                    description={history?.description || ""}
-                                                    selectedTags={history?.tags || []}
-                                                    searchHistory={searchHistory}
-                                                    key={setIdx}
-                                                    set={set}
-                                                    onTrailerClick={(trailerId: SetStateAction<string | null>) => setActiveTrailer(trailerId)}
-                                                />
                                             </div>
                                         );
                                     })}
