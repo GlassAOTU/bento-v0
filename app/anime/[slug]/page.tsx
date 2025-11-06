@@ -47,6 +47,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [isWatchlistModalOpen, setIsWatchlistModalOpen] = useState(false)
     const [aiDescription, setAiDescription] = useState<string | null>(null)
     const [descriptionLoading, setDescriptionLoading] = useState(false)
+    const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
 
     useEffect(() => {
         async function fetchAnimeData() {
@@ -200,7 +201,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                 <div className="max-w-5xl mx-auto px-10 py-12">
                     {/* Description Section */}
-                    <section className="mb-16">
+                    <section className="mb-8">
                         {descriptionLoading ? (
                             <DescriptionSkeleton />
                         ) : (
@@ -209,6 +210,30 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                             </p>
                         )}
                     </section>
+
+                    {/* Buttons Section */}
+                    {(animeDetails.externalLinks || animeDetails.trailer) && (
+                        <section className="mb-16">
+                            <div className="flex gap-3">
+                                {animeDetails.externalLinks && (
+                                    <a href={animeDetails.externalLinks.url} target="_blank" rel="noopener noreferrer">
+                                        <button className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">
+                                            {animeDetails.externalLinks.site}
+                                        </button>
+                                    </a>
+                                )}
+
+                                {animeDetails.trailer && animeDetails.trailer.id && (
+                                    <button
+                                        onClick={() => setActiveTrailer(animeDetails.trailer?.id || null)}
+                                        className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
+                                    >
+                                        Watch Trailer
+                                    </button>
+                                )}
+                            </div>
+                        </section>
+                    )}
 
                     {/* Details Section */}
                     <section className="mb-16">
@@ -338,6 +363,36 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     trailer: animeDetails.trailer
                 }}
             />
+
+            {/* Trailer Popup */}
+            {activeTrailer && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        setActiveTrailer(null);
+                    }
+                }}>
+                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                        <button
+                            onClick={() => setActiveTrailer(null)}
+                            className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </svg>
+                        </button>
+                        <div className="relative w-full ph-no-capture" style={{ paddingTop: '56.25%' }}>
+                            <iframe
+                                className="absolute top-0 left-0 w-full h-full"
+                                src={`https://www.youtube.com/embed/${activeTrailer}`}
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

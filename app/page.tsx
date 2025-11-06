@@ -152,7 +152,7 @@ function DiscoverContent() {
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">
 
                     {/* Banner */}
-                    <section className="flex justify-center sm:px-10 md:mb-10">
+                    <section className="flex justify-center sm:px-10 mb-2">
                         <div className="relative max-w-[1200px]">
                             <Image
                                 src="/images/header-image.png"
