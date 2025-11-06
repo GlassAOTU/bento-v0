@@ -7,6 +7,7 @@ import Link from 'next/link'
 import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
+import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 
 interface AnimeDetails {
@@ -44,12 +45,15 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [isWatchlistModalOpen, setIsWatchlistModalOpen] = useState(false)
+    const [aiDescription, setAiDescription] = useState<string | null>(null)
+    const [descriptionLoading, setDescriptionLoading] = useState(false)
 
     useEffect(() => {
         async function fetchAnimeData() {
             try {
                 setLoading(true)
                 setError(null)
+                setAiDescription(null)
 
                 // Fetch from API route
                 const response = await fetch(`/api/anime/${resolvedParams.slug}`)
@@ -63,11 +67,52 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 setAnimeDetails(data.details)
                 setSimilarAnime(data.similar)
                 setPopularAnime(data.popular)
+                setLoading(false)
+
+                // Check if AI description is already available
+                if (data.aiDescription) {
+                    setAiDescription(data.aiDescription)
+                } else {
+                    // Fetch AI description separately
+                    fetchAIDescription(data.details.id, data.details.description, data.details, data.similar, data.popular)
+                }
             } catch (err) {
                 console.error('Error fetching anime:', err)
                 setError('Failed to load anime details. The anime might not exist.')
-            } finally {
                 setLoading(false)
+            }
+        }
+
+        async function fetchAIDescription(animeId: number, description: string, details: any, similar: any, popular: any) {
+            try {
+                setDescriptionLoading(true)
+
+                const response = await fetch('/api/anime/description', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        animeId,
+                        description,
+                        details,
+                        similar,
+                        popular
+                    }),
+                })
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch AI description')
+                }
+
+                const data = await response.json()
+                setAiDescription(data.description)
+            } catch (err) {
+                console.error('Error fetching AI description:', err)
+                // Fallback to original description
+                setAiDescription(description)
+            } finally {
+                setDescriptionLoading(false)
             }
         }
 
@@ -78,9 +123,8 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
         return (
             <div className="bg-white min-h-screen">
                 <NavigationBar />
-                <div className="flex items-center justify-center min-h-[50vh]">
-                    <div className="text-gray-600">Loading anime details...</div>
-                </div>
+                <AnimePageSkeleton />
+                <Footer />
             </div>
         )
     }
@@ -157,9 +201,13 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 <div className="max-w-5xl mx-auto px-10 py-12">
                     {/* Description Section */}
                     <section className="mb-16">
-                        <p className="text-md leading-relaxed whitespace-pre-line">
-                            {animeDetails.description}
-                        </p>
+                        {descriptionLoading ? (
+                            <DescriptionSkeleton />
+                        ) : (
+                            <p className="text-md leading-relaxed whitespace-pre-line">
+                                {aiDescription || animeDetails.description}
+                            </p>
+                        )}
                     </section>
 
                     {/* Details Section */}

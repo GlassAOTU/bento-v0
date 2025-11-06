@@ -18,7 +18,8 @@ export async function getCachedAnimeDetails(searchTerm: string) {
         const cached = await redis.get(cacheKey)
         if (cached) {
             console.log(`[Cache HIT] Anime details for: ${searchTerm}`)
-            return JSON.parse(cached as string)
+            // Upstash Redis automatically deserializes JSON, so return directly
+            return typeof cached === 'string' ? JSON.parse(cached) : cached
         }
 
         console.log(`[Cache MISS] Fetching anime details for: ${searchTerm}`)
@@ -48,7 +49,8 @@ export async function getCachedSimilarAnime(animeId: number, limit: number = 4) 
         const cached = await redis.get(cacheKey)
         if (cached) {
             console.log(`[Cache HIT] Similar anime for ID: ${animeId}`)
-            return JSON.parse(cached as string)
+            // Upstash Redis automatically deserializes JSON, so return directly
+            return typeof cached === 'string' ? JSON.parse(cached) : cached
         }
 
         console.log(`[Cache MISS] Fetching similar anime for ID: ${animeId}`)
@@ -78,7 +80,8 @@ export async function getCachedPopularAnime(count: number = 4) {
         const cached = await redis.get(cacheKey)
         if (cached) {
             console.log(`[Cache HIT] Popular anime (count: ${count})`)
-            return JSON.parse(cached as string)
+            // Upstash Redis automatically deserializes JSON, so return directly
+            return typeof cached === 'string' ? JSON.parse(cached) : cached
         }
 
         console.log(`[Cache MISS] Fetching popular anime (count: ${count})`)
