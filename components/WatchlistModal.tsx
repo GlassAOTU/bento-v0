@@ -182,6 +182,27 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
             const watchlist = watchlists.find(w => w.id === watchlistId)
             const watchlistName = watchlist?.name || 'your watchlist'
 
+            // Check if anime already exists in this watchlist
+            const { data: existingItem, error: checkError } = await supabase
+                .from('watchlist_items')
+                .select('id')
+                .eq('watchlist_id', watchlistId)
+                .eq('title', anime.title)
+                .maybeSingle()
+
+            if (checkError) {
+                console.error('Error checking for duplicate:', checkError)
+                setError(`Failed to check watchlist: ${checkError.message}`)
+                setAdding(false)
+                return
+            }
+
+            if (existingItem) {
+                setError(`"${anime.title}" is already in ${watchlistName}`)
+                setAdding(false)
+                return
+            }
+
             const { error: addError } = await supabase
                 .from('watchlist_items')
                 .insert({

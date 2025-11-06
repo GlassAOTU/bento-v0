@@ -44,6 +44,13 @@ function WatchlistsContent() {
     // Get active tab from URL params, default to 'watchlist'
     const activeTab = searchParams.get('tab') || 'watchlist'
 
+    // Convert text to Title Case
+    const toTitleCase = (str: string) => {
+        return str.toLowerCase().split(' ').map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1)
+        }).join(' ')
+    }
+
     useEffect(() => {
         checkAuthAndFetchWatchlists()
         // Load recent searches from localStorage
@@ -173,14 +180,14 @@ function WatchlistsContent() {
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="hidden sm:inline w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="hidden sm:inline w-full h-auto"
                             />
                             <Image
                                 src="/images/header-image-mobile.png"
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="sm:hidden w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="sm:hidden w-full h-auto"
                             />
                         </div>
                     </section>
@@ -193,8 +200,18 @@ function WatchlistsContent() {
                         {/* Tab Navigation */}
                         <div className="flex justify-center gap-0 mb-12">
                             <button
-                                onClick={() => switchTab('recent-searches')}
+                                onClick={() => switchTab('watchlist')}
                                 className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 ${
+                                    activeTab === 'watchlist'
+                                        ? 'bg-[#F9F9F9] text-black'
+                                        : 'bg-white text-gray-400 hover:text-gray-600'
+                                }`}
+                            >
+                                my anime
+                            </button>
+                            <button
+                                onClick={() => switchTab('recent-searches')}
+                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 border-r-0 ${
                                     activeTab === 'recent-searches'
                                         ? 'bg-[#F9F9F9] text-black'
                                         : 'bg-white text-gray-400 hover:text-gray-600'
@@ -202,42 +219,11 @@ function WatchlistsContent() {
                             >
                                 recent searches
                             </button>
-                            <button
-                                onClick={() => switchTab('watchlist')}
-                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 border-r-0 ${
-                                    activeTab === 'watchlist'
-                                        ? 'bg-[#F9F9F9] text-black'
-                                        : 'bg-white text-gray-400 hover:text-gray-600'
-                                }`}
-                            >
-                                watchlist
-                            </button>
                         </div>
 
                         {/* Tab Content */}
-                        {activeTab === 'recent-searches' ? (
-                            /* Recent Searches Tab */
-                            <div>
-                                <h2 className="text-3xl font-bold mb-6">Recent Searches</h2>
-                                {recentSearches.length === 0 ? (
-                                    <div className="text-center py-16">
-                                        <p className="text-gray-500 text-lg mb-4">You haven't searched for anything yet.</p>
-                                        <p className="text-gray-400">Try the recommendations page to discover new anime!</p>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        {recentSearches.map((search, index) => (
-                                            <RecentSearchCard
-                                                key={index}
-                                                search={search}
-                                                onTrailerClick={(trailerId: string) => setActiveTrailer(trailerId)}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            /* Watchlist Tab */
+                        {activeTab === 'watchlist' ? (
+                            /* My Anime Tab */
                             <div>
                                 {/* Watchlists */}
                 {watchlists.length === 0 ? (
@@ -298,8 +284,8 @@ function WatchlistsContent() {
                                                                 className="object-cover w-full h-full"
                                                             />
                                                         </div>
-                                                        <p className="mt-3 text-center font-medium text-sm uppercase tracking-wide group-hover:text-gray-700 transition-colors">
-                                                            {item.title}
+                                                        <p className="mt-3 text-center font-medium text-sm tracking-wide group-hover:text-gray-700 transition-colors">
+                                                            {toTitleCase(item.title)}
                                                         </p>
                                                     </Link>
                                                 ))}
@@ -323,6 +309,27 @@ function WatchlistsContent() {
                         })}
                     </div>
                 )}
+                            </div>
+                        ) : (
+                            /* Recent Searches Tab */
+                            <div>
+                                <h2 className="text-3xl font-bold mb-6">Recent Searches</h2>
+                                {recentSearches.length === 0 ? (
+                                    <div className="text-center py-16">
+                                        <p className="text-gray-500 text-lg mb-4">You haven't searched for anything yet.</p>
+                                        <p className="text-gray-400">Try the recommendations page to discover new anime!</p>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        {recentSearches.map((search, index) => (
+                                            <RecentSearchCard
+                                                key={index}
+                                                search={search}
+                                                onTrailerClick={(trailerId: string) => setActiveTrailer(trailerId)}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

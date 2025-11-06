@@ -22,7 +22,7 @@ type Anime = {
 type AnimeCategories = {
     mostPopular: Anime[]
     shonen: Anime[]
-    isekai: Anime[]
+    sliceOfLife: Anime[]
     foundFamily: Anime[]
 }
 
@@ -159,14 +159,14 @@ function DiscoverContent() {
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="hidden sm:inline w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="hidden sm:inline w-full h-auto"
                             />
                             <Image
                                 src="/images/header-image-mobile.png"
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="sm:hidden w-full h-auto [mask-image:linear-gradient(to_top,transparent_0%,black_10%)]"
+                                className="sm:hidden w-full h-auto"
                             />
                         </div>
                     </section>
@@ -260,19 +260,19 @@ function DiscoverContent() {
                         animeData && (
                             <section className="px-10 flex flex-col gap-12">
                                 <CategorySection
-                                    title="MOST POPULAR"
+                                    title="Most Popular"
                                     anime={animeData.mostPopular}
                                 />
                                 <CategorySection
-                                    title="SHONEN"
+                                    title="Shonen"
                                     anime={animeData.shonen}
                                 />
                                 <CategorySection
-                                    title="ISEKAI (SLICE OF LIFE)"
-                                    anime={animeData.isekai}
+                                    title="Slice of Life"
+                                    anime={animeData.sliceOfLife}
                                 />
                                 <CategorySection
-                                    title="FOUND FAMILY WITH NO INCEST PLOTLINES"
+                                    title="Found Family with No Incest Plotlines"
                                     anime={animeData.foundFamily}
                                 />
                             </section>

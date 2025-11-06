@@ -12,6 +12,13 @@ type DiscoverAnimeCardProps = {
 }
 
 export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
+    // Convert text to Title Case
+    const toTitleCase = (str: string) => {
+        return str.toLowerCase().split(' ').map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1)
+        }).join(' ')
+    }
+
     return (
         <Link href={`/anime/${slugify(anime.title)}`} className="flex flex-col gap-2 group cursor-pointer">
             <div className="relative w-full aspect-[309/455] overflow-hidden rounded-md">
@@ -24,8 +31,8 @@ export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
                 />
             </div>
             <div className="flex flex-col gap-2">
-                <h3 className="text-xs font-semibold uppercase tracking-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
-                    {anime.title}
+                <h3 className="text-xs font-semibold tracking-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
+                    {toTitleCase(anime.title)}
                 </h3>
                 <div className="inline-flex items-center gap-1 self-start px-2 py-0.5 rounded-full bg-[#EEEEEE]/15 border border-black/[0.46]">
                     <span className="text-xs font-medium">{(anime.rating / 10).toFixed(1)}</span>

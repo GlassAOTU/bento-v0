@@ -93,7 +93,7 @@ export default function NavigationBar() {
                         </a>
                         {user && (
                             <a href="/watchlists?tab=watchlist" className={pathname === '/watchlists' ? 'font-semibold' : ''}>
-                                watchlist
+                                my anime
                             </a>
                         )}
                     </div>
@@ -202,7 +202,7 @@ export default function NavigationBar() {
                                 className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/watchlists' ? 'font-semibold' : ''}`}
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
-                                watchlist
+                                my anime
                             </a>
                         )}
 
