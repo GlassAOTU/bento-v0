@@ -23,41 +23,227 @@
       "title": "Jujutsu Kaisen",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-LHBAeoZDIsnF.jpg",
       "rating": 84
-    }
-  ],
-  "shonen": [
-    {
-      "id": 16498,
-      "title": "Shingeki no Kyojin",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx16498-buvcRTBx4NSm.jpg",
-      "rating": 85
-    },
-    {
-      "id": 101922,
-      "title": "Kimetsu no Yaiba",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg",
-      "rating": 82
-    },
-    {
-      "id": 113415,
-      "title": "Jujutsu Kaisen",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-LHBAeoZDIsnF.jpg",
-      "rating": 84
     },
     {
       "id": 21459,
       "title": "Boku no Hero Academia",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21459-nYh85uj2Fuwr.jpg",
       "rating": 76
-    }
-  ],
-  "isekai": [
+    },
+    {
+      "id": 11061,
+      "title": "HUNTER×HUNTER (2011)",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11061-y5gsT1hoHuHw.png",
+      "rating": 89
+    },
+    {
+      "id": 21087,
+      "title": "One Punch Man",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21087-B5DHjqZ3kW4b.jpg",
+      "rating": 83
+    },
+    {
+      "id": 20605,
+      "title": "Tokyo Ghoul",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b20605-k665mVkSug8D.jpg",
+      "rating": 75
+    },
+    {
+      "id": 20958,
+      "title": "Shingeki no Kyojin Season 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20958-HuFJyr54Mmir.jpg",
+      "rating": 84
+    },
+    {
+      "id": 21,
+      "title": "ONE PIECE",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg",
+      "rating": 88
+    },
+    {
+      "id": 5114,
+      "title": "Hagane no Renkinjutsushi: FULLMETAL ALCHEMIST",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx5114-nSWCgQlmOMtj.jpg",
+      "rating": 90
+    },
     {
       "id": 11757,
       "title": "Sword Art Online",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11757-SxYDUzdr9rh2.jpg",
       "rating": 69
     },
+    {
+      "id": 20,
+      "title": "NARUTO",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20-dE6UHbFFg1A5.jpg",
+      "rating": 80
+    },
+    {
+      "id": 21519,
+      "title": "Kimi no Na wa.",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21519-SUo3ZQuCbYhJ.png",
+      "rating": 85
+    },
+    {
+      "id": 20954,
+      "title": "Koe no Katachi",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20954-sYRfE5jQRtSB.jpg",
+      "rating": 88
+    },
+    {
+      "id": 99147,
+      "title": "Shingeki no Kyojin Season 3",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx99147-AiPDD8cwlCfi.jpg",
+      "rating": 85
+    },
+    {
+      "id": 21856,
+      "title": "Boku no Hero Academia 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21856-gutauxhWAwn6.png",
+      "rating": 79
+    },
+    {
+      "id": 101759,
+      "title": "Yakusoku no Neverland",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101759-8UR7r9MNVpz2.jpg",
+      "rating": 83
+    },
+    {
+      "id": 110277,
+      "title": "Shingeki no Kyojin: The Final Season",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx110277-sKUNXAsWMNFw.jpg",
+      "rating": 86
+    },
+    {
+      "id": 20755,
+      "title": "Ansatsu Kyoushitsu",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20755-dWrhs569YGUO.jpg",
+      "rating": 79
+    }
+  ],
+  "shonen": [
+    {
+      "id": 21507,
+      "title": "Mob Psycho 100",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21507-6YUSbh2m0N1p.jpg",
+      "rating": 84
+    },
+    {
+      "id": 20665,
+      "title": "Shigatsu wa Kimi no Uso",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20665-TLgkL8T8IRFd.png",
+      "rating": 84
+    },
+    {
+      "id": 100166,
+      "title": "Boku no Hero Academia 3",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx100166-jUCZYbzn2XLw.jpg",
+      "rating": 79
+    },
+    {
+      "id": 1735,
+      "title": "NARUTO: Shippuuden",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1735-kGfVm0YqCPcu.png",
+      "rating": 82
+    },
+    {
+      "id": 104578,
+      "title": "Shingeki no Kyojin Season 3 Part 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx104578-k61nx3LPjvgd.jpg",
+      "rating": 89
+    },
+    {
+      "id": 20464,
+      "title": "Haikyuu!!",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20464-ooZUyBe4ptp9.png",
+      "rating": 83
+    },
+    {
+      "id": 127230,
+      "title": "Chainsaw Man",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx127230-DdP4vAdssLoz.png",
+      "rating": 83
+    },
+    {
+      "id": 97940,
+      "title": "Black Clover",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx97940-fyh8o7gNbha0.png",
+      "rating": 79
+    },
+    {
+      "id": 20447,
+      "title": "Noragami",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20447-EoQXeygHaVCK.jpg",
+      "rating": 77
+    },
+    {
+      "id": 105333,
+      "title": "Dr. STONE",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx105333-GybuoSoOZfpH.jpg",
+      "rating": 81
+    },
+    {
+      "id": 140960,
+      "title": "SPY×FAMILY",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx140960-Kb6R5nYQfjmP.jpg",
+      "rating": 83
+    },
+    {
+      "id": 20613,
+      "title": "Akame ga Kill!",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20613-HXHpec4bemk5.jpg",
+      "rating": 72
+    },
+    {
+      "id": 104276,
+      "title": "Boku no Hero Academia 4",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx104276-SnEowMvesWIE.png",
+      "rating": 78
+    },
+    {
+      "id": 20789,
+      "title": "Nanatsu no Taizai",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20789-Ma5ouSYPkru9.jpg",
+      "rating": 73
+    },
+    {
+      "id": 21202,
+      "title": "Kono Subarashii Sekai ni Shukufuku wo!",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21202-qQoJeKz76vRT.png",
+      "rating": 79
+    },
+    {
+      "id": 124080,
+      "title": "Horimiya",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx124080-oeviACzGv5Vx.jpg",
+      "rating": 81
+    },
+    {
+      "id": 112151,
+      "title": "Kimetsu no Yaiba: Mugen Ressha-hen",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx112151-1qlQwPB1RrJe.png",
+      "rating": 84
+    },
+    {
+      "id": 269,
+      "title": "BLEACH",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx269-d2GmRkJbMopq.png",
+      "rating": 78
+    },
+    {
+      "id": 9919,
+      "title": "Ao no Exorcist",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx9919-nXS7JOZrWHfS.jpg",
+      "rating": 72
+    },
+    {
+      "id": 14719,
+      "title": "JoJo no Kimyou na Bouken (TV)",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx14719-VT5dRzTBSZ0w.jpg",
+      "rating": 77
+    }
+  ],
+  "isekai": [
     {
       "id": 21355,
       "title": "Re:Zero kara Hajimeru Isekai Seikatsu",
@@ -75,32 +261,230 @@
       "title": "Kono Subarashii Sekai ni Shukufuku wo!",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21202-qQoJeKz76vRT.png",
       "rating": 79
+    },
+    {
+      "id": 199,
+      "title": "Sen to Chihiro no Kamikakushi",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199-sWefXJvXkDOb.jpg",
+      "rating": 86
+    },
+    {
+      "id": 99263,
+      "title": "Tate no Yuusha no Nariagari",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx99263-LcazQwdlWzMy.jpg",
+      "rating": 76
+    },
+    {
+      "id": 101280,
+      "title": "Tensei Shitara Slime Datta Ken",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101280-tDxCVJm714nt.jpg",
+      "rating": 80
+    },
+    {
+      "id": 108465,
+      "title": "Mushoku Tensei: Isekai Ittara Honki Dasu",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx108465-1ANspF1EWyFx.jpg",
+      "rating": 82
+    },
+    {
+      "id": 20832,
+      "title": "Overlord",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20832-vUNm5zrYWifc.jpg",
+      "rating": 76
+    },
+    {
+      "id": 6702,
+      "title": "FAIRY TAIL",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b6702-KI4qgSMyI8Pm.png",
+      "rating": 71
+    },
+    {
+      "id": 21699,
+      "title": "Kono Subarashii Sekai ni Shukufuku wo! 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21699-Fkbnkl9ZC6fW.png",
+      "rating": 81
+    },
+    {
+      "id": 108632,
+      "title": "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx108632-lQWnmw7XaNOK.jpg",
+      "rating": 83
+    },
+    {
+      "id": 108511,
+      "title": "Tensei Shitara Slime Datta Ken 2nd Season",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx108511-PufFordLNyIb.jpg",
+      "rating": 83
+    },
+    {
+      "id": 127720,
+      "title": "Mushoku Tensei: Isekai Ittara Honki Dasu Part 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx127720-ADJgIrUVMdU9.jpg",
+      "rating": 85
+    },
+    {
+      "id": 100182,
+      "title": "Sword Art Online: Alicization",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/nx100182-KctPmCJ2smHQ.jpg",
+      "rating": 75
+    },
+    {
+      "id": 119661,
+      "title": "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx119661-GDbUZxrZMz01.png",
+      "rating": 84
+    },
+    {
+      "id": 121,
+      "title": "Hagane no Renkinjutsushi",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx121-zjmixZ428Mwv.png",
+      "rating": 79
+    },
+    {
+      "id": 98437,
+      "title": "Overlord II",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx98437-5q0GWqHhNAgJ.jpg",
+      "rating": 75
+    },
+    {
+      "id": 116742,
+      "title": "Tensei Shitara Slime Datta Ken 2nd Season Part 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx116742-jn0dW23ftehq.jpg",
+      "rating": 82
+    },
+    {
+      "id": 101474,
+      "title": "Overlord III",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101474-tGRyvSAWMjU9.jpg",
+      "rating": 77
+    },
+    {
+      "id": 111321,
+      "title": "Tate no Yuusha no Nariagari Season 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx111321-dIr3dEKOIPer.png",
+      "rating": 65
     }
   ],
   "foundFamily": [
     {
-      "id": 21,
-      "title": "ONE PIECE",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg",
-      "rating": 88
+      "id": 127230,
+      "title": "Chainsaw Man",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx127230-DdP4vAdssLoz.png",
+      "rating": 83
     },
     {
-      "id": 11757,
-      "title": "Sword Art Online",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11757-SxYDUzdr9rh2.jpg",
-      "rating": 69
+      "id": 97940,
+      "title": "Black Clover",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx97940-fyh8o7gNbha0.png",
+      "rating": 79
     },
     {
-      "id": 20,
-      "title": "NARUTO",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20-dE6UHbFFg1A5.jpg",
+      "id": 20447,
+      "title": "Noragami",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20447-EoQXeygHaVCK.jpg",
+      "rating": 77
+    },
+    {
+      "id": 105333,
+      "title": "Dr. STONE",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx105333-GybuoSoOZfpH.jpg",
+      "rating": 81
+    },
+    {
+      "id": 140960,
+      "title": "SPY×FAMILY",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx140960-Kb6R5nYQfjmP.jpg",
+      "rating": 83
+    },
+    {
+      "id": 99423,
+      "title": "Darling in the Franxx",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/nx99423-8MBxtwCeHf8B.png",
+      "rating": 68
+    },
+    {
+      "id": 30,
+      "title": "Shin Seiki Evangelion",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx30-AI1zr74Dh4ye.jpg",
+      "rating": 83
+    },
+    {
+      "id": 1,
+      "title": "Cowboy Bebop",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1-GCsPm7waJ4kS.png",
+      "rating": 86
+    },
+    {
+      "id": 6547,
+      "title": "Angel Beats!",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx6547-SYexAn5aFyss.png",
+      "rating": 77
+    },
+    {
+      "id": 101280,
+      "title": "Tensei Shitara Slime Datta Ken",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101280-tDxCVJm714nt.jpg",
       "rating": 80
     },
     {
-      "id": 101759,
-      "title": "Yakusoku no Neverland",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101759-8UR7r9MNVpz2.jpg",
-      "rating": 83
+      "id": 21311,
+      "title": "Bungou Stray Dogs",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21311-hAXyT8Yoh6G9.jpg",
+      "rating": 77
+    },
+    {
+      "id": 20923,
+      "title": "Shokugeki no Souma",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20923-pNT38pjW3RFH.jpg",
+      "rating": 78
+    },
+    {
+      "id": 9989,
+      "title": "Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai.",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx9989-hImMg6kCMm6I.jpg",
+      "rating": 80
+    },
+    {
+      "id": 154587,
+      "title": "Sousou no Frieren",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-qQTzQnEJJ3oB.jpg",
+      "rating": 91
+    },
+    {
+      "id": 6702,
+      "title": "FAIRY TAIL",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b6702-KI4qgSMyI8Pm.png",
+      "rating": 71
+    },
+    {
+      "id": 2001,
+      "title": "Tengen Toppa Gurren Lagann",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx2001-XwRnjzGeFWRQ.png",
+      "rating": 85
+    },
+    {
+      "id": 431,
+      "title": "Howl no Ugoku Shiro",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx431-o8Lj3XkjHm2k.jpg",
+      "rating": 85
+    },
+    {
+      "id": 106286,
+      "title": "Tenki no Ko",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx106286-5COcpd0J9VbL.png",
+      "rating": 81
+    },
+    {
+      "id": 20474,
+      "title": "JoJo no Kimyou na Bouken: Stardust Crusaders",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx20474-xuqem5GBlBtb.jpg",
+      "rating": 79
+    },
+    {
+      "id": 21776,
+      "title": "Kobayashi-san Chi no Maidragon",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21776-bwPaYKhnKfUs.png",
+      "rating": 77
     }
   ]
 }
