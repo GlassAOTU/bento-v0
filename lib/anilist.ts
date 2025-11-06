@@ -37,18 +37,20 @@ export async function fetchAnimeDetails(animeTitle: string) {
         throw new Error("Anime not found in AniList response");
     }
 
+    const media = data.data.Media
+
     return {
-        bannerImage: data?.data?.Media?.bannerImage || "",
-        externalLinks: data?.data?.Media?.externalLinks?.[0] || null, // Grab only the first link
-        description: (data?.data?.Media?.description || "No description available")
+        bannerImage: media.bannerImage || "",
+        externalLinks: media.externalLinks?.[0] || null,
+        description: (media.description || "No description available")
             .replace(/<br\s*\/?>/gi, "\n")
             .replace(/<[^>]+>/g, "")
             .replace(/\(Source:.*?\)/gi, "")
             .replace(/\s*\n\s*/g, "\n")
             .trim(),
-        trailer: data?.data?.Media?.trailer ? {
-            id: data.data.Media.trailer.id,
-            site: data.data.Media.trailer.site
+        trailer: media.trailer ? {
+            id: media.trailer.id,
+            site: media.trailer.site
         } : null
     }
 }
