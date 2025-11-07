@@ -24,7 +24,6 @@ function RecommendationContent() {
 
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
-    const [isWelcomePopupOpen, setWelcomePopupOpen] = useState(false);
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false);
     // const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
@@ -107,11 +106,6 @@ function RecommendationContent() {
         }
     }, [hasRestoredFromCache, setRecommendations, setSeenTitles])
 
-    const handleWelcomePopup = () => {
-        setWelcomePopupOpen(false);
-        localStorage.setItem('hasVisitedBefore', 'true');
-    };
-
     const openLimitPopup = () => {
         setLimitPopupOpen(true);
     };
@@ -144,12 +138,7 @@ function RecommendationContent() {
     }, [seenTitles])
 
     useEffect(() => {
-        const hasVisited = localStorage.getItem('hasVisitedBefore');
         const isStillRateLimited = localStorage.getItem('rateLimited');
-
-        if (!hasVisited) {
-            setWelcomePopupOpen(true);
-        }
 
         if (isStillRateLimited) {
             openLimitPopup();
@@ -236,25 +225,6 @@ function RecommendationContent() {
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-
-                {/* Welcome Popup */}
-                {isWelcomePopupOpen && (
-                    <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
-                        if (e.target === e.currentTarget) {
-                            handleWelcomePopup();
-                        }
-                    }}>
-                        <div className="relative">
-                            <Image src="/images/welcome-popup.png" alt="Popup" width={900} height={600} className="rounded-xl drop-shadow" />
-                            <button onClick={handleWelcomePopup} className="absolute top-0 right-0 p-2 m-4 rounded-full border-2 text-xs sm:text-md border-mySecondary/50 hover:border-mySecondary transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M18 6 6 18" />
-                                    <path d="m6 6 12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                )}
 
                 {/* Page content */}
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">

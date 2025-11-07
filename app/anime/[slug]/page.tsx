@@ -199,7 +199,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     </div>
                 </section>
 
-                <div className="max-w-5xl mx-auto px-10 py-12">
+                <div className="max-w-5xl mx-auto px-10 pt-6 pb-12">
                     {/* Description Section */}
                     <section className="mb-8">
                         {descriptionLoading ? (
@@ -234,6 +234,9 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                             </div>
                         </section>
                     )}
+
+                    {/* Divider */}
+                    <hr className="border-t border-gray-200 mb-16" />
 
                     {/* Details Section */}
                     <section className="mb-16">
@@ -288,6 +291,9 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                         </div>
                     </section>
 
+                    {/* Divider */}
+                    <hr className="border-t border-gray-200 mb-16" />
+
                     {/* Similar Anime Section */}
                     {similarAnime.length > 0 && (
                         <section className="mb-16">
@@ -315,6 +321,11 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                                 ))}
                             </div>
                         </section>
+                    )}
+
+                    {/* Divider */}
+                    {similarAnime.length > 0 && popularAnime.length > 0 && (
+                        <hr className="border-t border-gray-200 mb-16" />
                     )}
 
                     {/* Most Popular Section */}
