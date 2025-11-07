@@ -8,6 +8,7 @@ import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import WaitlistPopup from './WaitlistPopup';
 import AuthModal from './AuthModal';
+import { identifyUser, trackUserSignout } from '@/lib/analytics/events';
 
 export default function NavigationBar() {
     const pathname = usePathname();
@@ -54,6 +55,12 @@ export default function NavigationBar() {
                         is_email_confirmed: !!session.user.email_confirmed_at,
                     });
 
+                    // Identify user in PostHog
+                    identifyUser(session.user.id, {
+                        email: session.user.email,
+                        created_at: session.user.created_at
+                    });
+
                     // Close auth modal when user signs in
                     setIsAuthModalOpen(false);
                 }
@@ -67,6 +74,7 @@ export default function NavigationBar() {
 
     const handleSignOut = async () => {
         const supabase = createClient();
+        trackUserSignout();
         await supabase.auth.signOut();
         setUser(null); // Immediately update UI
     };

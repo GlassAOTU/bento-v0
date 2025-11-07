@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useMemo } from 'react'
 import DiscoverAnimeCard from './DiscoverAnimeCard'
+import { trackCategoryCarouselScroll } from '@/lib/analytics/events'
 
 type Anime = {
     id: number
@@ -84,6 +85,12 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
             ? container.scrollLeft - scrollAmount
             : container.scrollLeft + scrollAmount
 
+        // Track carousel scroll
+        trackCategoryCarouselScroll({
+            category: title,
+            direction
+        })
+
         container.scrollTo({
             left: targetScroll,
             behavior: 'smooth'
@@ -150,7 +157,11 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
                             key={`${item.id}-${index}`}
                             className="flex-none w-[75%] md:w-[calc(25%-0.75rem)] snap-start"
                         >
-                            <DiscoverAnimeCard anime={item} />
+                            <DiscoverAnimeCard
+                                anime={item}
+                                category={title}
+                                positionInCarousel={index % anime.length}
+                            />
                         </div>
                     ))}
                 </div>

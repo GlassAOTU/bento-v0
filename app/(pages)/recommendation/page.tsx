@@ -13,11 +13,13 @@ import LimitPopup from "../../../components/LimitPopup"
 import TagSelector from "../../../components/TagSelector"
 import { useRecommendations } from "../../../lib/hooks/useRecommendations"
 
-import posthog from 'posthog-js';
 import AnimeSet from '../../../components/AnimeSet'
 import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
 import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
+import { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/browser-client'
+import { trackRecommendationSeeMoreClicked, getAuthStatus } from '@/lib/analytics/events'
 
 function RecommendationContent() {
     const searchParams = useSearchParams()
@@ -29,6 +31,7 @@ function RecommendationContent() {
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
     const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
     const [hasRestoredFromCache, setHasRestoredFromCache] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
 
     const {
         recommendations,
@@ -39,7 +42,17 @@ function RecommendationContent() {
         getRecommendations,
         setRecommendations,
         setSeenTitles
-    } = useRecommendations()
+    } = useRecommendations([], user)
+
+    // Get user authentication status
+    useEffect(() => {
+        const initAuth = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            setUser(user)
+        }
+        initAuth()
+    }, [])
 
     // Restore from sessionStorage after mount (client-side only)
     useEffect(() => {
@@ -183,7 +196,7 @@ function RecommendationContent() {
         const currentQuery = { description, tags: selectedTags, timestamp: Date.now() };
         setSearchHistory(prev => [...prev, currentQuery]);
 
-        const result = await getRecommendations(description, selectedTags);
+        const result = await getRecommendations(description, selectedTags, append);
 
         function isSuccessResult(result: any): result is { success: true; data: any[] } {
             return result && result.success && Array.isArray(result.data);
@@ -216,6 +229,13 @@ function RecommendationContent() {
     };
 
     const handleSeeMore = () => {
+        // Track see more click
+        trackRecommendationSeeMoreClicked({
+            current_results_count: recommendations.length,
+            total_queries: searchHistory.length,
+            auth_status: getAuthStatus(user)
+        });
+
         handleGetRecommendations(true);
     };
 

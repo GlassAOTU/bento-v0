@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { slugify } from '@/lib/utils/slugify'
+import { trackDiscoverAnimeCardClick, getAuthStatus } from '@/lib/analytics/events'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/browser-client'
 
 type DiscoverAnimeCardProps = {
     anime: {
@@ -9,9 +12,22 @@ type DiscoverAnimeCardProps = {
         image: string
         rating: number
     }
+    category?: string
+    positionInCarousel?: number
 }
 
-export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
+export default function DiscoverAnimeCard({ anime, category = 'unknown', positionInCarousel = 0 }: DiscoverAnimeCardProps) {
+    const [user, setUser] = useState<any>(null)
+
+    useEffect(() => {
+        const initAuth = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            setUser(user)
+        }
+        initAuth()
+    }, [])
+
     // Convert text to Title Case
     const toTitleCase = (str: string) => {
         return str.toLowerCase().split(' ').map(word => {
@@ -19,8 +35,22 @@ export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
         }).join(' ')
     }
 
+    const handleClick = () => {
+        trackDiscoverAnimeCardClick({
+            anime_id: anime.id,
+            anime_title: anime.title,
+            category,
+            position_in_carousel: positionInCarousel,
+            auth_status: getAuthStatus(user)
+        })
+    }
+
     return (
-        <Link href={`/anime/${slugify(anime.title)}`} className="flex flex-col gap-2 group cursor-pointer">
+        <Link
+            href={`/anime/${slugify(anime.title)}`}
+            className="flex flex-col gap-2 group cursor-pointer"
+            onClick={handleClick}
+        >
             <div className="relative w-full aspect-[309/455] overflow-hidden rounded-md">
                 <Image
                     src={anime.image}

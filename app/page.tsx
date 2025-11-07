@@ -11,6 +11,7 @@ import NavigationBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 import CategorySection from '../components/CategorySection'
 import DiscoverAnimeCard from '../components/DiscoverAnimeCard'
+import { trackDiscoverSearch, trackDiscoverSearchCleared, getAuthStatus } from '@/lib/analytics/events'
 
 type Anime = {
     id: number
@@ -113,17 +114,37 @@ function DiscoverContent() {
         }
 
         const debounceTimer = setTimeout(async () => {
+            // Get the trimmed query
+            const trimmedQuery = searchQuery.trim()
+
+            // Check if this query was already searched (avoid duplicate searches)
+            const cachedResults = sessionStorage.getItem('discover_search_results')
+            const cachedQuery = sessionStorage.getItem('discover_last_query')
+
+            if (cachedQuery === trimmedQuery && cachedResults) {
+                // Already searched this exact query, don't search again
+                return
+            }
+
             setIsSearching(true)
             setSearchError(null)
 
             try {
-                const results = await searchAnime(searchQuery.trim())
+                const results = await searchAnime(trimmedQuery)
                 setSearchResults(results)
                 setHasSearched(true)
 
+                // Track search in PostHog (only on successful new search)
+                trackDiscoverSearch({
+                    query: trimmedQuery,
+                    results_count: results.length,
+                    auth_status: getAuthStatus(user)
+                })
+
                 // Save to sessionStorage and update URL
                 sessionStorage.setItem('discover_search_results', JSON.stringify(results))
-                router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`, { scroll: false })
+                sessionStorage.setItem('discover_last_query', trimmedQuery)
+                router.push(`/?q=${encodeURIComponent(trimmedQuery)}`, { scroll: false })
             } catch (error) {
                 console.error('Search error:', error)
                 setSearchError('Failed to search anime. Please try again.')
@@ -131,17 +152,19 @@ function DiscoverContent() {
             } finally {
                 setIsSearching(false)
             }
-        }, 300) // 300ms debounce
+        }, 500) // Increased to 500ms debounce for better UX
 
         return () => clearTimeout(debounceTimer)
-    }, [searchQuery, hasSearched, isRestoringFromCache, router])
+    }, [searchQuery, hasSearched, isRestoringFromCache, router, user])
 
     const handleClearSearch = () => {
+        trackDiscoverSearchCleared()
         setSearchQuery('')
         setSearchResults([])
         setHasSearched(false)
         setSearchError(null)
         sessionStorage.removeItem('discover_search_results')
+        sessionStorage.removeItem('discover_last_query')
         router.push('/', { scroll: false })
     }
 

@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { fetchAnimeDetails } from "@/lib/anilist";
-import posthog from 'posthog-js';
+import {
+    trackRecommendationQueryStarted,
+    trackRecommendationQueryCompleted,
+    trackRecommendationRateLimited,
+    getAuthStatus
+} from '@/lib/analytics/events';
 
 export type AnimeRecommendation = {
     title: string;
@@ -11,7 +16,7 @@ export type AnimeRecommendation = {
     trailer: { id: string, site: string }| null;
 };
 
-export function useRecommendations(initialRecommendations: AnimeRecommendation[] = []) {
+export function useRecommendations(initialRecommendations: AnimeRecommendation[] = [], user?: any) {
     const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>(initialRecommendations);
     const [seenTitles, setSeenTitles] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -24,13 +29,25 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         );
     };
 
-    const getRecommendations = async (description: string, selectedTags: string[]) => {
+    const getRecommendations = async (description: string, selectedTags: string[], isAppend: boolean = false) => {
         if (isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited) {
             if (isRateLimited) {
                 return { error: "Rate limited" };
             }
             return { error: "Invalid input" };
         }
+
+        const startTime = Date.now();
+
+        // Track query started
+        trackRecommendationQueryStarted({
+            description: description.trim(),
+            description_length: description.trim().length,
+            tags_selected: selectedTags,
+            tag_count: selectedTags.length,
+            is_append: isAppend,
+            auth_status: getAuthStatus(user)
+        });
 
         setIsLoading(true);
         setError("");
@@ -46,6 +63,12 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
                 setIsRateLimited(true);
                 localStorage.setItem('rateLimited', 'true');
                 setError("Rate limit reached.");
+
+                // Track rate limit event
+                trackRecommendationRateLimited({
+                    auth_status: getAuthStatus(user)
+                });
+
                 return { error: "Rate limit reached" };
             }
 
@@ -86,11 +109,16 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
             setSeenTitles(newSeenTitles);
             setRecommendations(prev => [...animeFinish, ...prev]);
 
-            // Track the recommendation request with PostHog
-            posthog.capture('submit_recommendations', {
-                selected_tags: selectedTags,
+            const endTime = Date.now();
+            const responseTime = endTime - startTime;
+
+            // Track query completed
+            trackRecommendationQueryCompleted({
                 description: description.trim(),
-                recommendations: animeFinish.map(rec => rec.title)
+                tags_selected: selectedTags,
+                results_count: animeFinish.length,
+                response_time_ms: responseTime,
+                auth_status: getAuthStatus(user)
             });
 
             return { success: true, data: animeFinish };

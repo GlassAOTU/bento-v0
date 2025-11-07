@@ -1,8 +1,10 @@
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import WatchlistModal from "./WatchlistModal"
 import { slugify } from "@/lib/utils/slugify"
+import { trackRecommendationTrailerOpened, trackRecommendationExternalLinkClicked, trackWatchlistAddClicked, getAuthStatus } from "@/lib/analytics/events"
+import { createClient } from '@/lib/supabase/browser-client'
 
 export default function AnimeCard({ item, onTrailerClick }: {
     item: {
@@ -16,6 +18,37 @@ export default function AnimeCard({ item, onTrailerClick }: {
     onTrailerClick?: (trailerId: string) => void;
 }) {
     const [isWatchlistModalOpen, setIsWatchlistModalOpen] = useState(false)
+    const [user, setUser] = useState<any>(null)
+
+    useEffect(() => {
+        const initAuth = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            setUser(user)
+        }
+        initAuth()
+    }, [])
+
+    const handleTrailerClick = () => {
+        if (item.trailer?.id) {
+            trackRecommendationTrailerOpened({
+                anime_title: item.title,
+                source_page: 'recommendations'
+            })
+            onTrailerClick?.(item.trailer.id)
+        }
+    }
+
+    const handleExternalLinkClick = () => {
+        if (item.externalLinks) {
+            trackRecommendationExternalLinkClicked({
+                anime_title: item.title,
+                platform: item.externalLinks.site,
+                source_page: 'recommendations'
+            })
+        }
+    }
+
     return (
         <div className="flex gap-6 mb-5 rounded-lg flex-col hover:scale-[102%] transition-all">
             {/* <div className="w-40 h-52 max-w-[950px] max-h-[208px] rounded-md overflow-hidden shadow-md bg-red-600"> */}
@@ -46,14 +79,20 @@ export default function AnimeCard({ item, onTrailerClick }: {
                     {/* Left side buttons */}
                     <div className="flex gap-3">
                         {item.externalLinks && (
-                            <a href={item.externalLinks.url} target="_blank" rel="noopener noreferrer" className="inline-block">
+                            <a
+                                href={item.externalLinks.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block"
+                                onClick={handleExternalLinkClick}
+                            >
                                 <button className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">{item.externalLinks.site}</button>
                             </a>
                         )}
 
                         {item.trailer && item.trailer.id && item.trailer.site && (
                             <button
-                                onClick={() => item.trailer?.id && onTrailerClick?.(item.trailer.id)}
+                                onClick={handleTrailerClick}
                                 className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
                             >
                                 Watch Trailer
@@ -63,7 +102,14 @@ export default function AnimeCard({ item, onTrailerClick }: {
 
                     {/* Right side button */}
                     <button
-                        onClick={() => setIsWatchlistModalOpen(true)}
+                        onClick={() => {
+                            trackWatchlistAddClicked({
+                                anime_title: item.title,
+                                source_page: 'recommendations',
+                                auth_status: getAuthStatus(user)
+                            })
+                            setIsWatchlistModalOpen(true)
+                        }}
                         className="px-4 py-1 rounded-md bg-[#F9F9F9] text-black border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-sm"
                     >
                         Add to Watchlist
