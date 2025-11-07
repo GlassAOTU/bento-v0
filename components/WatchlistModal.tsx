@@ -6,6 +6,14 @@ import { createClient } from '@/lib/supabase/browser-client'
 import { X } from 'lucide-react'
 import UnauthenticatedWatchlistOverlay from './UnauthenticatedWatchlistOverlay'
 import AuthModal from './AuthModal'
+import {
+    trackWatchlistModalOpened,
+    trackWatchlistUnauthenticatedPrompt,
+    trackWatchlistAnimeAdded,
+    trackWatchlistCreated,
+    trackWatchlistDuplicatePrevented,
+    getAuthStatus
+} from '@/lib/analytics/events'
 
 interface Watchlist {
     id: string
@@ -67,7 +75,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
         return () => {
             document.body.style.overflow = 'unset'
         }
-    }, [isOpen])
+    }, [isOpen, anime])
 
     // Listen for auth state changes
     useEffect(() => {
@@ -98,6 +106,14 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
             if (!user) {
                 setLoading(false)
                 setShowUnauthOverlay(true)
+
+                // Track unauthenticated prompt
+                if (anime) {
+                    trackWatchlistUnauthenticatedPrompt({
+                        anime_title: anime.title
+                    })
+                }
+
                 return
             }
 
@@ -111,7 +127,18 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 console.error('Error fetching watchlists:', fetchError)
                 setError('Failed to load watchlists')
             } else {
-                setWatchlists(data || [])
+                const watchlistData = data || []
+                setWatchlists(watchlistData)
+
+                // Track modal opened
+                if (anime) {
+                    trackWatchlistModalOpened({
+                        anime_title: anime.title,
+                        has_existing_watchlists: watchlistData.length > 0,
+                        watchlist_count: watchlistData.length,
+                        auth_status: 'authenticated'
+                    })
+                }
             }
         } catch (err) {
             console.error('Error fetching watchlists:', err)
@@ -156,6 +183,14 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 console.error('Error creating watchlist:', createError)
                 setError(`Failed to create watchlist: ${createError.message}`)
             } else if (data && anime) {
+                // Track watchlist created
+                trackWatchlistCreated({
+                    watchlist_name: data.name,
+                    watchlist_id: data.id,
+                    created_with_anime: true,
+                    anime_title: anime.title
+                })
+
                 // Add the anime to the newly created watchlist
                 // Update watchlists state to include the new one
                 setWatchlists([...watchlists, { id: data.id, name: data.name, description: data.description }])
@@ -199,6 +234,13 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
             if (existingItem) {
                 setError(`"${anime.title}" is already in ${watchlistName}`)
+
+                // Track duplicate prevented
+                trackWatchlistDuplicatePrevented({
+                    anime_title: anime.title,
+                    watchlist_name: watchlistName
+                })
+
                 setAdding(false)
                 return
             }
@@ -219,6 +261,14 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 console.error('Error adding to watchlist:', addError)
                 setError(`Failed to add anime to watchlist: ${addError.message}`)
             } else {
+                // Track anime added to watchlist
+                trackWatchlistAnimeAdded({
+                    anime_title: anime.title,
+                    watchlist_name: watchlistName,
+                    watchlist_id: watchlistId,
+                    auth_status: 'authenticated'
+                })
+
                 // Success! Show success message
                 setSuccess(true)
                 setSuccessWatchlistName(watchlistName)
@@ -240,6 +290,15 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
     }
 
     const handleCreateAccount = () => {
+        // Track auth initiated from watchlist
+        if (anime) {
+            const { trackWatchlistAuthInitiated } = require('@/lib/analytics/events')
+            trackWatchlistAuthInitiated({
+                anime_title_attempting_to_add: anime.title,
+                auth_action: 'signup'
+            })
+        }
+
         // Store current page for OAuth return using a cookie (persists across redirects)
         // Cookie expires in 10 minutes (enough time for OAuth flow)
         document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=600; SameSite=Lax`

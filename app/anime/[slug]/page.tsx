@@ -9,6 +9,17 @@ import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
 import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
+import { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/browser-client'
+import {
+    trackAnimeDetailViewed,
+    trackAnimeTrailerWatched,
+    trackAnimeExternalLinkClicked,
+    trackAnimeSimilarClicked,
+    trackWatchlistAddClicked,
+    getReferrerPage,
+    getAuthStatus
+} from '@/lib/analytics/events'
 
 interface AnimeDetails {
     id: number
@@ -48,6 +59,17 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [aiDescription, setAiDescription] = useState<string | null>(null)
     const [descriptionLoading, setDescriptionLoading] = useState(false)
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
+    const [user, setUser] = useState<User | null>(null)
+
+    useEffect(() => {
+        // Get user auth status
+        const initAuth = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            setUser(user)
+        }
+        initAuth()
+    }, [])
 
     useEffect(() => {
         async function fetchAnimeData() {
@@ -69,6 +91,14 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 setSimilarAnime(data.similar)
                 setPopularAnime(data.popular)
                 setLoading(false)
+
+                // Track anime detail page view
+                trackAnimeDetailViewed({
+                    anime_id: data.details.id,
+                    anime_title: data.details.title,
+                    referrer_page: getReferrerPage(),
+                    auth_status: getAuthStatus(user)
+                })
 
                 // Check if AI description is already available
                 if (data.aiDescription) {
@@ -118,7 +148,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
         }
 
         fetchAnimeData()
-    }, [resolvedParams.slug])
+    }, [resolvedParams.slug, user])
 
     if (loading) {
         return (
@@ -184,7 +214,14 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     <div className="relative z-10 h-full flex items-end">
                         <div className="max-w-5xl mx-auto w-full px-10 pb-12">
                             <button
-                                onClick={() => setIsWatchlistModalOpen(true)}
+                                onClick={() => {
+                                    trackWatchlistAddClicked({
+                                        anime_title: animeDetails.title,
+                                        source_page: 'anime_detail',
+                                        auth_status: getAuthStatus(user)
+                                    })
+                                    setIsWatchlistModalOpen(true)
+                                }}
                                 className="px-6 py-2 mb-4 bg-white/90 hover:bg-white text-black font-semibold rounded-md transition-colors inline-block"
                             >
                                 ADD TO WATCHLIST
@@ -216,7 +253,17 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                         <section className="mb-16">
                             <div className="flex gap-3">
                                 {animeDetails.externalLinks && (
-                                    <a href={animeDetails.externalLinks.url} target="_blank" rel="noopener noreferrer">
+                                    <a
+                                        href={animeDetails.externalLinks.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => {
+                                            trackAnimeExternalLinkClicked({
+                                                anime_title: animeDetails.title,
+                                                platform: animeDetails.externalLinks.site
+                                            })
+                                        }}
+                                    >
                                         <button className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">
                                             {animeDetails.externalLinks.site}
                                         </button>
@@ -225,7 +272,12 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                                 {animeDetails.trailer && animeDetails.trailer.id && (
                                     <button
-                                        onClick={() => setActiveTrailer(animeDetails.trailer?.id || null)}
+                                        onClick={() => {
+                                            trackAnimeTrailerWatched({
+                                                anime_title: animeDetails.title
+                                            })
+                                            setActiveTrailer(animeDetails.trailer?.id || null)
+                                        }}
                                         className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
                                     >
                                         Watch Trailer
@@ -304,6 +356,13 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                                         key={anime.id}
                                         href={`/anime/${slugify(anime.title)}`}
                                         className="flex flex-col group"
+                                        onClick={() => {
+                                            trackAnimeSimilarClicked({
+                                                source_anime: animeDetails.title,
+                                                target_anime: anime.title,
+                                                auth_status: getAuthStatus(user)
+                                            })
+                                        }}
                                     >
                                         <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
                                             <Image

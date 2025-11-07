@@ -12,6 +12,12 @@ import RecentSearchCard from '@/components/RecentSearchCard'
 import EditWatchlistModal from '@/components/EditWatchlistModal'
 import { slugify } from '@/lib/utils/slugify'
 import { getRecentSearches, RecentSearch } from '@/lib/utils/localStorage'
+import {
+    trackMyAnimePageViewed,
+    trackWatchlistTabSwitched,
+    trackWatchlistExpanded,
+    trackWatchlistEdited
+} from '@/lib/analytics/events'
 
 interface WatchlistItem {
     id: string
@@ -87,6 +93,12 @@ function WatchlistsContent() {
     }, [router])
 
     const switchTab = (tab: 'watchlist' | 'recent-searches') => {
+        // Track tab switch
+        trackWatchlistTabSwitched({
+            from_tab: activeTab as 'watchlist' | 'recent-searches',
+            to_tab: tab
+        })
+
         router.push(`/watchlists?tab=${tab}`)
     }
 
@@ -138,6 +150,14 @@ function WatchlistsContent() {
             )
 
             setWatchlists(watchlistsWithItems)
+
+            // Track My Anime page view
+            const totalAnimeCount = watchlistsWithItems.reduce((sum, wl) => sum + wl.items.length, 0)
+            trackMyAnimePageViewed({
+                active_tab: activeTab as 'watchlist' | 'recent-searches',
+                watchlist_count: watchlistsWithItems.length,
+                total_anime_count: totalAnimeCount
+            })
         } catch (error) {
             console.error('Error:', error)
         } finally {
@@ -146,6 +166,18 @@ function WatchlistsContent() {
     }
 
     const toggleExpanded = (watchlistId: string) => {
+        const watchlist = watchlists.find(wl => wl.id === watchlistId)
+        const isCurrentlyExpanded = expandedWatchlists.has(watchlistId)
+
+        if (watchlist) {
+            trackWatchlistExpanded({
+                watchlist_name: watchlist.name,
+                watchlist_id: watchlistId,
+                total_items: watchlist.items.length,
+                action: isCurrentlyExpanded ? 'collapse' : 'expand'
+            })
+        }
+
         setExpandedWatchlists(prev => {
             const newSet = new Set(prev)
             if (newSet.has(watchlistId)) {
@@ -252,6 +284,10 @@ function WatchlistsContent() {
                                         </div>
                                         <button
                                             onClick={() => {
+                                                trackWatchlistEdited({
+                                                    watchlist_name: watchlist.name,
+                                                    watchlist_id: watchlist.id
+                                                })
                                                 setEditingWatchlist(watchlist)
                                                 setIsEditModalOpen(true)
                                             }}
