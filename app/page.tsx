@@ -21,6 +21,7 @@ type Anime = {
 
 type AnimeCategories = {
     mostPopular: Anime[]
+    topRated: Anime[]
     shonen: Anime[]
     sliceOfLife: Anime[]
     foundFamily: Anime[]
@@ -258,19 +259,35 @@ function DiscoverContent() {
                     ) : (
                         /* Categories */
                         animeData && (
-                            <section className="px-10 flex flex-col gap-12">
+                            <section className="px-10 flex flex-col gap-6 md:gap-12">
                                 <CategorySection
                                     title="Most Popular"
                                     anime={animeData.mostPopular}
                                 />
+
+                                <hr className="border-t border-gray-200" />
+
+                                <CategorySection
+                                    title="Top Rated"
+                                    anime={animeData.topRated}
+                                />
+
+                                <hr className="border-t border-gray-200" />
+
                                 <CategorySection
                                     title="Shonen"
                                     anime={animeData.shonen}
                                 />
+
+                                <hr className="border-t border-gray-200" />
+
                                 <CategorySection
                                     title="Slice of Life"
                                     anime={animeData.sliceOfLife}
                                 />
+
+                                <hr className="border-t border-gray-200" />
+
                                 <CategorySection
                                     title="Found Family with No Incest Plotlines"
                                     anime={animeData.foundFamily}
