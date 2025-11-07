@@ -259,7 +259,7 @@ function DiscoverContent() {
                     ) : (
                         /* Categories */
                         animeData && (
-                            <section className="px-10 flex flex-col gap-3 md:gap-12">
+                            <section className="px-10 flex flex-col gap-3 md:gap-6">
                                 <CategorySection
                                     title="Most Popular"
                                     anime={animeData.mostPopular}
