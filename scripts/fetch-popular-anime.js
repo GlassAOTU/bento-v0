@@ -104,6 +104,29 @@ async function fetchAnimeByCategory(category, count = 20) {
             variables = { perPage: count, tag_in: ['Found Family'], genre_not_in: ['Action', 'Adventure'], scoreMin: 60 };
             break;
 
+        case 'top-rated':
+            query = `
+            query ($perPage: Int, $scoreMin: Int) {
+              Page(perPage: $perPage) {
+                media(
+                  type: ANIME,
+                  sort: SCORE_DESC,
+                  isAdult: false,
+                  averageScore_greater: $scoreMin,
+                  format_in: [TV, MOVIE, OVA, ONA]
+                ) {
+                  id
+                  title { romaji }
+                  coverImage { large }
+                  averageScore
+                  genres
+                  isAdult
+                }
+              }
+            }`;
+            variables = { perPage: count, scoreMin: 60 };
+            break;
+
         default:
             throw new Error(`Unknown category: ${category}`);
     }
@@ -175,6 +198,7 @@ async function main() {
 
     const categories = [
         { key: 'mostPopular', name: 'Most Popular', slug: 'most-popular' },
+        { key: 'topRated', name: 'Top Rated', slug: 'top-rated' },
         { key: 'shonen', name: 'Shonen', slug: 'shonen' },
         { key: 'sliceOfLife', name: 'Slice of Life', slug: 'slice-of-life' },
         { key: 'foundFamily', name: 'Found Family with No Incest Plotlines', slug: 'found-family' }
