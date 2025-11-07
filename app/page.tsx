@@ -259,34 +259,34 @@ function DiscoverContent() {
                     ) : (
                         /* Categories */
                         animeData && (
-                            <section className="px-10 flex flex-col gap-3 md:gap-6">
+                            <section className="px-10 flex flex-col">
                                 <CategorySection
                                     title="Most Popular"
                                     anime={animeData.mostPopular}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 my-3 md:my-6" />
 
                                 <CategorySection
                                     title="Top Rated"
                                     anime={animeData.topRated}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 my-3 md:my-6" />
 
                                 <CategorySection
                                     title="Shonen"
                                     anime={animeData.shonen}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 my-3 md:my-6" />
 
                                 <CategorySection
                                     title="Slice of Life"
                                     anime={animeData.sliceOfLife}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 my-3 md:my-6" />
 
                                 <CategorySection
                                     title="Found Family with No Incest Plotlines"

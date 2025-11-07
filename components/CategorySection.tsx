@@ -106,7 +106,7 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
             </div>
 
             {/* Horizontal Scroll Container */}
-            <div className="relative">
+            <div className="relative pb-2">
                 {/* Left Arrow - Always shown */}
                 <button
                     onClick={() => scroll('left')}

@@ -31,7 +31,7 @@ export default function DiscoverAnimeCard({ anime }: DiscoverAnimeCardProps) {
                 />
             </div>
             <div className="flex flex-col gap-2">
-                <h3 className="text-xs font-semibold tracking-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
+                <h3 className="text-xs font-semibold tracking-tight line-clamp-2 group-hover:text-gray-700 transition-colors min-h-[2.5rem]">
                     {toTitleCase(anime.title)}
                 </h3>
                 <div className="inline-flex items-center gap-1 self-start px-2 py-0.5 rounded-full bg-[#EEEEEE]/15 border border-black/[0.46]">
