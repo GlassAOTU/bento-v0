@@ -133,6 +133,9 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
                     </div>
                 </button>
 
+                {/* Right fade overlay for mobile peek effect */}
+                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+
                 {/* Scrollable Anime Container */}
                 <div
                     ref={scrollContainerRef}
@@ -145,7 +148,7 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
                     {infiniteAnime.map((item, index) => (
                         <div
                             key={`${item.id}-${index}`}
-                            className="flex-none w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] snap-start"
+                            className="flex-none w-[75%] md:w-[calc(25%-0.75rem)] snap-start"
                         >
                             <DiscoverAnimeCard anime={item} />
                         </div>
