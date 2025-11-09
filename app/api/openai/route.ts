@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { createClient } from '@/lib/supabase/server-client'
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
@@ -12,20 +13,67 @@ export const config = {
 }
 
 export async function POST(request: Request) {
-    // grab the IP address from the request headers
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'
+    console.log('[OpenAI Route] Request received')
 
-    // check the rate limit for the IP address
-    const allowed = await checkRateLimit(ip, 'chatgpt')
-    if (!allowed) {
+    // Parse the request body first for validation
+    const { description, tags, seenTitles } = await request.json()
+    console.log('[OpenAI Route] Request body:', { description, tagsCount: tags?.length, seenTitlesCount: seenTitles?.length })
+
+    // Input validation
+    const descriptionLength = description?.trim().length || 0
+    const hasValidTags = tags && tags.length > 0
+
+    if (descriptionLength < 10 && !hasValidTags) {
+        console.log('[OpenAI Route] Validation failed: insufficient input')
         return NextResponse.json(
-            { error: 'Too many requests. Please wait before trying again.' },
-            { status: 429 }
+            { error: 'Please provide at least 10 characters in description or select at least one tag.' },
+            { status: 400 }
         )
     }
 
-    // Parse the request body
-    const { description, tags, seenTitles } = await request.json()
+    if (descriptionLength > 500) {
+        console.log('[OpenAI Route] Validation failed: description too long')
+        return NextResponse.json(
+            { error: 'Description is too long. Please keep it under 500 characters.' },
+            { status: 400 }
+        )
+    }
+
+    // Detect if user is authenticated
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    console.log('[OpenAI Route] User auth:', user ? `authenticated (${user.id})` : 'anonymous')
+
+    // Determine rate limit namespace and identifier
+    const namespace = user ? 'recommendations_authenticated' : 'recommendations_anonymous'
+    const identifier = user?.id ?? request.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'
+    console.log('[OpenAI Route] Rate limit check:', { namespace, identifier })
+
+    // Check tiered rate limit
+    const rateLimitResult = await checkRateLimit(identifier, namespace)
+    console.log('[OpenAI Route] Rate limit result:', rateLimitResult)
+
+    if (!rateLimitResult.allowed) {
+        console.log('[OpenAI Route] Rate limit exceeded')
+        return NextResponse.json(
+            {
+                error: user
+                    ? 'Rate limit exceeded. Authenticated users can make 10 requests per 10 minutes.'
+                    : 'Rate limit exceeded. Anonymous users can make 3 requests per 10 minutes. Sign in for higher limits.',
+                resetAt: rateLimitResult.resetAt
+            },
+            {
+                status: 429,
+                headers: {
+                    'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+                    'X-RateLimit-Remaining': '0',
+                    'X-RateLimit-Reset': rateLimitResult.resetAt || '',
+                }
+            }
+        )
+    }
+
+    console.log('[OpenAI Route] Rate limit passed, making OpenAI request')
     const prompt = `You are an anime recommendation engine.
                     Based on the following input, recommend exactly 5 distinct animes, matching the described themes or genres, and/or the provided tags.
                     Do not recommend any pornographic animes.
@@ -50,14 +98,28 @@ export async function POST(request: Request) {
 
     try {
         // Call OpenAI API with the prompt
+        console.log('[OpenAI Route] Calling OpenAI API...')
         const completion = await openai.chat.completions.create({
             model: "gpt-4",
             messages: [{ role: "user", content: prompt }],
         })
         const reply = completion.choices[0]?.message?.content?.trim()
-        return NextResponse.json({ recommendations: reply })
+        console.log('[OpenAI Route] OpenAI response received:', reply?.substring(0, 100) + '...')
+
+        // Return with rate limit headers
+        console.log('[OpenAI Route] Returning success response')
+        return NextResponse.json(
+            { recommendations: reply },
+            {
+                headers: {
+                    'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+                    'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+                    'X-RateLimit-Reset': rateLimitResult.resetAt || '',
+                }
+            }
+        )
     } catch (error) {
-        console.error("OpenAI error:", error)
+        console.error("[OpenAI Route] OpenAI API error:", error)
         return NextResponse.json({ error: "Failed to get recommendations woooooooo" }, { status: 500 })
     }
 }

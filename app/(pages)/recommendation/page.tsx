@@ -17,8 +17,9 @@ import AnimeSet from '../../../components/AnimeSet'
 import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
 import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
-import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser-client'
+import { User } from '@supabase/supabase-js'
+import AuthModal from '../../../components/AuthModal'
 import { trackRecommendationSeeMoreClicked, getAuthStatus } from '@/lib/analytics/events'
 
 function RecommendationContent() {
@@ -27,6 +28,8 @@ function RecommendationContent() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
     const [isLimitPopupOpen, setLimitPopupOpen] = useState(false);
+    const [isAuthModalOpen, setAuthModalOpen] = useState(false);
+    const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
     // const [isWaitlistBoxOpen, setWaitlistBoxOpen] = useState(false);
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
     const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
@@ -38,6 +41,7 @@ function RecommendationContent() {
         seenTitles,
         isLoading,
         isRateLimited,
+        rateLimitInfo,
         error,
         getRecommendations,
         setRecommendations,
@@ -54,62 +58,49 @@ function RecommendationContent() {
         initAuth()
     }, [])
 
-    // Restore from sessionStorage after mount (client-side only)
+    // Always restore from sessionStorage after mount (client-side only)
     useEffect(() => {
         if (hasRestoredFromCache) return;
 
         try {
-            // Check if this is a back/forward navigation
-            const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
-            const isBackForward = navEntries.length > 0 && navEntries[0].type === 'back_forward';
-
             // Check if returning from auth flow (e.g., OAuth from watchlist)
             const isReturningFromAuth = sessionStorage.getItem('auth_flow_in_progress') === 'true';
 
-            // Restore cache if navigating via back/forward button OR returning from auth flow
-            if (isBackForward || isReturningFromAuth) {
-                const cachedRecs = sessionStorage.getItem('recommendations_data')
-                const cachedHistory = sessionStorage.getItem('recommendations_history')
-                const cachedSeenTitles = sessionStorage.getItem('recommendations_seenTitles')
-                const cachedDescription = sessionStorage.getItem('recommendations_description')
-                const cachedTags = sessionStorage.getItem('recommendations_tags')
+            // Always restore cache to preserve results across page navigations
+            const cachedRecs = sessionStorage.getItem('recommendations_data')
+            const cachedHistory = sessionStorage.getItem('recommendations_history')
+            const cachedSeenTitles = sessionStorage.getItem('recommendations_seenTitles')
+            const cachedDescription = sessionStorage.getItem('recommendations_description')
+            const cachedTags = sessionStorage.getItem('recommendations_tags')
 
-                if (cachedRecs) {
-                    const parsedRecs = JSON.parse(cachedRecs)
-                    setRecommendations(parsedRecs)
-                }
+            if (cachedRecs) {
+                const parsedRecs = JSON.parse(cachedRecs)
+                setRecommendations(parsedRecs)
+            }
 
-                if (cachedHistory) {
-                    const parsedHistory = JSON.parse(cachedHistory)
-                    setSearchHistory(parsedHistory)
-                }
+            if (cachedHistory) {
+                const parsedHistory = JSON.parse(cachedHistory)
+                setSearchHistory(parsedHistory)
+            }
 
-                if (cachedSeenTitles) {
-                    const parsedSeenTitles = JSON.parse(cachedSeenTitles)
-                    setSeenTitles(parsedSeenTitles)
-                }
+            if (cachedSeenTitles) {
+                const parsedSeenTitles = JSON.parse(cachedSeenTitles)
+                setSeenTitles(parsedSeenTitles)
+            }
 
-                if (cachedDescription) {
-                    setDescription(cachedDescription)
-                }
+            if (cachedDescription) {
+                setDescription(cachedDescription)
+            }
 
-                if (cachedTags) {
-                    const parsedTags = JSON.parse(cachedTags)
-                    setSelectedTags(parsedTags)
-                }
+            if (cachedTags) {
+                const parsedTags = JSON.parse(cachedTags)
+                setSelectedTags(parsedTags)
+            }
 
-                // Clear auth flow flags after restoration if returning from auth
-                if (isReturningFromAuth) {
-                    sessionStorage.removeItem('auth_flow_in_progress')
-                    sessionStorage.removeItem('auth_return_url')
-                }
-            } else {
-                // Clear cache on fresh navigation or reload
-                sessionStorage.removeItem('recommendations_data');
-                sessionStorage.removeItem('recommendations_history');
-                sessionStorage.removeItem('recommendations_seenTitles');
-                sessionStorage.removeItem('recommendations_description');
-                sessionStorage.removeItem('recommendations_tags');
+            // Clear auth flow flags after restoration if returning from auth
+            if (isReturningFromAuth) {
+                sessionStorage.removeItem('auth_flow_in_progress')
+                sessionStorage.removeItem('auth_return_url')
             }
 
             setHasRestoredFromCache(true)
@@ -151,11 +142,20 @@ function RecommendationContent() {
     }, [seenTitles])
 
     useEffect(() => {
-        const isStillRateLimited = localStorage.getItem('rateLimited');
+        const initAuth = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            setUser(user)
 
-        if (isStillRateLimited) {
-            openLimitPopup();
+            // Listen for auth changes
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                setUser(session?.user ?? null)
+            })
+
+            return () => subscription.unsubscribe()
         }
+
+        initAuth()
 
         // Pre-fill from URL parameters (from recent searches)
         const urlDescription = searchParams.get('description')
@@ -171,60 +171,75 @@ function RecommendationContent() {
     }, [searchParams]);
 
     const handleGetRecommendations = async (append = false) => {
+        console.log('[RecommendationPage] handleGetRecommendations called:', { append, isButtonDisabled, isRateLimited });
+
         if (isButtonDisabled) {
-            if (isRateLimited)
+            if (isRateLimited) {
+                console.log('[RecommendationPage] Opening limit popup');
                 openLimitPopup();
+            }
             return;
         }
 
-        // Clear all cached state when starting a new search (not appending)
-        if (!append) {
-            sessionStorage.removeItem('recommendations_data');
-            sessionStorage.removeItem('recommendations_history');
-            sessionStorage.removeItem('recommendations_seenTitles');
-            sessionStorage.removeItem('recommendations_description');
-            sessionStorage.removeItem('recommendations_tags');
-            setRecommendations([]);
-            setSearchHistory([]);
-            setSeenTitles([]);
-        }
-
-        // Save current search parameters to sessionStorage
-        sessionStorage.setItem('recommendations_description', description);
-        sessionStorage.setItem('recommendations_tags', JSON.stringify(selectedTags));
-
-        const currentQuery = { description, tags: selectedTags, timestamp: Date.now() };
-        setSearchHistory(prev => [...prev, currentQuery]);
-
+        console.log('[RecommendationPage] Calling getRecommendations...');
         const result = await getRecommendations(description, selectedTags, append);
+        console.log('[RecommendationPage] getRecommendations result:', result);
 
         function isSuccessResult(result: any): result is { success: true; data: any[] } {
             return result && result.success && Array.isArray(result.data);
         }
 
         if (result.error === "Rate limit reached") {
+            console.log('[RecommendationPage] Rate limit error, opening popup');
             openLimitPopup();
             return;
         }
 
-        // Save successful search to localStorage
-        if (isSuccessResult(result) && result.data.length > 0) {
-            const recentSearchResults: RecentSearchResult[] = result.data.map(anime => ({
-                title: anime.title,
-                image: anime.image,
-                reason: anime.reason,
-                description: anime.description
-            }));
+        // Only clear and update state if the request was successful
+        if (isSuccessResult(result)) {
+            console.log('[RecommendationPage] Success! Processing results...');
 
-            console.log('Saving search to localStorage:', {
-                description,
-                tags: selectedTags,
-                resultsCount: recentSearchResults.length,
-                results: recentSearchResults
-            });
+            // Clear sessionStorage AFTER confirming the request succeeded (not when appending)
+            // NOTE: Don't clear React state here - the hook manages recommendations/seenTitles
+            if (!append) {
+                console.log('[RecommendationPage] Clearing previous sessionStorage (not appending)');
+                sessionStorage.removeItem('recommendations_data');
+                sessionStorage.removeItem('recommendations_history');
+                sessionStorage.removeItem('recommendations_seenTitles');
+                sessionStorage.removeItem('recommendations_description');
+                sessionStorage.removeItem('recommendations_tags');
+                setSearchHistory([]);
+            }
 
-            saveRecentSearch(description, selectedTags, recentSearchResults);
-            console.log('Search saved successfully');
+            // Save current search parameters to sessionStorage
+            sessionStorage.setItem('recommendations_description', description);
+            sessionStorage.setItem('recommendations_tags', JSON.stringify(selectedTags));
+
+            const currentQuery = { description, tags: selectedTags, timestamp: Date.now() };
+            setSearchHistory(prev => [...prev, currentQuery]);
+            console.log('[RecommendationPage] Updated search history');
+
+            // Save successful search to localStorage
+            if (result.data.length > 0) {
+                const recentSearchResults: RecentSearchResult[] = result.data.map(anime => ({
+                    title: anime.title,
+                    image: anime.image,
+                    reason: anime.reason,
+                    description: anime.description
+                }));
+
+                console.log('[RecommendationPage] Saving search to localStorage:', {
+                    description,
+                    tags: selectedTags,
+                    resultsCount: recentSearchResults.length,
+                    results: recentSearchResults
+                });
+
+                saveRecentSearch(description, selectedTags, recentSearchResults);
+                console.log('[RecommendationPage] Search saved successfully');
+            }
+        } else {
+            console.log('[RecommendationPage] Result was not successful:', result);
         }
     };
 
@@ -443,6 +458,27 @@ function RecommendationContent() {
                     </div>
                 </div>
             )}
+
+            {/* Rate Limit Popup */}
+            {isLimitPopupOpen && (
+                <LimitPopup
+                    message={rateLimitInfo?.message || "You've reached the rate limit. Please try again later."}
+                    resetAt={rateLimitInfo?.resetAt || null}
+                    isAuthenticated={!!user}
+                    onClose={closeLimitPopup}
+                    onAuthPrompt={(view) => {
+                        setAuthModalView(view)
+                        setAuthModalOpen(true)
+                    }}
+                />
+            )}
+
+            {/* Auth Modal */}
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setAuthModalOpen(false)}
+                initialView={authModalView}
+            />
 
             {/* <BottomButton /> */}
         </div>
