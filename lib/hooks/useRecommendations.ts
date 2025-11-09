@@ -21,6 +21,7 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
     const [seenTitles, setSeenTitles] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isRateLimited, setIsRateLimited] = useState(false);
+    const [rateLimitInfo, setRateLimitInfo] = useState<{ message: string; resetAt: string | null } | null>(null);
     const [error, setError] = useState("");
 
     const addSeenTitle = (title: string) => {
@@ -29,11 +30,15 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         );
     };
 
-    const getRecommendations = async (description: string, selectedTags: string[], isAppend: boolean = false) => {
+    const getRecommendations = async (description: string, selectedTags: string[], append: boolean = false) => {
+        console.log('[useRecommendations] Starting getRecommendations:', { description, selectedTags, isLoading, isRateLimited });
+
         if (isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited) {
             if (isRateLimited) {
+                console.log('[useRecommendations] Blocked: rate limited');
                 return { error: "Rate limited" };
             }
+            console.log('[useRecommendations] Blocked: invalid input or already loading');
             return { error: "Invalid input" };
         }
 
@@ -45,7 +50,7 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
             description_length: description.trim().length,
             tags_selected: selectedTags,
             tag_count: selectedTags.length,
-            is_append: isAppend,
+            is_append: append,
             auth_status: getAuthStatus(user)
         });
 
@@ -53,15 +58,28 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         setError("");
 
         try {
+            console.log('[useRecommendations] Calling /api/openai...');
             const response = await fetch("/api/openai", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
             });
 
+            console.log('[useRecommendations] Response status:', response.status);
+
             if (response.status === 429) {
+                console.log('[useRecommendations] Rate limited response');
+                const errorData = await response.json();
                 setIsRateLimited(true);
+                setRateLimitInfo({
+                    message: errorData.error || "Rate limit reached.",
+                    resetAt: errorData.resetAt || null
+                });
                 localStorage.setItem('rateLimited', 'true');
+                localStorage.setItem('rateLimitInfo', JSON.stringify({
+                    message: errorData.error,
+                    resetAt: errorData.resetAt
+                }));
                 setError("Rate limit reached.");
 
                 // Track rate limit event
@@ -73,22 +91,31 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
             }
 
             if (!response.ok) {
+                console.error('[useRecommendations] Response not ok:', response.status);
                 throw new Error("Failed to fetch recommendations");
             }
 
             const data = await response.json();
+            console.log('[useRecommendations] Received data:', data);
+
             const newSeenTitles = [...seenTitles];
             const animeFinish: AnimeRecommendation[] = [];
 
             const recommendations = data.recommendations.split(" | ");
+            console.log('[useRecommendations] Parsed recommendations:', recommendations);
 
             for (const rec of recommendations) {
                 const [rawTitle, reason] = rec.split(" ~ ");
                 const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
+                console.log('[useRecommendations] Processing title:', title);
 
-                if (newSeenTitles.includes(title)) continue;
+                if (newSeenTitles.includes(title)) {
+                    console.log('[useRecommendations] Skipping already seen title:', title);
+                    continue;
+                }
 
                 try {
+                    console.log('[useRecommendations] Fetching details for:', title);
                     const { description, bannerImage, externalLinks, trailer } = await fetchAnimeDetails(title);
 
                     animeFinish.push({
@@ -101,13 +128,24 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
                     });
 
                     newSeenTitles.push(title);
+                    console.log('[useRecommendations] Successfully added:', title);
                 } catch (e) {
-                    console.warn(`Failed to fetch details for: ${title}`, e);
+                    console.warn(`[useRecommendations] Failed to fetch details for: ${title}`, e);
                 }
             }
 
-            setSeenTitles(newSeenTitles);
-            setRecommendations(prev => [...animeFinish, ...prev]);
+            console.log('[useRecommendations] Final anime list:', animeFinish.length, 'items');
+
+            // Clear state when not appending (fresh search)
+            if (!append) {
+                console.log('[useRecommendations] Clearing previous results (not appending)');
+                setSeenTitles(newSeenTitles);
+                setRecommendations(animeFinish);
+            } else {
+                console.log('[useRecommendations] Appending to previous results');
+                setSeenTitles(newSeenTitles);
+                setRecommendations(prev => [...animeFinish, ...prev]);
+            }
 
             const endTime = Date.now();
             const responseTime = endTime - startTime;
@@ -121,13 +159,15 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
                 auth_status: getAuthStatus(user)
             });
 
+            console.log('[useRecommendations] Returning success:', animeFinish);
             return { success: true, data: animeFinish };
         } catch (err) {
-            console.error(err);
+            console.error('[useRecommendations] Error:', err);
             setError("Failed to get recommendations. Please try again later.");
             return { error: "Failed to get recommendations" };
         } finally {
             setIsLoading(false);
+            console.log('[useRecommendations] Request completed');
         }
     };
 
@@ -136,6 +176,7 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         seenTitles,
         isLoading,
         isRateLimited,
+        rateLimitInfo,
         error,
         getRecommendations,
         addSeenTitle,
