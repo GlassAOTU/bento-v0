@@ -9,8 +9,6 @@ import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
 import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
-import { User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/browser-client'
 import {
     trackAnimeDetailViewed,
     trackAnimeTrailerWatched,
@@ -20,6 +18,7 @@ import {
     getReferrerPage,
     getAuthStatus
 } from '@/lib/analytics/events'
+import { useAuth } from '@/lib/auth/AuthContext'
 
 interface AnimeDetails {
     id: number
@@ -50,6 +49,7 @@ interface AnimeCard {
 export default function AnimePage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = use(params)
     const router = useRouter()
+    const { user } = useAuth() // Get user from AuthContext
     const [animeDetails, setAnimeDetails] = useState<AnimeDetails | null>(null)
     const [similarAnime, setSimilarAnime] = useState<AnimeCard[]>([])
     const [popularAnime, setPopularAnime] = useState<AnimeCard[]>([])
@@ -59,17 +59,6 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [aiDescription, setAiDescription] = useState<string | null>(null)
     const [descriptionLoading, setDescriptionLoading] = useState(false)
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
-    const [user, setUser] = useState<User | null>(null)
-
-    useEffect(() => {
-        // Get user auth status
-        const initAuth = async () => {
-            const supabase = createClient()
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-        }
-        initAuth()
-    }, [])
 
     useEffect(() => {
         async function fetchAnimeData() {

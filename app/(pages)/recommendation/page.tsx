@@ -17,13 +17,13 @@ import AnimeSet from '../../../components/AnimeSet'
 import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
 import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
-import { createClient } from '@/lib/supabase/browser-client'
-import { User } from '@supabase/supabase-js'
 import AuthModal from '../../../components/AuthModal'
 import { trackRecommendationSeeMoreClicked, getAuthStatus } from '@/lib/analytics/events'
+import { useAuth } from '@/lib/auth/AuthContext'
 
 function RecommendationContent() {
     const searchParams = useSearchParams()
+    const { user } = useAuth() // Get user from AuthContext
 
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
@@ -34,7 +34,6 @@ function RecommendationContent() {
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null);
     const [searchHistory, setSearchHistory] = useState<{ description: string, tags: string[], timestamp: number }[]>([]);
     const [hasRestoredFromCache, setHasRestoredFromCache] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
 
     const {
         recommendations,
@@ -47,16 +46,6 @@ function RecommendationContent() {
         setRecommendations,
         setSeenTitles
     } = useRecommendations([], user)
-
-    // Get user authentication status
-    useEffect(() => {
-        const initAuth = async () => {
-            const supabase = createClient()
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-        }
-        initAuth()
-    }, [])
 
     // Always restore from sessionStorage after mount (client-side only)
     useEffect(() => {
@@ -141,23 +130,8 @@ function RecommendationContent() {
         }
     }, [seenTitles])
 
+    // Pre-fill from URL parameters (from recent searches)
     useEffect(() => {
-        const initAuth = async () => {
-            const supabase = createClient()
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-
-            // Listen for auth changes
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null)
-            })
-
-            return () => subscription.unsubscribe()
-        }
-
-        initAuth()
-
-        // Pre-fill from URL parameters (from recent searches)
         const urlDescription = searchParams.get('description')
         const urlTags = searchParams.get('tags')
 
