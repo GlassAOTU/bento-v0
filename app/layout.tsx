@@ -3,7 +3,8 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
-import PostHogProvider from '@/util/posthog-provider'; // Keep your existing import path
+import PostHogProvider from '@/util/posthog-provider'
+import { AuthProvider } from '@/lib/auth/AuthContext'
 
 export const metadata: Metadata = {
     title: 'Bento Anime',
@@ -35,9 +36,11 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 <PostHogProvider>
-                    {children}
-                    <Analytics />
-                    <SpeedInsights />
+                    <AuthProvider>
+                        {children}
+                        <Analytics />
+                        <SpeedInsights />
+                    </AuthProvider>
                 </PostHogProvider>
             </body>
         </html>

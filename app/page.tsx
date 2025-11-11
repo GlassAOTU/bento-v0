@@ -4,13 +4,13 @@ import './globals.css'
 import Image from 'next/image'
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/browser-client'
 import { searchAnime } from '@/lib/anilist'
 import NavigationBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 import CategorySection from '../components/CategorySection'
 import DiscoverAnimeCard from '../components/DiscoverAnimeCard'
+import { trackDiscoverSearch, trackDiscoverSearchCleared, getAuthStatus } from '@/lib/analytics/events'
+import { useAuth } from '@/lib/auth/AuthContext'
 
 type Anime = {
     id: number
@@ -30,7 +30,7 @@ type AnimeCategories = {
 function DiscoverContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [user, setUser] = useState<User | null>(null)
+    const { user } = useAuth() // Get user from AuthContext
     const [animeData, setAnimeData] = useState<AnimeCategories | null>(null)
 
     // Search state
@@ -62,22 +62,8 @@ function DiscoverContent() {
         }
     }, [searchParams])
 
+    // Load anime data on mount
     useEffect(() => {
-        const initAuth = async () => {
-            const supabase = await createClient()
-
-            // Get initial session
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-
-            // Listen for auth changes
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null)
-            })
-
-            return () => subscription.unsubscribe()
-        }
-
         const loadAnimeData = async () => {
             try {
                 const response = await fetch('/data/popular-anime.json')
@@ -89,7 +75,6 @@ function DiscoverContent() {
             }
         }
 
-        initAuth()
         loadAnimeData()
     }, [])
 
@@ -113,17 +98,37 @@ function DiscoverContent() {
         }
 
         const debounceTimer = setTimeout(async () => {
+            // Get the trimmed query
+            const trimmedQuery = searchQuery.trim()
+
+            // Check if this query was already searched (avoid duplicate searches)
+            const cachedResults = sessionStorage.getItem('discover_search_results')
+            const cachedQuery = sessionStorage.getItem('discover_last_query')
+
+            if (cachedQuery === trimmedQuery && cachedResults) {
+                // Already searched this exact query, don't search again
+                return
+            }
+
             setIsSearching(true)
             setSearchError(null)
 
             try {
-                const results = await searchAnime(searchQuery.trim())
+                const results = await searchAnime(trimmedQuery)
                 setSearchResults(results)
                 setHasSearched(true)
 
+                // Track search in PostHog (only on successful new search)
+                trackDiscoverSearch({
+                    query: trimmedQuery,
+                    results_count: results.length,
+                    auth_status: getAuthStatus(user)
+                })
+
                 // Save to sessionStorage and update URL
                 sessionStorage.setItem('discover_search_results', JSON.stringify(results))
-                router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`, { scroll: false })
+                sessionStorage.setItem('discover_last_query', trimmedQuery)
+                router.push(`/?q=${encodeURIComponent(trimmedQuery)}`, { scroll: false })
             } catch (error) {
                 console.error('Search error:', error)
                 setSearchError('Failed to search anime. Please try again.')
@@ -131,17 +136,19 @@ function DiscoverContent() {
             } finally {
                 setIsSearching(false)
             }
-        }, 300) // 300ms debounce
+        }, 500) // Increased to 500ms debounce for better UX
 
         return () => clearTimeout(debounceTimer)
-    }, [searchQuery, hasSearched, isRestoringFromCache, router])
+    }, [searchQuery, hasSearched, isRestoringFromCache, router, user])
 
     const handleClearSearch = () => {
+        trackDiscoverSearchCleared()
         setSearchQuery('')
         setSearchResults([])
         setHasSearched(false)
         setSearchError(null)
         sessionStorage.removeItem('discover_search_results')
+        sessionStorage.removeItem('discover_last_query')
         router.push('/', { scroll: false })
     }
 

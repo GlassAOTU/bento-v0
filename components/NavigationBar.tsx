@@ -2,73 +2,42 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/browser-client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import WaitlistPopup from './WaitlistPopup';
 import AuthModal from './AuthModal';
+import UsernameSetupModal from './UsernameSetupModal';
+import { trackUserSignout } from '@/lib/analytics/events';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 export default function NavigationBar() {
     const pathname = usePathname();
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { user, profile, loading, profileLoading, hasProfile, refreshProfile } = useAuth();
     const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isUsernameSetupOpen, setIsUsernameSetupOpen] = useState(false);
 
+    // Show username setup modal only after both auth and profile checks are complete
     useEffect(() => {
-        const initAuth = async () => {
-            const supabase = createClient();
-
-            // Get initial session
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-            setLoading(false);
-
-            // Log user details to console
-            if (user) {
-                console.log('Current user:', {
-                    id: user.id,
-                    email: user.email,
-                    email_confirmed_at: user.email_confirmed_at,
-                    confirmed_at: user.confirmed_at,
-                    created_at: user.created_at,
-                    last_sign_in_at: user.last_sign_in_at,
-                    is_email_confirmed: !!user.email_confirmed_at,
-                });
+        // Wait for both auth and profile loading to finish
+        if (!loading && !profileLoading) {
+            // Only show modal if user exists but has no profile
+            if (user && !hasProfile) {
+                setIsUsernameSetupOpen(true);
+            } else {
+                setIsUsernameSetupOpen(false);
             }
-
-            // Listen for auth changes
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null);
-                setLoading(false);
-
-                // Log on auth state change
-                if (session?.user) {
-                    console.log('Auth state changed:', {
-                        id: session.user.id,
-                        email: session.user.email,
-                        email_confirmed_at: session.user.email_confirmed_at,
-                        is_email_confirmed: !!session.user.email_confirmed_at,
-                    });
-
-                    // Close auth modal when user signs in
-                    setIsAuthModalOpen(false);
-                }
-            });
-
-            return () => subscription.unsubscribe();
-        };
-
-        initAuth();
-    }, []);
+        }
+    }, [user, hasProfile, loading, profileLoading]);
 
     const handleSignOut = async () => {
         const supabase = createClient();
+        trackUserSignout();
         await supabase.auth.signOut();
-        setUser(null); // Immediately update UI
+        // AuthContext will handle updating user state via onAuthStateChange
     };
 
     return (
@@ -280,6 +249,16 @@ export default function NavigationBar() {
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
                 initialView={authModalView}
+            />
+
+            {/* Username Setup Modal */}
+            <UsernameSetupModal
+                isOpen={isUsernameSetupOpen}
+                onClose={() => setIsUsernameSetupOpen(false)}
+                onSuccess={() => {
+                    refreshProfile(); // Refresh profile from AuthContext
+                    setIsUsernameSetupOpen(false);
+                }}
             />
         </>
     );

@@ -2,6 +2,8 @@
 
 import { RecentSearch } from '@/lib/utils/localStorage'
 import AnimeCard from './AnimeCard'
+import Link from 'next/link'
+import { trackRecentSearchClicked } from '@/lib/analytics/events'
 
 interface RecentSearchCardProps {
     search: RecentSearch
@@ -9,10 +11,25 @@ interface RecentSearchCardProps {
 }
 
 export default function RecentSearchCard({ search, onTrailerClick }: RecentSearchCardProps) {
+    const handleSearchClick = () => {
+        const daysSinceSearch = Math.floor((Date.now() - search.timestamp) / (1000 * 60 * 60 * 24))
+
+        trackRecentSearchClicked({
+            description: search.description,
+            tags: search.tags,
+            search_age_days: daysSinceSearch,
+            results_count: search.results.length
+        })
+    }
+
     return (
         <div className="mb-16">
             {/* Search Header - Matches new recommendations page design */}
-            <div className='flex flex-col gap-1 mb-4'>
+            <Link
+                href={`/recommendation?description=${encodeURIComponent(search.description)}&tags=${search.tags.join(',')}`}
+                className='flex flex-col gap-1 mb-4 cursor-pointer hover:opacity-80 transition-opacity'
+                onClick={handleSearchClick}
+            >
                 {/* Query Description */}
                 {search.description && search.description.length !== 0 && (
                     <p className='text-xl font-normal text-black'>
@@ -37,7 +54,7 @@ export default function RecentSearchCard({ search, onTrailerClick }: RecentSearc
                         year: '2-digit'
                     }).replace(/\//g, '.')}
                 </p>
-            </div>
+            </Link>
 
             {/* Anime Results - Similar to AnimeSet */}
             <div className="">
