@@ -7,6 +7,8 @@ import Link from 'next/link'
 import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
+import RecentEpisodes from '@/components/RecentEpisodes'
+import EpisodesModal from '@/components/EpisodesModal'
 import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 import { User } from '@supabase/supabase-js'
@@ -60,6 +62,9 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [descriptionLoading, setDescriptionLoading] = useState(false)
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
     const [user, setUser] = useState<User | null>(null)
+    const [seasons, setSeasons] = useState<any[]>([])
+    const [latestSeasonEpisodes, setLatestSeasonEpisodes] = useState<any>(null)
+    const [isEpisodesModalOpen, setIsEpisodesModalOpen] = useState(false)
 
     useEffect(() => {
         // Get user auth status
@@ -90,6 +95,8 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 setAnimeDetails(data.details)
                 setSimilarAnime(data.similar)
                 setPopularAnime(data.popular)
+                setSeasons(data.seasons || [])
+                setLatestSeasonEpisodes(data.latestSeasonEpisodes || null)
                 setLoading(false)
 
                 // Track anime detail page view
@@ -107,10 +114,34 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     // Fetch AI description separately
                     fetchAIDescription(data.details.id, data.details.description, data.details, data.similar, data.popular)
                 }
+
+                // DEV ONLY: Fetch TMDB comparison data for console logging
+                if (process.env.NODE_ENV === 'development') {
+                    fetchTMDBComparison(resolvedParams.slug, data.details)
+                }
             } catch (err) {
                 console.error('Error fetching anime:', err)
                 setError('Failed to load anime details. The anime might not exist.')
                 setLoading(false)
+            }
+        }
+
+        async function fetchTMDBComparison(slug: string, anilistDetails: any) {
+            try {
+                const response = await fetch(`/api/anime/tmdb-compare/${slug}`)
+                if (!response.ok) {
+                    console.warn('TMDB comparison failed:', response.status)
+                    return
+                }
+
+                const comparison = await response.json()
+
+                // Pretty print comparison to console
+
+
+                console.groupEnd()
+
+            } catch (error) {
             }
         }
 
@@ -168,7 +199,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     <h1 className="text-2xl font-bold text-gray-900 mb-4">Anime Not Found</h1>
                     <p className="text-gray-600 mb-6">{error || 'The anime you\'re looking for doesn\'t exist.'}</p>
                     <button
-                        onClick={() => router.push('/recommendation')}
+                        onClick={() => router.push('/')}
                         className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors"
                     >
                         Back to Recommendations
@@ -183,15 +214,15 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-                {/* Hero Section with Banner */}
-                <section className="relative w-full h-[300px] md:h-[400px] bg-gray-900">
-                    {/* Banner Image */}
-                    <div className="absolute inset-0">
+                {/* Hero Section with Banner - Full Width */}
+                <section className="relative w-full h-[546px] bg-gray-900">
+                    {/* Banner Image - Full Width */}
+                    <div className="absolute inset-0 w-full">
                         <Image
                             src={animeDetails.bannerImage}
                             alt={animeDetails.title}
                             fill
-                            className="object-contain"
+                            className="object-cover"
                             priority
                         />
                         {/* Gradient Overlay */}
@@ -201,7 +232,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     {/* Back Button */}
                     <button
                         onClick={() => router.back()}
-                        className="absolute top-6 left-6 md:left-10 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all backdrop-blur-sm"
+                        className="absolute top-6 left-6 md:left-16 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all backdrop-blur-sm"
                         aria-label="Go back"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -212,7 +243,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                     {/* Hero Content */}
                     <div className="relative z-10 h-full flex items-end">
-                        <div className="max-w-5xl mx-auto w-full px-10 pb-12">
+                        <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
                             <button
                                 onClick={() => {
                                     trackWatchlistAddClicked({
@@ -236,7 +267,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     </div>
                 </section>
 
-                <div className="max-w-5xl mx-auto px-10 pt-6 pb-12">
+                <div className="container mx-auto max-w-7xl px-6 md:px-16 pt-6 pb-12">
                     {/* Description Section */}
                     <section className="mb-8">
                         {descriptionLoading ? (
@@ -286,15 +317,36 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                             </div>
                         </section>
                     )}
+                </div>
 
-                    {/* Divider */}
-                    <hr className="border-t border-gray-200 mb-16" />
+                {/* Divider before Recent Episodes */}
+                {latestSeasonEpisodes && latestSeasonEpisodes.episodes && latestSeasonEpisodes.episodes.length > 0 && (
+                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
+                        <hr className="border-t border-gray-200" />
+                    </div>
+                )}
 
+                {/* Recent Episodes Section - Full Width */}
+                {latestSeasonEpisodes && latestSeasonEpisodes.episodes && latestSeasonEpisodes.episodes.length > 0 && (
+                    <RecentEpisodes
+                        seasonName={latestSeasonEpisodes.name}
+                        seasonNumber={latestSeasonEpisodes.season_number}
+                        episodes={latestSeasonEpisodes.episodes}
+                        onViewAllClick={() => setIsEpisodesModalOpen(true)}
+                    />
+                )}
+
+                {/* Divider after Recent Episodes */}
+                {latestSeasonEpisodes && latestSeasonEpisodes.episodes && latestSeasonEpisodes.episodes.length > 0 && (
+                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
+                        <hr className="border-t border-gray-200" />
+                    </div>
+                )}
+
+                <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
                     {/* Details Section */}
                     <section className="mb-16">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold">Details</h2>
-                        </div>
+                        <h2 className="text-3xl font-bold text-mySecondary font-instrument-sans mb-6">DETAILS</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                             {animeDetails.episodes && (
                                 <div className="flex">
@@ -343,7 +395,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                         </div>
                     </section>
 
-                    {/* Divider */}
+                    {/* Divider after Details */}
                     <hr className="border-t border-gray-200 mb-16" />
 
                     {/* Similar Anime Section */}
@@ -432,6 +484,15 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     externalLinks: animeDetails.externalLinks,
                     trailer: animeDetails.trailer
                 }}
+            />
+
+            {/* Episodes Modal */}
+            <EpisodesModal
+                isOpen={isEpisodesModalOpen}
+                onClose={() => setIsEpisodesModalOpen(false)}
+                tmdbId={animeDetails.id}
+                seasons={seasons}
+                currentSeasonNumber={latestSeasonEpisodes?.season_number || 1}
             />
 
             {/* Trailer Popup */}

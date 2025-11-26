@@ -351,6 +351,19 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
           url
           site
         }
+        streamingEpisodes {
+          title
+          thumbnail
+          url
+          site
+        }
+        airingSchedule {
+          nodes {
+            airingAt
+            timeUntilAiring
+            episode
+          }
+        }
         isAdult
       }
     }`
@@ -406,7 +419,9 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
             id: media.trailer.id,
             site: media.trailer.site
         } : null,
-        externalLinks: media.externalLinks?.[0] || null
+        externalLinks: media.externalLinks?.[0] || null,
+        streamingEpisodes: media.streamingEpisodes || [],
+        airingSchedule: media.airingSchedule?.nodes || []
     }
 }
 

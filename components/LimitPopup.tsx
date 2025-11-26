@@ -46,7 +46,7 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
     const handleAuthClick = (view: 'signup' | 'signin') => {
         // Save current state to sessionStorage
         sessionStorage.setItem('auth_flow_in_progress', 'true')
-        sessionStorage.setItem('auth_return_url', '/recommendation')
+        sessionStorage.setItem('auth_return_url', '/')
 
         // Close the rate limit popup
         onClose()

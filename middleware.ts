@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const public_routes = ["/", "/recommendation"]; // for non-authenticated users
+const public_routes = ["/", "/discover"]; // for non-authenticated users
 
 export function isPublicRoute(request: NextRequest) {
     return public_routes.includes(request.nextUrl.pathname);

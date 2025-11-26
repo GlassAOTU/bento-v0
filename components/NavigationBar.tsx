@@ -28,34 +28,14 @@ export default function NavigationBar() {
             setUser(user);
             setLoading(false);
 
-            // Log user details to console
-            if (user) {
-                console.log('Current user:', {
-                    id: user.id,
-                    email: user.email,
-                    email_confirmed_at: user.email_confirmed_at,
-                    confirmed_at: user.confirmed_at,
-                    created_at: user.created_at,
-                    last_sign_in_at: user.last_sign_in_at,
-                    is_email_confirmed: !!user.email_confirmed_at,
-                });
-            }
 
             // Listen for auth changes
             const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
                 setUser(session?.user ?? null);
                 setLoading(false);
 
-                // Log on auth state change
+                // Identify user in PostHog
                 if (session?.user) {
-                    console.log('Auth state changed:', {
-                        id: session.user.id,
-                        email: session.user.email,
-                        email_confirmed_at: session.user.email_confirmed_at,
-                        is_email_confirmed: !!session.user.email_confirmed_at,
-                    });
-
-                    // Identify user in PostHog
                     identifyUser(session.user.id, {
                         email: session.user.email,
                         created_at: session.user.created_at
@@ -94,10 +74,10 @@ export default function NavigationBar() {
                     {/* Desktop Navigation Links */}
                     <div className="flex-row gap-12 hidden md:flex md:justify-center">
                         <a href="/" className={pathname === '/' ? 'font-semibold' : ''}>
-                            discover
-                        </a>
-                        <a href="/recommendation" className={pathname === '/recommendation' ? 'font-semibold' : ''}>
                             recommendations
+                        </a>
+                        <a href="/discover" className={pathname === '/discover' ? 'font-semibold' : ''}>
+                            discover
                         </a>
                         {user && (
                             <a href="/watchlists?tab=watchlist" className={pathname === '/watchlists' ? 'font-semibold' : ''}>
@@ -195,14 +175,14 @@ export default function NavigationBar() {
                             className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/' ? 'font-semibold' : ''}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                            discover
+                            recommendations
                         </a>
                         <a
-                            href="/recommendation"
-                            className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/recommendation' ? 'font-semibold' : ''}`}
+                            href="/discover"
+                            className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/discover' ? 'font-semibold' : ''}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                            recommendations
+                            discover
                         </a>
                         {user && (
                             <a

@@ -1,4 +1,5 @@
 import { createClient } from './server-client'
+import { createServiceClient } from './service-client'
 
 export interface AnimeData {
     anime_id: number
@@ -53,7 +54,8 @@ export async function saveAnimeData(
     originalDescription: string
 ): Promise<boolean> {
     try {
-        const supabase = await createClient()
+        // Use service client for write operations (bypasses RLS)
+        const supabase = createServiceClient()
 
         const { error } = await supabase
             .from('anime_data')
@@ -71,11 +73,13 @@ export async function saveAnimeData(
             })
 
         if (error) {
+            console.error('Failed to save anime data:', error)
             return false
         }
 
         return true
     } catch (error) {
+        console.error('Error in saveAnimeData:', error)
         return false
     }
 }
