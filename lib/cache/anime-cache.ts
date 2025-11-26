@@ -17,12 +17,9 @@ export async function getCachedAnimeDetails(searchTerm: string) {
         // Try to get from cache first
         const cached = await redis.get(cacheKey)
         if (cached) {
-            console.log(`[Cache HIT] Anime details for: ${searchTerm}`)
             // Upstash Redis automatically deserializes JSON, so return directly
             return typeof cached === 'string' ? JSON.parse(cached) : cached
         }
-
-        console.log(`[Cache MISS] Fetching anime details for: ${searchTerm}`)
 
         // Fetch from AniList
         const data = await fetchFullAnimeDetails(searchTerm)
@@ -48,12 +45,9 @@ export async function getCachedSimilarAnime(animeId: number, limit: number = 4) 
         // Try to get from cache first
         const cached = await redis.get(cacheKey)
         if (cached) {
-            console.log(`[Cache HIT] Similar anime for ID: ${animeId}`)
             // Upstash Redis automatically deserializes JSON, so return directly
             return typeof cached === 'string' ? JSON.parse(cached) : cached
         }
-
-        console.log(`[Cache MISS] Fetching similar anime for ID: ${animeId}`)
 
         // Fetch from AniList
         const data = await fetchSimilarAnime(animeId, limit)
@@ -79,12 +73,9 @@ export async function getCachedPopularAnime(count: number = 4) {
         // Try to get from cache first
         const cached = await redis.get(cacheKey)
         if (cached) {
-            console.log(`[Cache HIT] Popular anime (count: ${count})`)
             // Upstash Redis automatically deserializes JSON, so return directly
             return typeof cached === 'string' ? JSON.parse(cached) : cached
         }
-
-        console.log(`[Cache MISS] Fetching popular anime (count: ${count})`)
 
         // Fetch from AniList
         const data = await fetchPopularAnime(count)
@@ -116,7 +107,6 @@ export async function invalidateAnimeCache(searchTerm: string, animeId?: number)
         for (const key of keys) {
             await redis.del(key)
         }
-        console.log(`[Cache] Invalidated cache for: ${searchTerm}`)
     } catch (error) {
         console.error(`[Cache Error] Failed to invalidate cache for ${searchTerm}:`, error)
     }

@@ -26,7 +26,7 @@ export default function RecentSearchCard({ search, onTrailerClick }: RecentSearc
         <div className="mb-16">
             {/* Search Header - Matches new recommendations page design */}
             <Link
-                href={`/recommendation?description=${encodeURIComponent(search.description)}&tags=${search.tags.join(',')}`}
+                href={`/?description=${encodeURIComponent(search.description)}&tags=${search.tags.join(',')}`}
                 className='flex flex-col gap-1 mb-4 cursor-pointer hover:opacity-80 transition-opacity'
                 onClick={handleSearchClick}
             >

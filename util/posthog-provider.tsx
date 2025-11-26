@@ -22,7 +22,6 @@ export default function PostHogProvider({
                     loaded: (posthog) => {
                         if (process.env.NODE_ENV === 'development') {
                             posthog.debug();
-                            console.log('PostHog initialized successfully');
                         }
                     },
                     persistence: 'localStorage',

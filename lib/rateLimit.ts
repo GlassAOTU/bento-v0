@@ -28,7 +28,6 @@ export async function checkRateLimit(
   identifier: string,
   namespace: string = 'recommendations_anonymous'
 ): Promise<RateLimitResult> {
-  console.log('[Rate Limit] Checking rate limit:', { identifier, namespace })
 
   const supabase = await createClient()
   const config = CONFIGS[namespace]
@@ -45,7 +44,6 @@ export async function checkRateLimit(
 
   const now = new Date()
   const windowStart = new Date(now.getTime() - config.windowMinutes * 60 * 1000)
-  console.log('[Rate Limit] Window:', { now: now.toISOString(), windowStart: windowStart.toISOString() })
 
   try {
     // Try to find existing rate limit record within current window
@@ -57,7 +55,6 @@ export async function checkRateLimit(
       .gte('window_start', windowStart.toISOString())
       .single()
 
-    console.log('[Rate Limit] Existing record query:', { existing, fetchError })
 
     if (fetchError && fetchError.code !== 'PGRST116') {
       // Real error (not just "not found")
@@ -73,7 +70,6 @@ export async function checkRateLimit(
     if (!existing) {
       // First request in this window - create new record
       const windowEnd = new Date(now.getTime() + config.windowMinutes * 60 * 1000)
-      console.log('[Rate Limit] Creating new record, windowEnd:', windowEnd.toISOString())
 
       const { error: insertError } = await supabase
         .from('rate_limits')
@@ -88,7 +84,6 @@ export async function checkRateLimit(
       if (insertError) {
         console.error('[Rate Limit] Insert error:', insertError)
       } else {
-        console.log('[Rate Limit] New record created successfully')
       }
 
       const result = {
@@ -97,14 +92,12 @@ export async function checkRateLimit(
         resetAt: windowEnd.toISOString(),
         limit: config.maxRequests
       }
-      console.log('[Rate Limit] Result (new):', result)
       return result
     }
 
     // Existing window - increment counter
     const newCount = existing.request_count + 1
     const allowed = newCount <= config.maxRequests
-    console.log('[Rate Limit] Existing window:', { currentCount: existing.request_count, newCount, allowed, limit: config.maxRequests })
 
     if (allowed) {
       // Only increment if still allowed
@@ -116,10 +109,8 @@ export async function checkRateLimit(
       if (updateError) {
         console.error('[Rate Limit] Update error:', updateError)
       } else {
-        console.log('[Rate Limit] Counter incremented successfully')
       }
     } else {
-      console.log('[Rate Limit] Request denied - limit exceeded')
     }
 
     const result = {
@@ -128,7 +119,6 @@ export async function checkRateLimit(
       resetAt: existing.window_end,
       limit: config.maxRequests
     }
-    console.log('[Rate Limit] Result (existing):', result)
     return result
 
   } catch (error) {
