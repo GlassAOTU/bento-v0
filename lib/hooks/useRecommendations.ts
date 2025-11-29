@@ -7,6 +7,18 @@ import {
     getAuthStatus
 } from '@/lib/analytics/events';
 
+// Helper to fetch TMDB backdrop image for a title (wide format for recommendation cards)
+async function getTMDBImage(title: string): Promise<string | null> {
+    try {
+        const response = await fetch(`/api/anime/tmdb-lookup?title=${encodeURIComponent(title)}&type=backdrop`);
+        const data = await response.json();
+        // Use backdrop for wide cards, fall back to poster if no backdrop
+        return data.backdrop_url || data.poster_url || null;
+    } catch {
+        return null;
+    }
+}
+
 export type AnimeRecommendation = {
     title: string;
     reason: string;
@@ -107,11 +119,14 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
                 try {
                     const { description, bannerImage, externalLinks, trailer } = await fetchAnimeDetails(title);
 
+                    // Try to get TMDB image, fall back to AniList banner
+                    const tmdbImage = await getTMDBImage(title);
+
                     animeFinish.push({
                         title,
                         reason: reason?.trim() || "No reason provided",
                         description,
-                        image: bannerImage,
+                        image: tmdbImage || bannerImage,
                         externalLinks,
                         trailer
                     });

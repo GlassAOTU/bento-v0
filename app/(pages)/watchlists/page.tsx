@@ -25,6 +25,8 @@ interface WatchlistItem {
     reason: string
     description: string
     image: string
+    image_source?: string | null
+    tmdb_id?: number | null
     external_links: { url: string; site: string } | null
     trailer: { id: string; site: string } | null
 }
@@ -34,6 +36,38 @@ interface Watchlist {
     name: string
     description: string | null
     items: WatchlistItem[]
+}
+
+// Update a watchlist item with TMDB image (runs in background)
+async function updateItemWithTMDBImage(supabase: any, item: WatchlistItem) {
+    try {
+        // Fetch TMDB data
+        const response = await fetch(`/api/anime/tmdb-lookup?title=${encodeURIComponent(item.title)}`)
+        const tmdbData = await response.json()
+
+        if (tmdbData.tmdb_id && tmdbData.poster_url) {
+            // Update the item in the database
+            await supabase
+                .from('watchlist_items')
+                .update({
+                    image: tmdbData.poster_url,
+                    tmdb_id: tmdbData.tmdb_id,
+                    image_source: 'tmdb',
+                    original_image_url: item.image
+                })
+                .eq('id', item.id)
+        } else {
+            // Mark as checked so we don't keep trying
+            await supabase
+                .from('watchlist_items')
+                .update({
+                    image_source: 'anilist_fallback'
+                })
+                .eq('id', item.id)
+        }
+    } catch (error) {
+        console.error('Failed to update item with TMDB image:', error)
+    }
 }
 
 function WatchlistsContent() {
@@ -142,9 +176,17 @@ function WatchlistsContent() {
                         return { ...watchlist, items: [] }
                     }
 
+                    // Check for items without TMDB images and update them in background
+                    const items = itemsData || []
+                    for (const item of items) {
+                        if (!item.image_source || item.image_source === 'external') {
+                            updateItemWithTMDBImage(supabase, item)
+                        }
+                    }
+
                     return {
                         ...watchlist,
-                        items: itemsData || []
+                        items: items
                     }
                 })
             )

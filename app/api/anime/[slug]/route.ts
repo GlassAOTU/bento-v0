@@ -51,7 +51,9 @@ export async function GET(
                 popular: cachedData.popular_anime,
                 seasons: cachedData.details.seasons || [],
                 latestSeasonEpisodes: cachedData.details.latestSeasonEpisodes || null,
+                videos: cachedData.details.videos || [],
                 aiDescription: cachedData.ai_description,
+                tmdbId: cachedData.details.id || animeId,
                 dataSource: 'Cache'
             })
         }
@@ -70,14 +72,14 @@ export async function GET(
         }
 
         // If TMDB failed, use AniList as fallback
-        let details, latestSeasonEpisodes = null, seasons = []
+        let details, latestSeasonEpisodes = null, seasons = [], videos: any[] = []
 
         if (isUsingTMDB && tmdbData) {
             // Format TMDB details
             details = {
                 id: tmdbData.tmdb_id,
                 title: tmdbData.details.title,
-                englishTitle: tmdbData.details.original_title,
+                romajiTitle: tmdbData.details.original_title,
                 bannerImage: tmdbData.details.backdrop_url_original || tmdbData.details.backdrop_url || '',
                 coverImage: tmdbData.details.poster_url || '',
                 description: tmdbData.details.overview || '',
@@ -102,6 +104,7 @@ export async function GET(
 
             latestSeasonEpisodes = tmdbData.latestSeasonEpisodes
             seasons = tmdbData.seasons?.seasons || []
+            videos = tmdbData.details.videos || []
         } else {
             // Fallback to AniList
             try {
@@ -224,7 +227,8 @@ export async function GET(
         const enrichedDetails = {
             ...details,
             seasons: seasons,
-            latestSeasonEpisodes: latestSeasonEpisodes
+            latestSeasonEpisodes: latestSeasonEpisodes,
+            videos: videos
         }
 
         // Save to Supabase in background (don't await)
@@ -252,7 +256,9 @@ export async function GET(
             popular,
             seasons: seasons,
             latestSeasonEpisodes: latestSeasonEpisodes,
+            videos: videos,
             aiDescription: aiDescription,
+            tmdbId: isUsingTMDB && tmdbData ? tmdbData.tmdb_id : null,
             dataSource: isUsingTMDB ? 'TMDB' : 'AniList' // For debugging
         })
 

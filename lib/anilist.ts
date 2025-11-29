@@ -63,6 +63,7 @@ export async function fetchPopularAnime(count: number = 4) {
           id
           title {
             romaji
+            english
           }
           coverImage {
             large
@@ -105,7 +106,7 @@ export async function fetchPopularAnime(count: number = 4) {
         })
         .map((anime: any) => ({
             id: anime.id,
-            title: anime.title.romaji,
+            title: anime.title.english || anime.title.romaji,
             image: anime.coverImage.large,
             rating: anime.averageScore
         }))
@@ -233,7 +234,7 @@ export async function searchAnime(searchQuery: string, limit: number = 24) {
         .slice(0, limit)
         .map((anime: any) => ({
             id: anime.id,
-            title: anime.title.romaji,
+            title: anime.title.english || anime.title.romaji,
             image: anime.coverImage.large,
             rating: anime.averageScore
         }))
@@ -248,7 +249,7 @@ function deduplicateTitles(results: any[]): any[] {
     const deduped: any[] = []
 
     for (const anime of results) {
-        const normalizedTitle = normalizeTitle(anime.title.romaji)
+        const normalizedTitle = normalizeTitle(anime.title.english || anime.title.romaji)
 
         // Check if we've seen a very similar title
         let isDuplicate = false
@@ -397,8 +398,8 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
 
     return {
         id: media.id,
-        title: media.title.romaji,
-        englishTitle: media.title.english,
+        title: media.title.english || media.title.romaji,
+        romajiTitle: media.title.romaji,
         bannerImage: media.bannerImage || media.coverImage.extraLarge,
         coverImage: media.coverImage.large,
         description: (media.description || "No description available")
@@ -439,6 +440,7 @@ export async function fetchSimilarAnime(animeId: number, limit: number = 4) {
               id
               title {
                 romaji
+                english
               }
               coverImage {
                 large
@@ -488,7 +490,7 @@ export async function fetchSimilarAnime(animeId: number, limit: number = 4) {
         })
         .map((node: any) => ({
             id: node.mediaRecommendation.id,
-            title: node.mediaRecommendation.title.romaji,
+            title: node.mediaRecommendation.title.english || node.mediaRecommendation.title.romaji,
             image: node.mediaRecommendation.coverImage.large,
             rating: node.mediaRecommendation.averageScore
         }))
