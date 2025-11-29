@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState } from 'react'
 
 interface Episode {
     id: number
@@ -14,166 +14,168 @@ interface Episode {
     still_url_original: string | null
 }
 
-interface RecentEpisodesProps {
-    seasonName: string
-    seasonNumber: number
-    episodes: Episode[]
-    onViewAllClick: () => void
+interface Season {
+    id: number
+    name: string
+    season_number: number
+    episode_count: number
+    air_date: string
+    poster_url: string | null
 }
 
-export default function RecentEpisodes({ seasonName, seasonNumber, episodes, onViewAllClick }: RecentEpisodesProps) {
-    const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const [scrollProgress, setScrollProgress] = useState(0)
-    const isAdjustingRef = useRef(false)
-    const hasInitializedRef = useRef(false)
+interface RecentEpisodesProps {
+    seasons: Season[]
+    latestSeasonEpisodes: {
+        season_number: number
+        name: string
+        episodes: Episode[]
+    } | null
+    onSeasonChange?: (seasonNumber: number) => Promise<Episode[]>
+}
 
-    if (!episodes || episodes.length === 0) {
+export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeasonChange }: RecentEpisodesProps) {
+    const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number>(
+        latestSeasonEpisodes?.season_number || 1
+    )
+    const [episodes, setEpisodes] = useState<Episode[]>(latestSeasonEpisodes?.episodes || [])
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false)
+    const [showAll, setShowAll] = useState(false)
+
+    // Filter out season 0 (specials) and sort by most recent first
+    const regularSeasons = seasons
+        .filter(s => s.season_number > 0)
+        .sort((a, b) => b.season_number - a.season_number)
+
+    if (!regularSeasons || regularSeasons.length === 0) {
         return null
     }
 
-    // Create infinite loop by duplicating items (3 copies total)
-    const infiniteEpisodes = useMemo(() => [...episodes, ...episodes, ...episodes], [episodes])
+    const displayedEpisodes = showAll ? episodes : episodes.slice(0, 3)
+    const remainingCount = episodes.length - 3
 
-    const checkScrollPosition = () => {
-        const container = scrollContainerRef.current
-        if (!container || isAdjustingRef.current) return
+    const handleSeasonChange = async (seasonNumber: number) => {
+        setSelectedSeasonNumber(seasonNumber)
+        setIsDropdownOpen(false)
+        setShowAll(false)
 
-        const { scrollLeft, scrollWidth, clientWidth } = container
-        const sectionWidth = scrollWidth / 3
-
-        // Calculate progress
-        const middleStart = sectionWidth
-        const progressWithinMiddle = ((scrollLeft - middleStart) % sectionWidth + sectionWidth) % sectionWidth
-        const progress = (progressWithinMiddle / sectionWidth) * 100
-        setScrollProgress(Math.max(0, Math.min(100, progress)))
-
-        // Seamless looping
-        if (scrollLeft < sectionWidth * 0.5) {
-            isAdjustingRef.current = true
-            container.scrollLeft = scrollLeft + sectionWidth
-            setTimeout(() => { isAdjustingRef.current = false }, 50)
-        } else if (scrollLeft > sectionWidth * 2.5) {
-            isAdjustingRef.current = true
-            container.scrollLeft = scrollLeft - sectionWidth
-            setTimeout(() => { isAdjustingRef.current = false }, 50)
+        if (onSeasonChange) {
+            setIsLoadingEpisodes(true)
+            try {
+                const newEpisodes = await onSeasonChange(seasonNumber)
+                setEpisodes(newEpisodes)
+            } catch (error) {
+                console.error('Failed to load episodes:', error)
+            } finally {
+                setIsLoadingEpisodes(false)
+            }
         }
-    }
-
-    useEffect(() => {
-        const container = scrollContainerRef.current
-        if (!container) return
-
-        if (!hasInitializedRef.current) {
-            hasInitializedRef.current = true
-            setTimeout(() => {
-                const sectionWidth = container.scrollWidth / 3
-                container.scrollLeft = sectionWidth
-                checkScrollPosition()
-            }, 100)
-        }
-
-        container.addEventListener('scroll', checkScrollPosition, { passive: true })
-        window.addEventListener('resize', checkScrollPosition)
-
-        return () => {
-            container.removeEventListener('scroll', checkScrollPosition)
-            window.removeEventListener('resize', checkScrollPosition)
-        }
-    }, [episodes])
-
-    const scroll = (direction: 'left' | 'right') => {
-        const container = scrollContainerRef.current
-        if (!container) return
-
-        const scrollAmount = container.clientWidth * 0.8
-        const targetScroll = direction === 'left'
-            ? container.scrollLeft - scrollAmount
-            : container.scrollLeft + scrollAmount
-
-        container.scrollTo({
-            left: targetScroll,
-            behavior: 'smooth'
-        })
     }
 
     return (
-        <section className="w-full py-12 group">
+        <section className="w-full py-12">
             <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-3xl font-bold text-mySecondary font-instrument-sans">
-                        RECENT EPISODES
+                {/* Header with Season Dropdown */}
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans">
+                        Recent Episodes
                     </h2>
-                    <button
-                        onClick={onViewAllClick}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        aria-label="View all episodes"
-                    >
-                        {/* Grid icon matching screenshot */}
-                        <svg
-                            className="w-6 h-6 text-mySecondary"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+
+                    {/* Season Dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                         >
-                            <rect x="3" y="3" width="7" height="7" strokeWidth="2" />
-                            <rect x="14" y="3" width="7" height="7" strokeWidth="2" />
-                            <rect x="3" y="14" width="7" height="7" strokeWidth="2" />
-                            <rect x="14" y="14" width="7" height="7" strokeWidth="2" />
-                        </svg>
-                    </button>
+                            <span className="text-sm font-medium">
+                                season {selectedSeasonNumber}
+                            </span>
+                            <svg
+                                className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {isDropdownOpen && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setIsDropdownOpen(false)}
+                                />
+                                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
+                                    {regularSeasons.map((season) => (
+                                        <button
+                                            key={season.id}
+                                            onClick={() => handleSeasonChange(season.season_number)}
+                                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                                                season.season_number === selectedSeasonNumber
+                                                    ? 'bg-gray-50 font-medium'
+                                                    : ''
+                                            }`}
+                                        >
+                                            season {season.season_number}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
 
-                {/* Scrollable Episodes Container with Netflix-style controls */}
-                <div className="relative">
-                    {/* Left Arrow */}
-                    <button
-                        onClick={() => scroll('left')}
-                        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        aria-label="Scroll left"
-                    >
-                        <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M15 18l-6-6 6-6"/>
-                            </svg>
-                        </div>
-                    </button>
-
-                    {/* Right Arrow */}
-                    <button
-                        onClick={() => scroll('right')}
-                        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        aria-label="Scroll right"
-                    >
-                        <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M9 18l6-6-6-6"/>
-                            </svg>
-                        </div>
-                    </button>
-
-                    {/* Mobile fade overlay */}
-                    <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
-
-                    {/* Scrollable Container */}
-                    <div
-                        ref={scrollContainerRef}
-                        className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-                        style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                        }}
-                    >
-                        {infiniteEpisodes.map((episode, index) => (
-                            <div
-                                key={`${episode.id}-${index}`}
-                                className="flex-none w-[75%] md:w-[calc(33.333%-1rem)] snap-start"
-                            >
-                                <EpisodeCard episode={episode} />
+                {/* Episodes Grid */}
+                {isLoadingEpisodes ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="w-full aspect-video bg-gray-200 rounded-lg mb-4" />
+                                <div className="h-5 bg-gray-200 rounded mb-2 w-3/4" />
+                                <div className="h-4 bg-gray-200 rounded mb-1" />
+                                <div className="h-4 bg-gray-200 rounded w-2/3" />
                             </div>
                         ))}
                     </div>
-                </div>
+                ) : episodes.length > 0 ? (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {displayedEpisodes.map((episode) => (
+                                <EpisodeCard key={episode.id} episode={episode} />
+                            ))}
+                        </div>
+
+                        {/* Show More Button */}
+                        {!showAll && remainingCount > 0 && (
+                            <div className="flex justify-center mt-8">
+                                <button
+                                    onClick={() => setShowAll(true)}
+                                    className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                >
+                                    show {remainingCount} more
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Show Less Button */}
+                        {showAll && episodes.length > 3 && (
+                            <div className="flex justify-center mt-8">
+                                <button
+                                    onClick={() => setShowAll(false)}
+                                    className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                >
+                                    show less
+                                </button>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="text-center py-8 text-gray-500">
+                        No episodes available for this season
+                    </div>
+                )}
             </div>
         </section>
     )
@@ -188,20 +190,20 @@ function EpisodeCard({ episode }: { episode: Episode }) {
             month: 'long',
             day: 'numeric',
             year: 'numeric'
-        })
-        : 'Date TBA'
+        }).toUpperCase()
+        : 'DATE TBA'
 
     // Truncate description
     const truncatedDescription = episode.overview
-        ? episode.overview.length > 150
-            ? episode.overview.substring(0, 150) + '...'
+        ? episode.overview.length > 120
+            ? episode.overview.substring(0, 120) + '...'
             : episode.overview
         : 'This is the episode description and a place where a quick sentence or two will be able to give a quicker explainer what the episode was about.'
 
     return (
-        <div className="flex-none w-80">
+        <div className="flex flex-col">
             {/* Episode Thumbnail */}
-            <div className="relative w-full h-48 bg-gray-200 rounded-lg overflow-hidden mb-4">
+            <div className="relative w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-4">
                 {episode.still_url_w300 && !imageError ? (
                     <Image
                         src={episode.still_url_w300}
@@ -213,7 +215,7 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
                         <svg
-                            className="w-16 h-16 text-gray-400"
+                            className="w-12 h-12 text-gray-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -231,13 +233,13 @@ function EpisodeCard({ episode }: { episode: Episode }) {
 
             {/* Episode Info */}
             <div className="space-y-2">
-                <h3 className="text-lg font-bold text-mySecondary font-instrument-sans">
-                    EPISODE {episode.episode_number}: {episode.name.toUpperCase()}
+                <h3 className="text-sm font-bold text-mySecondary font-instrument-sans uppercase">
+                    EPISODE {episode.episode_number} : {episode.name.toUpperCase()}
                 </h3>
                 <p className="text-sm text-gray-600 line-clamp-3 font-instrument-sans">
                     {truncatedDescription}
                 </p>
-                <p className="text-sm text-gray-500 font-instrument-sans">
+                <p className="text-xs text-gray-400 font-instrument-sans uppercase">
                     {formattedDate}
                 </p>
             </div>

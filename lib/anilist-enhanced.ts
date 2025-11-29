@@ -192,7 +192,7 @@ export async function searchAnimeEnhanced(searchQuery: string, limit: number = 2
 
         const romajiTitle = anime.title.romaji || ''
         const englishTitle = anime.title.english || ''
-        const displayTitle = romajiTitle || englishTitle
+        const displayTitle = englishTitle || romajiTitle
 
         // Skip if no title
         if (!displayTitle) continue

@@ -198,8 +198,16 @@ export async function getTMDBShowDetails(tmdbId: number) {
                 crew: data.credits?.crew?.slice(0, 10)
             },
 
-            // Videos (trailers)
-            videos: data.videos?.results?.filter((v: any) => v.type === 'Trailer' || v.type === 'Teaser'),
+            // Videos (all types - trailers, clips, behind the scenes, etc.)
+            videos: data.videos?.results?.map((v: any) => ({
+                id: v.id,
+                key: v.key,
+                name: v.name,
+                type: v.type,
+                site: v.site,
+                official: v.official,
+                published_at: v.published_at
+            })),
 
             // All available images
             images: {

@@ -2,43 +2,43 @@
   "mostPopular": [
     {
       "id": 16498,
-      "title": "Shingeki no Kyojin",
+      "title": "Attack on Titan",
       "image": "https://image.tmdb.org/t/p/w500/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg",
       "rating": 85
     },
     {
       "id": 101922,
-      "title": "Kimetsu no Yaiba",
+      "title": "Demon Slayer: Kimetsu no Yaiba",
       "image": "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg",
       "rating": 82
     },
     {
       "id": 1535,
-      "title": "DEATH NOTE",
+      "title": "Death Note",
       "image": "https://image.tmdb.org/t/p/w500/tCZFfYTIwrR7n94J6G14Y4hAFU6.jpg",
       "rating": 84
     },
     {
       "id": 113415,
-      "title": "Jujutsu Kaisen",
+      "title": "JUJUTSU KAISEN",
       "image": "https://image.tmdb.org/t/p/w500/fHpKWq9ayzSk8nSwqRuaAUemRKh.jpg",
       "rating": 84
     },
     {
       "id": 21459,
-      "title": "Boku no Hero Academia",
+      "title": "My Hero Academia",
       "image": "https://image.tmdb.org/t/p/w500/phuYuzqWW9ru8EA3HVjE9W2Rr3M.jpg",
       "rating": 76
     },
     {
       "id": 11061,
-      "title": "HUNTER×HUNTER (2011)",
+      "title": "Hunter x Hunter (2011)",
       "image": "https://image.tmdb.org/t/p/w500/i2EEr2uBvRlAwJ8d8zTG2Y19mIa.jpg",
       "rating": 89
     },
     {
       "id": 21087,
-      "title": "One Punch Man",
+      "title": "One-Punch Man",
       "image": "https://image.tmdb.org/t/p/w500/dT10AxJIXVvRwFAew4tt2RhzJrD.jpg",
       "rating": 83
     },
@@ -56,7 +56,7 @@
     },
     {
       "id": 5114,
-      "title": "Hagane no Renkinjutsushi: FULLMETAL ALCHEMIST",
+      "title": "Fullmetal Alchemist: Brotherhood",
       "image": "https://image.tmdb.org/t/p/w500/7qVSNBKsrER8P77DfsSQfrPK04L.jpg",
       "rating": 90
     },
@@ -68,81 +68,81 @@
     },
     {
       "id": 20,
-      "title": "NARUTO",
+      "title": "Naruto",
       "image": "https://image.tmdb.org/t/p/w500/xppeysfvDKVx775MFuH8Z9BlpMk.jpg",
       "rating": 80
     },
     {
       "id": 21519,
-      "title": "Kimi no Na wa.",
+      "title": "Your Name.",
       "image": "https://image.tmdb.org/t/p/w500/ApPIfZotblqFAEfbdDdsByrmQOD.jpg",
       "rating": 85
     },
     {
       "id": 20954,
-      "title": "Koe no Katachi",
+      "title": "A Silent Voice",
       "image": "https://image.tmdb.org/t/p/w500/1c13pBCsWWS2W4ijXqNuaDBcjJT.jpg",
       "rating": 88
     },
     {
       "id": 101759,
-      "title": "Yakusoku no Neverland",
+      "title": "The Promised Neverland",
       "image": "https://image.tmdb.org/t/p/w500/oBgRCpAbtMpk1v8wfdsIph7lPQE.jpg",
       "rating": 83
     },
     {
+      "id": 110277,
+      "title": "Attack on Titan Final Season",
+      "image": "https://image.tmdb.org/t/p/w500/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg",
+      "rating": 86
+    },
+    {
       "id": 20755,
-      "title": "Ansatsu Kyoushitsu",
+      "title": "Assassination Classroom",
       "image": "https://image.tmdb.org/t/p/w500/qf0l0nQ2t06Es3cSXflqx6l6vsJ.jpg",
       "rating": 79
     },
     {
       "id": 20665,
-      "title": "Shigatsu wa Kimi no Uso",
+      "title": "Your lie in April",
       "image": "https://image.tmdb.org/t/p/w500/rRjfH3ckTYz8z8aSkJshFL4VyK9.jpg",
       "rating": 84
     },
     {
       "id": 21234,
-      "title": "Boku dake ga Inai Machi",
+      "title": "ERASED",
       "image": "https://image.tmdb.org/t/p/w500/EljUwZJhpuYfVuSfqY8Pt1xxpH.jpg",
       "rating": 81
     },
     {
       "id": 1735,
-      "title": "NARUTO: Shippuuden",
+      "title": "Naruto: Shippuden",
       "image": "https://image.tmdb.org/t/p/w500/71mASgFgSiPl9QUexVH8BubU0lD.jpg",
       "rating": 82
-    },
-    {
-      "id": 21355,
-      "title": "Re:Zero kara Hajimeru Isekai Seikatsu",
-      "image": "https://image.tmdb.org/t/p/w500/aRwmcX36r1ZpR5Xq5mmFcpUDQ8J.jpg",
-      "rating": 81
     }
   ],
   "topRated": [
     {
       "id": 154587,
-      "title": "Sousou no Frieren",
+      "title": "Frieren: Beyond Journey’s End",
       "image": "https://image.tmdb.org/t/p/w500/dqZENchTd7lp5zht7BdlqM7RBhD.jpg",
       "rating": 91
     },
     {
-      "id": 171627,
-      "title": "Chainsaw Man: Reze-hen",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx171627-ZN9D7P46yHnw.png",
-      "rating": 91
-    },
-    {
-      "id": 20996,
-      "title": "Gintama°",
+      "id": 114129,
+      "title": "Gintama: THE VERY FINAL",
       "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
       "rating": 91
     },
     {
+      "id": 124194,
+      "title": "Fruits Basket The Final Season",
+      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
+      "rating": 89
+    },
+    {
       "id": 21745,
-      "title": "Owarimonogatari (Ge)",
+      "title": "Owarimonogatari Second Season",
       "image": "https://image.tmdb.org/t/p/w500/zCEjjb1NH3LLsWeZx47wOeqkezf.jpg",
       "rating": 89
     },
@@ -154,85 +154,67 @@
     },
     {
       "id": 125367,
-      "title": "Kaguya-sama wa Kokurasetai: Ultra Romantic",
+      "title": "Kaguya-sama: Love is War -Ultra Romantic-",
       "image": "https://image.tmdb.org/t/p/w500/5khbC6AuNgnvnoDbjIMKCOhEtIc.jpg",
       "rating": 89
     },
     {
-      "id": 15417,
-      "title": "Gintama': Enchousen",
-      "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
-      "rating": 89
-    },
-    {
-      "id": 9969,
-      "title": "Gintama'",
-      "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
-      "rating": 89
-    },
-    {
-      "id": 97889,
-      "title": "Gintama.",
-      "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
-      "rating": 88
-    },
-    {
       "id": 116674,
-      "title": "BLEACH: Sennen Kessen-hen",
+      "title": "BLEACH: Thousand-Year Blood War",
       "image": "https://image.tmdb.org/t/p/w500/2EewmxXe72ogD0EaWM8gqa0ccIw.jpg",
       "rating": 88
     },
     {
       "id": 19,
-      "title": "MONSTER",
+      "title": "Monster",
       "image": "https://image.tmdb.org/t/p/w500/n5XNKXnoXpoXyfiCtXHOf8q8PFM.jpg",
       "rating": 88
     },
     {
       "id": 161645,
-      "title": "Kusuriya no Hitorigoto",
+      "title": "The Apothecary Diaries",
       "image": "https://image.tmdb.org/t/p/w500/e3ojpANrFnmJCyeBNTinYwyBCIN.jpg",
       "rating": 88
     },
     {
+      "id": 17074,
+      "title": "Monogatari Series Second Season",
+      "image": "https://image.tmdb.org/t/p/w500/zCEjjb1NH3LLsWeZx47wOeqkezf.jpg",
+      "rating": 88
+    },
+    {
       "id": 101925,
-      "title": "Gintama.: Shirogane no Tamashii-hen - Kouhan-sen",
+      "title": "Gintama.: Silver Soul Arc - Second Half War",
       "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
       "rating": 87
     },
     {
       "id": 15335,
-      "title": "Gintama: Kanketsu-hen - Yorozuya yo Eien Nare",
+      "title": "Gintama: The Final Chapter - Be Forever Yorozuya",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx15335-QjijwChGTBs0.png",
       "rating": 87
     },
     {
       "id": 4181,
-      "title": "CLANNAD: After Story",
+      "title": "Clannad: After Story",
       "image": "https://image.tmdb.org/t/p/w500/jPBMYp4ddXkGJDSxxmaKBjzv2r3.jpg",
       "rating": 87
     },
     {
       "id": 101348,
-      "title": "VINLAND SAGA",
+      "title": "Vinland Saga",
       "image": "https://image.tmdb.org/t/p/w500/vUHlpA5c1NXkds59reY3HMb4Abs.jpg",
       "rating": 87
     },
     {
-      "id": 21400,
-      "title": "Kizumonogatari III: Reiketsu-hen",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21400-38ykNo3j4xXo.png",
-      "rating": 87
-    },
-    {
       "id": 151384,
-      "title": "Kaguya-sama wa Kokurasetai: First Kiss wa Owaranai",
+      "title": "Kaguya-sama: Love is War -The First Kiss That Never Ends-",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx151384-gv0q8wOE6D58.jpg",
       "rating": 87
     },
     {
       "id": 103047,
-      "title": "Violet Evergarden Movie",
+      "title": "Violet Evergarden: the Movie",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx103047-odblDHHEdehK.jpg",
       "rating": 87
     },
@@ -241,12 +223,30 @@
       "title": "Uma Musume: Pretty Derby - Shin Jidai no Tobira",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx172420-4LjhmwpNMHti.jpg",
       "rating": 87
+    },
+    {
+      "id": 113024,
+      "title": "Revue Starlight: The Movie",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx113024-OdzOh0OKFPTN.png",
+      "rating": 87
+    },
+    {
+      "id": 178788,
+      "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx178788-zm3gtpB9TpRt.jpg",
+      "rating": 87
+    },
+    {
+      "id": 130003,
+      "title": "BOCCHI THE ROCK!",
+      "image": "https://image.tmdb.org/t/p/w500/Af4tZ3eKjKWXG4vfiQ8R1NJomAP.jpg",
+      "rating": 87
     }
   ],
   "shonen": [
     {
       "id": 20464,
-      "title": "Haikyuu!!",
+      "title": "HAIKYU!!",
       "image": "https://image.tmdb.org/t/p/w500/8WEr48swcqe89Zsy5sdrGCASlIg.jpg",
       "rating": 83
     },
@@ -282,49 +282,49 @@
     },
     {
       "id": 20789,
-      "title": "Nanatsu no Taizai",
+      "title": "The Seven Deadly Sins",
       "image": "https://image.tmdb.org/t/p/w500/tvJvByy99ul4hytAfNEboAFaFEY.jpg",
       "rating": 73
     },
     {
       "id": 21202,
-      "title": "Kono Subarashii Sekai ni Shukufuku wo!",
+      "title": "KONOSUBA -God's blessing on this wonderful world!",
       "image": "https://image.tmdb.org/t/p/w500/oRaOeQlwktbGSd2T31FYAcgHZlh.jpg",
       "rating": 79
     },
     {
       "id": 112151,
-      "title": "Kimetsu no Yaiba: Mugen Ressha-hen",
+      "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
       "image": "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg",
       "rating": 84
     },
     {
       "id": 269,
-      "title": "BLEACH",
+      "title": "Bleach",
       "image": "https://image.tmdb.org/t/p/w500/2EewmxXe72ogD0EaWM8gqa0ccIw.jpg",
-      "rating": 79
+      "rating": 78
     },
     {
       "id": 9919,
-      "title": "Ao no Exorcist",
+      "title": "Blue Exorcist",
       "image": "https://image.tmdb.org/t/p/w500/kpNoqNmElzGUEcEoZyfFwvYXMsR.jpg",
       "rating": 72
     },
     {
       "id": 14719,
-      "title": "JoJo no Kimyou na Bouken (TV)",
+      "title": "JoJo's Bizarre Adventure (TV)",
       "image": "https://image.tmdb.org/t/p/w500/ogAWwbh3frWtiTyyXrZaVFtqCgp.jpg",
       "rating": 77
     },
     {
       "id": 105310,
-      "title": "Enen no Shouboutai",
+      "title": "Fire Force",
       "image": "https://image.tmdb.org/t/p/w500/Alx1QJZeiweoM0ZVSnJ7PnuqPQx.jpg",
       "rating": 76
     },
     {
       "id": 142329,
-      "title": "Kimetsu no Yaiba: Yuukaku-hen",
+      "title": "Demon Slayer: Kimetsu no Yaiba Entertainment District Arc",
       "image": "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg",
       "rating": 86
     },
@@ -342,25 +342,25 @@
     },
     {
       "id": 101280,
-      "title": "Tensei Shitara Slime Datta Ken",
+      "title": "That Time I Got Reincarnated as a Slime",
       "image": "https://image.tmdb.org/t/p/w500/pzujcdPAoH361NObVrtbA7zACE7.jpg",
       "rating": 80
     },
     {
       "id": 10620,
-      "title": "Mirai Nikki",
+      "title": "The Future Diary",
       "image": "https://image.tmdb.org/t/p/w500/5MxOVu9eItgGZh4AQrtAnbZIsJr.jpg",
       "rating": 68
     },
     {
       "id": 20923,
-      "title": "Shokugeki no Souma",
+      "title": "Food Wars!",
       "image": "https://image.tmdb.org/t/p/w500/eAQHqcJXP0FBzXvQkIV5g5ZueZb.jpg",
       "rating": 78
     },
     {
       "id": 154587,
-      "title": "Sousou no Frieren",
+      "title": "Frieren: Beyond Journey’s End",
       "image": "https://image.tmdb.org/t/p/w500/dqZENchTd7lp5zht7BdlqM7RBhD.jpg",
       "rating": 91
     }
@@ -368,13 +368,13 @@
   "sliceOfLife": [
     {
       "id": 101921,
-      "title": "Kaguya-sama wa Kokurasetai: Tensaitachi no Renai Zunousen",
+      "title": "Kaguya-sama: Love is War",
       "image": "https://image.tmdb.org/t/p/w500/5khbC6AuNgnvnoDbjIMKCOhEtIc.jpg",
       "rating": 83
     },
     {
       "id": 140960,
-      "title": "SPY×FAMILY",
+      "title": "SPY x FAMILY",
       "image": "https://image.tmdb.org/t/p/w500/7NAvPYPAu7MeHwP8E9sn81PqsRh.jpg",
       "rating": 83
     },
@@ -398,37 +398,37 @@
     },
     {
       "id": 112641,
-      "title": "Kaguya-sama wa Kokurasetai?: Tensaitachi no Renai Zunousen",
+      "title": "Kaguya-sama: Love is War?",
       "image": "https://image.tmdb.org/t/p/w500/5khbC6AuNgnvnoDbjIMKCOhEtIc.jpg",
-      "rating": 86
+      "rating": 85
     },
     {
       "id": 9989,
-      "title": "Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai.",
+      "title": "Anohana: The Flower We Saw That Day",
       "image": "https://image.tmdb.org/t/p/w500/2tgOAvOttp7rak3r2U5vIAaeyDt.jpg",
       "rating": 80
     },
     {
       "id": 15809,
-      "title": "Hataraku Maou-sama!",
+      "title": "The Devil is a Part-Timer!",
       "image": "https://image.tmdb.org/t/p/w500/55jYHFT8iJuASF8Mzg0V8Dh3N3M.jpg",
       "rating": 75
     },
     {
       "id": 132405,
-      "title": "Sono Bisque Doll wa Koi wo Suru",
+      "title": "My Dress-Up Darling",
       "image": "https://image.tmdb.org/t/p/w500/A6mxBwvvv63JXZm3xXKv4SugE0L.jpg",
       "rating": 80
     },
     {
       "id": 14813,
-      "title": "Yahari Ore no Seishun Love Come wa Machigatteiru.",
+      "title": "My Teen Romantic Comedy SNAFU",
       "image": "https://image.tmdb.org/t/p/w500/sb5MNoeZGHX21qvtwhmizUsJJqq.jpg",
       "rating": 78
     },
     {
       "id": 99750,
-      "title": "Kimi no Suizou wo Tabetai",
+      "title": "I Want to Eat Your Pancreas",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx99750-pNyly9d3MEgV.jpg",
       "rating": 84
     },
@@ -440,111 +440,123 @@
     },
     {
       "id": 106286,
-      "title": "Tenki no Ko",
+      "title": "Weathering With You",
       "image": "https://image.tmdb.org/t/p/w500/9Y5RZypOahsGKYN9Sukr1wobSB8.jpg",
       "rating": 81
     },
     {
       "id": 14741,
-      "title": "Chuunibyou demo Koi ga Shitai!",
+      "title": "Love, Chunibyo & Other Delusions",
       "image": "https://image.tmdb.org/t/p/w500/1IapEqydEiGO0gCgBPVexTFbUCS.jpg",
       "rating": 75
     },
     {
       "id": 21776,
-      "title": "Kobayashi-san Chi no Maidragon",
+      "title": "Miss Kobayashi's Dragon Maid",
       "image": "https://image.tmdb.org/t/p/w500/tNznuhcf7WKzEmPQEsIgGMrB3Az.jpg",
       "rating": 77
     },
     {
       "id": 99578,
-      "title": "Wotaku ni Koi wa Muzukashii",
+      "title": "Wotakoi: Love is Hard for Otaku",
       "image": "https://image.tmdb.org/t/p/w500/fpDesSzDRMFGIJbcuC2WVCveC2P.jpg",
       "rating": 78
     },
     {
       "id": 133965,
-      "title": "Komi-san wa, Komyushou desu.",
+      "title": "Komi Can’t Communicate",
       "image": "https://image.tmdb.org/t/p/w500/xGciZiSIEmkqgcv4ouWmkhmXmPH.jpg",
       "rating": 77
     },
     {
+      "id": 105334,
+      "title": "Fruits Basket (2019)",
+      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
+      "rating": 82
+    },
+    {
       "id": 103572,
-      "title": "Go-toubun no Hanayome",
+      "title": "The Quintessential Quintuplets",
       "image": "https://image.tmdb.org/t/p/w500/mrahUSmFjae8UHtlOcZ58ytmAGu.jpg",
       "rating": 75
     },
     {
       "id": 2167,
-      "title": "CLANNAD",
+      "title": "Clannad",
       "image": "https://image.tmdb.org/t/p/w500/jPBMYp4ddXkGJDSxxmaKBjzv2r3.jpg",
       "rating": 77
-    },
-    {
-      "id": 18153,
-      "title": "Kyoukai no Kanata",
-      "image": "https://image.tmdb.org/t/p/w500/6cmtMbEZAYm3aWzthFRk6048LFi.jpg",
-      "rating": 74
     }
   ],
   "foundFamily": [
     {
       "id": 20923,
-      "title": "Shokugeki no Souma",
+      "title": "Food Wars!",
       "image": "https://image.tmdb.org/t/p/w500/eAQHqcJXP0FBzXvQkIV5g5ZueZb.jpg",
       "rating": 78
     },
     {
       "id": 9989,
-      "title": "Ano Hi Mita Hana no Namae wo Bokutachi wa Mada Shiranai.",
+      "title": "Anohana: The Flower We Saw That Day",
       "image": "https://image.tmdb.org/t/p/w500/2tgOAvOttp7rak3r2U5vIAaeyDt.jpg",
       "rating": 80
     },
     {
       "id": 106286,
-      "title": "Tenki no Ko",
+      "title": "Weathering With You",
       "image": "https://image.tmdb.org/t/p/w500/9Y5RZypOahsGKYN9Sukr1wobSB8.jpg",
       "rating": 81
     },
     {
       "id": 21776,
-      "title": "Kobayashi-san Chi no Maidragon",
+      "title": "Miss Kobayashi's Dragon Maid",
       "image": "https://image.tmdb.org/t/p/w500/tNznuhcf7WKzEmPQEsIgGMrB3Az.jpg",
       "rating": 77
     },
     {
+      "id": 105334,
+      "title": "Fruits Basket (2019)",
+      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
+      "rating": 82
+    },
+    {
       "id": 13759,
-      "title": "Sakurasou no Pet na Kanojo",
+      "title": "The Pet Girl of Sakurasou",
       "image": "https://image.tmdb.org/t/p/w500/euzCsaY9Jb49gSqUWXSDonBF3su.jpg",
       "rating": 78
     },
     {
       "id": 853,
-      "title": "Ouran Koukou Host Club",
+      "title": "Ouran High School Host Club",
       "image": "https://image.tmdb.org/t/p/w500/2bO4wYNTYSC2mV0YvomZtaHRLMp.jpg",
       "rating": 80
     },
     {
       "id": 98436,
-      "title": "Mahoutsukai no Yome",
+      "title": "The Ancient Magus' Bride",
       "image": "https://image.tmdb.org/t/p/w500/8jnA4eaJLj3GByaYIw2JroVln40.jpg",
       "rating": 78
     },
     {
       "id": 21366,
-      "title": "3-gatsu no Lion",
+      "title": "March comes in like a lion",
       "image": "https://image.tmdb.org/t/p/w500/sokReNdjEwG2TkdUzJcVnD6sChT.jpg",
       "rating": 83
     },
     {
+      "id": 124194,
+      "title": "Fruits Basket The Final Season",
+      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
+      "rating": 89
+    },
+    {
       "id": 107717,
-      "title": "Kobayashi-san Chi no Maidragon S",
+      "title": "Miss Kobayashi's Dragon Maid S",
       "image": "https://image.tmdb.org/t/p/w500/tNznuhcf7WKzEmPQEsIgGMrB3Az.jpg",
       "rating": 81
     },
     {
       "id": 107693,
-      "title": "Mairimashita! Iruma-kun",
+      "title": "Welcome to Demon School! Iruma-kun",
       "image": "https://image.tmdb.org/t/p/w500/aed6I1EMR4Lbk8bdikWrndbn5Og.jpg",
       "rating": 77
     },
@@ -556,43 +568,37 @@
     },
     {
       "id": 100077,
-      "title": "Hinamatsuri",
+      "title": "HINAMATSURI",
       "image": "https://image.tmdb.org/t/p/w500/c6cULnkJ0NoePjcwpH576LrGNdK.jpg",
       "rating": 80
     },
     {
       "id": 99457,
-      "title": "Sayonara no Asa ni Yakusoku no Hana wo Kazarou",
+      "title": "Maquia: When the Promised Flower Blooms",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx99457-OD0xtM8NlHNQ.png",
       "rating": 82
     },
     {
       "id": 109190,
-      "title": "Violet Evergarden Gaiden: Eien to Jidou Shuki Ningyou",
+      "title": "Violet Evergarden: Eternity and the Auto Memory Doll",
       "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx109190-e8mv1qdmpjLW.jpg",
       "rating": 83
     },
     {
-      "id": 4081,
-      "title": "Natsume Yuujinchou",
-      "image": "https://image.tmdb.org/t/p/w500/c4B2NFHFH0N8W7ovMsxiGIj7Fgp.jpg",
-      "rating": 80
-    },
-    {
       "id": 21860,
-      "title": "Shuumatsu Nani Shitemasu ka? Isogashii desu ka? Sukutte Moratte Ii desu ka?",
+      "title": "WorldEnd: What are you doing at the end of the world? Are you busy? Will you save us?",
       "image": "https://image.tmdb.org/t/p/w500/3ovabijZNSSXBAloBFzUVqmmLXC.jpg",
       "rating": 75
     },
     {
       "id": 162694,
-      "title": "Kimi no Koto ga Dai Dai Dai Dai Daisuki na 100-nin no Kanojo",
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You",
       "image": "https://image.tmdb.org/t/p/w500/ms7uowQ6gBjfaB2zzwugfr30IKZ.jpg",
       "rating": 76
     },
     {
       "id": 10162,
-      "title": "Usagi Drop",
+      "title": "Bunny Drop",
       "image": "https://image.tmdb.org/t/p/w500/o1sIk7Bn5aRPoKEAG4qf9eRwD8i.jpg",
       "rating": 81
     },
@@ -601,12 +607,6 @@
       "title": "Mekakucity Actors",
       "image": "https://image.tmdb.org/t/p/w500/4fYd1cBnv2CEYW3bdQvcWCOwXhK.jpg",
       "rating": 66
-    },
-    {
-      "id": 101351,
-      "title": "Happy Sugar Life",
-      "image": "https://image.tmdb.org/t/p/w500/51nw1Oor0iiXCwp2ieYuY3WQ9vt.jpg",
-      "rating": 65
     }
   ]
 }

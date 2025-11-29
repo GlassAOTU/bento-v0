@@ -309,7 +309,7 @@ async function fetchAnimeByCategory(category, count = 40) { // Increased to acco
 
             const romajiTitle = anime.title.romaji || '';
             const englishTitle = anime.title.english || '';
-            const title = romajiTitle || englishTitle || '';
+            const title = englishTitle || romajiTitle || '';
 
             // Skip if empty title
             if (!title) continue;

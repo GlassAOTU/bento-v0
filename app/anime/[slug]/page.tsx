@@ -8,7 +8,7 @@ import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
 import RecentEpisodes from '@/components/RecentEpisodes'
-import EpisodesModal from '@/components/EpisodesModal'
+import VideosSection from '@/components/VideosSection'
 import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 import { User } from '@supabase/supabase-js'
@@ -26,7 +26,7 @@ import {
 interface AnimeDetails {
     id: number
     title: string
-    englishTitle: string | null
+    romajiTitle: string | null
     bannerImage: string
     coverImage: string
     description: string
@@ -64,7 +64,8 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [user, setUser] = useState<User | null>(null)
     const [seasons, setSeasons] = useState<any[]>([])
     const [latestSeasonEpisodes, setLatestSeasonEpisodes] = useState<any>(null)
-    const [isEpisodesModalOpen, setIsEpisodesModalOpen] = useState(false)
+    const [tmdbId, setTmdbId] = useState<number | null>(null)
+    const [videos, setVideos] = useState<any[]>([])
 
     useEffect(() => {
         // Get user auth status
@@ -97,6 +98,8 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 setPopularAnime(data.popular)
                 setSeasons(data.seasons || [])
                 setLatestSeasonEpisodes(data.latestSeasonEpisodes || null)
+                setTmdbId(data.tmdbId || null)
+                setVideos(data.videos || [])
                 setLoading(false)
 
                 // Track anime detail page view
@@ -257,12 +260,9 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                             >
                                 ADD TO WATCHLIST
                             </button>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                            <h1 className="text-4xl md:text-5xl font-bold text-white">
                                 {animeDetails.title}
                             </h1>
-                            {animeDetails.englishTitle && animeDetails.englishTitle !== animeDetails.title && (
-                                <p className="text-xl text-white/90">{animeDetails.englishTitle}</p>
-                            )}
                         </div>
                     </div>
                 </section>
@@ -320,24 +320,44 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 </div>
 
                 {/* Divider before Recent Episodes */}
-                {latestSeasonEpisodes && latestSeasonEpisodes.episodes && latestSeasonEpisodes.episodes.length > 0 && (
+                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
                     <div className="container mx-auto max-w-7xl px-6 md:px-16">
                         <hr className="border-t border-gray-200" />
                     </div>
                 )}
 
                 {/* Recent Episodes Section - Full Width */}
-                {latestSeasonEpisodes && latestSeasonEpisodes.episodes && latestSeasonEpisodes.episodes.length > 0 && (
+                {seasons && seasons.length > 0 && (
                     <RecentEpisodes
-                        seasonName={latestSeasonEpisodes.name}
-                        seasonNumber={latestSeasonEpisodes.season_number}
-                        episodes={latestSeasonEpisodes.episodes}
-                        onViewAllClick={() => setIsEpisodesModalOpen(true)}
+                        seasons={seasons}
+                        latestSeasonEpisodes={latestSeasonEpisodes}
+                        onSeasonChange={async (seasonNumber: number) => {
+                            if (!tmdbId) return []
+                            const response = await fetch(`/api/anime/tmdb/season/${tmdbId}/${seasonNumber}`)
+                            if (!response.ok) return []
+                            const data = await response.json()
+                            return data.episodes || []
+                        }}
                     />
                 )}
 
                 {/* Divider after Recent Episodes */}
-                {latestSeasonEpisodes && latestSeasonEpisodes.episodes && latestSeasonEpisodes.episodes.length > 0 && (
+                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
+                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
+                        <hr className="border-t border-gray-200" />
+                    </div>
+                )}
+
+                {/* Videos Section */}
+                {videos && videos.length > 0 && (
+                    <VideosSection
+                        videos={videos}
+                        onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
+                    />
+                )}
+
+                {/* Divider after Videos */}
+                {videos && videos.length > 0 && (
                     <div className="container mx-auto max-w-7xl px-6 md:px-16">
                         <hr className="border-t border-gray-200" />
                     </div>
@@ -345,8 +365,8 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                 <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
                     {/* Details Section */}
-                    <section className="mb-16">
-                        <h2 className="text-3xl font-bold text-mySecondary font-instrument-sans mb-6">DETAILS</h2>
+                    <section className="pt-16 mb-16">
+                        <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-6">Details</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                             {animeDetails.episodes && (
                                 <div className="flex">
@@ -484,15 +504,6 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     externalLinks: animeDetails.externalLinks,
                     trailer: animeDetails.trailer
                 }}
-            />
-
-            {/* Episodes Modal */}
-            <EpisodesModal
-                isOpen={isEpisodesModalOpen}
-                onClose={() => setIsEpisodesModalOpen(false)}
-                tmdbId={animeDetails.id}
-                seasons={seasons}
-                currentSeasonNumber={latestSeasonEpisodes?.season_number || 1}
             />
 
             {/* Trailer Popup */}
