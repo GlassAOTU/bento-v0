@@ -245,6 +245,27 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 return
             }
 
+            // Try to get TMDB data and cache image
+            let finalImageUrl = anime.image
+            let tmdbId: number | null = null
+            let imageSource = 'external'
+
+            try {
+                // Look up TMDB data
+                const tmdbResponse = await fetch(
+                    `/api/anime/tmdb-lookup?title=${encodeURIComponent(anime.title)}`
+                )
+                const tmdbData = await tmdbResponse.json()
+
+                if (tmdbData.tmdb_id && tmdbData.poster_url) {
+                    tmdbId = tmdbData.tmdb_id
+                    finalImageUrl = tmdbData.poster_url
+                    imageSource = 'tmdb'
+                }
+            } catch (err) {
+                console.warn('TMDB lookup failed, using original image:', err)
+            }
+
             const { error: addError } = await supabase
                 .from('watchlist_items')
                 .insert({
@@ -252,7 +273,10 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     title: anime.title,
                     reason: anime.reason,
                     description: anime.description,
-                    image: anime.image,
+                    image: finalImageUrl,
+                    tmdb_id: tmdbId,
+                    image_source: imageSource,
+                    original_image_url: anime.image,
                     external_links: anime.externalLinks,
                     trailer: anime.trailer
                 })

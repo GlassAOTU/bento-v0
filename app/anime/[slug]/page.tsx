@@ -1,12 +1,14 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
+import RecentEpisodes from '@/components/RecentEpisodes'
+import VideosSection from '@/components/VideosSection'
 import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 import { User } from '@supabase/supabase-js'
@@ -24,7 +26,7 @@ import {
 interface AnimeDetails {
     id: number
     title: string
-    englishTitle: string | null
+    romajiTitle: string | null
     bannerImage: string
     coverImage: string
     description: string
@@ -60,6 +62,26 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [descriptionLoading, setDescriptionLoading] = useState(false)
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
     const [user, setUser] = useState<User | null>(null)
+    const [seasons, setSeasons] = useState<any[]>([])
+    const [latestSeasonEpisodes, setLatestSeasonEpisodes] = useState<any>(null)
+    const [tmdbId, setTmdbId] = useState<number | null>(null)
+    const [videos, setVideos] = useState<any[]>([])
+    const similarScrollRef = useRef<HTMLDivElement>(null)
+
+    const scrollSimilar = (direction: 'left' | 'right') => {
+        const container = similarScrollRef.current
+        if (!container) return
+
+        const scrollAmount = container.clientWidth * 0.8
+        const targetScroll = direction === 'left'
+            ? container.scrollLeft - scrollAmount
+            : container.scrollLeft + scrollAmount
+
+        container.scrollTo({
+            left: targetScroll,
+            behavior: 'smooth'
+        })
+    }
 
     useEffect(() => {
         // Get user auth status
@@ -90,6 +112,10 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                 setAnimeDetails(data.details)
                 setSimilarAnime(data.similar)
                 setPopularAnime(data.popular)
+                setSeasons(data.seasons || [])
+                setLatestSeasonEpisodes(data.latestSeasonEpisodes || null)
+                setTmdbId(data.tmdbId || null)
+                setVideos(data.videos || [])
                 setLoading(false)
 
                 // Track anime detail page view
@@ -107,10 +133,34 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     // Fetch AI description separately
                     fetchAIDescription(data.details.id, data.details.description, data.details, data.similar, data.popular)
                 }
+
+                // DEV ONLY: Fetch TMDB comparison data for console logging
+                if (process.env.NODE_ENV === 'development') {
+                    fetchTMDBComparison(resolvedParams.slug, data.details)
+                }
             } catch (err) {
                 console.error('Error fetching anime:', err)
                 setError('Failed to load anime details. The anime might not exist.')
                 setLoading(false)
+            }
+        }
+
+        async function fetchTMDBComparison(slug: string, anilistDetails: any) {
+            try {
+                const response = await fetch(`/api/anime/tmdb-compare/${slug}`)
+                if (!response.ok) {
+                    console.warn('TMDB comparison failed:', response.status)
+                    return
+                }
+
+                const comparison = await response.json()
+
+                // Pretty print comparison to console
+
+
+                console.groupEnd()
+
+            } catch (error) {
             }
         }
 
@@ -168,7 +218,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     <h1 className="text-2xl font-bold text-gray-900 mb-4">Anime Not Found</h1>
                     <p className="text-gray-600 mb-6">{error || 'The anime you\'re looking for doesn\'t exist.'}</p>
                     <button
-                        onClick={() => router.push('/recommendation')}
+                        onClick={() => router.push('/')}
                         className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors"
                     >
                         Back to Recommendations
@@ -183,15 +233,15 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-                {/* Hero Section with Banner */}
-                <section className="relative w-full h-[300px] md:h-[400px] bg-gray-900">
-                    {/* Banner Image */}
-                    <div className="absolute inset-0">
+                {/* Hero Section with Banner - Full Width */}
+                <section className="relative w-full h-[546px] bg-gray-900">
+                    {/* Banner Image - Full Width */}
+                    <div className="absolute inset-0 w-full">
                         <Image
                             src={animeDetails.bannerImage}
                             alt={animeDetails.title}
                             fill
-                            className="object-contain"
+                            className="object-cover"
                             priority
                         />
                         {/* Gradient Overlay */}
@@ -201,7 +251,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     {/* Back Button */}
                     <button
                         onClick={() => router.back()}
-                        className="absolute top-6 left-6 md:left-10 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all backdrop-blur-sm"
+                        className="absolute top-6 left-6 md:left-16 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all backdrop-blur-sm"
                         aria-label="Go back"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -212,7 +262,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                     {/* Hero Content */}
                     <div className="relative z-10 h-full flex items-end">
-                        <div className="max-w-5xl mx-auto w-full px-10 pb-12">
+                        <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
                             <button
                                 onClick={() => {
                                     trackWatchlistAddClicked({
@@ -226,17 +276,14 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                             >
                                 ADD TO WATCHLIST
                             </button>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                            <h1 className="text-4xl md:text-5xl font-bold text-white">
                                 {animeDetails.title}
                             </h1>
-                            {animeDetails.englishTitle && animeDetails.englishTitle !== animeDetails.title && (
-                                <p className="text-xl text-white/90">{animeDetails.englishTitle}</p>
-                            )}
                         </div>
                     </div>
                 </section>
 
-                <div className="max-w-5xl mx-auto px-10 pt-6 pb-12">
+                <div className={`container mx-auto max-w-7xl px-6 md:px-16 pt-6 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pb-12' : 'pb-0'}`}>
                     {/* Description Section */}
                     <section className="mb-8">
                         {descriptionLoading ? (
@@ -284,17 +331,63 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                                     </button>
                                 )}
                             </div>
+
+                            {/* Divider after buttons when no episodes/videos sections exist */}
+                            {!(seasons?.filter(s => s.season_number > 0).length > 0) && !(videos && videos.length > 0) && (
+                                <hr className="border-t border-gray-200 mt-16" />
+                            )}
                         </section>
                     )}
+                </div>
 
-                    {/* Divider */}
-                    <hr className="border-t border-gray-200 mb-16" />
+                {/* Divider before Recent Episodes */}
+                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
+                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
+                        <hr className="border-t border-gray-200" />
+                    </div>
+                )}
 
+                {/* Recent Episodes Section - Full Width */}
+                {seasons && seasons.length > 0 && (
+                    <RecentEpisodes
+                        seasons={seasons}
+                        latestSeasonEpisodes={latestSeasonEpisodes}
+                        onSeasonChange={async (seasonNumber: number) => {
+                            if (!tmdbId) return []
+                            const response = await fetch(`/api/anime/tmdb/season/${tmdbId}/${seasonNumber}`)
+                            if (!response.ok) return []
+                            const data = await response.json()
+                            return data.episodes || []
+                        }}
+                    />
+                )}
+
+                {/* Divider after Recent Episodes */}
+                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
+                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
+                        <hr className="border-t border-gray-200" />
+                    </div>
+                )}
+
+                {/* Videos Section */}
+                {videos && videos.length > 0 && (
+                    <VideosSection
+                        videos={videos}
+                        onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
+                    />
+                )}
+
+                {/* Divider after Videos */}
+                {videos && videos.length > 0 && (
+                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
+                        <hr className="border-t border-gray-200" />
+                    </div>
+                )}
+
+                <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
                     {/* Details Section */}
-                    <section className="mb-16">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold">Details</h2>
-                        </div>
+                    <section className={`mb-16 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pt-16' : ''}`}>
+                        <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-6">Details</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                             {animeDetails.episodes && (
                                 <div className="flex">
@@ -343,41 +436,80 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                         </div>
                     </section>
 
-                    {/* Divider */}
+                    {/* Divider after Details */}
                     <hr className="border-t border-gray-200 mb-16" />
 
                     {/* Similar Anime Section */}
                     {similarAnime.length > 0 && (
-                        <section className="mb-16">
+                        <section className="mb-16 group/similar">
                             <h2 className="text-2xl font-bold mb-6">Similar Anime You Might Enjoy</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                {similarAnime.map((anime) => (
-                                    <Link
-                                        key={anime.id}
-                                        href={`/anime/${slugify(anime.title)}`}
-                                        className="flex flex-col group"
-                                        onClick={() => {
-                                            trackAnimeSimilarClicked({
-                                                source_anime: animeDetails.title,
-                                                target_anime: anime.title,
-                                                auth_status: getAuthStatus(user)
-                                            })
-                                        }}
-                                    >
-                                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                            <Image
-                                                src={anime.image}
-                                                alt={anime.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
-                                        {anime.rating && (
-                                            <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
-                                        )}
-                                    </Link>
-                                ))}
+                            <div className="relative">
+                                {/* Left Arrow */}
+                                <button
+                                    onClick={() => scrollSimilar('left')}
+                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
+                                    aria-label="Scroll left"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M15 18l-6-6 6-6"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {/* Right Arrow */}
+                                <button
+                                    onClick={() => scrollSimilar('right')}
+                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
+                                    aria-label="Scroll right"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M9 18l6-6-6-6"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {/* Mobile fade overlay */}
+                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+
+                                {/* Scrollable Container */}
+                                <div
+                                    ref={similarScrollRef}
+                                    className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+                                    style={{
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none',
+                                    }}
+                                >
+                                    {similarAnime.map((anime) => (
+                                        <Link
+                                            key={anime.id}
+                                            href={`/anime/${slugify(anime.title)}`}
+                                            className="flex-none w-[45%] md:w-[calc(25%-0.75rem)] snap-start group"
+                                            onClick={() => {
+                                                trackAnimeSimilarClicked({
+                                                    source_anime: animeDetails.title,
+                                                    target_anime: anime.title,
+                                                    auth_status: getAuthStatus(user)
+                                                })
+                                            }}
+                                        >
+                                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
+                                                <Image
+                                                    src={anime.image}
+                                                    alt={anime.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
+                                            {anime.rating && (
+                                                <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
+                                            )}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </section>
                     )}

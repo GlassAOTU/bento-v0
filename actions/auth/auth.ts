@@ -16,15 +16,6 @@ export async function signup(formData: FormData) {
     }
 
     if (data.user) {
-        // Log user details to console
-        console.log('New user signed up:', {
-            id: data.user.id,
-            email: data.user.email,
-            email_confirmed_at: data.user.email_confirmed_at,
-            confirmed_at: data.user.confirmed_at,
-            created_at: data.user.created_at,
-        });
-
         // If email confirmation is required, user won't have email_confirmed_at
         const needsEmailConfirmation = !data.user.email_confirmed_at;
 
@@ -45,13 +36,10 @@ export async function signup(formData: FormData) {
 
 // Sign in user
 export async function signin(formData: FormData) {
-    console.log('[Server Action] signin called')
     const email = formData.get('email') as string
     const password = formData.get('password') as string
-    console.log('[Server Action] Email:', email)
 
     const supabase = await createClient();
-    console.log('[Server Action] Supabase client created')
 
     const {
         data: { user },
@@ -61,12 +49,10 @@ export async function signin(formData: FormData) {
         password,
     });
 
-    console.log('[Server Action] Supabase response:', { user: user?.email, error: error?.message })
 
     if (error) {
         // Check if error is due to unconfirmed email
         if (error.message === 'Email not confirmed') {
-            console.log('[Server Action] Email not confirmed error, returning needsEmailConfirmation');
             return {
                 success: true,
                 needsEmailConfirmation: true,
@@ -79,12 +65,9 @@ export async function signin(formData: FormData) {
     }
 
     if (user) {
-        console.log('[Server Action] User authenticated:', user.email)
-        console.log('[Server Action] Email confirmed at:', user.email_confirmed_at)
 
         // Check if email is confirmed
         if (!user.email_confirmed_at) {
-            console.log('[Server Action] User email not confirmed, returning needsEmailConfirmation')
             return {
                 success: true,
                 needsEmailConfirmation: true,
@@ -92,11 +75,9 @@ export async function signin(formData: FormData) {
             };
         }
 
-        console.log('[Server Action] Email confirmed, auth successful')
         return { success: true };
     }
 
-    console.log('[Server Action] No user returned, returning success')
     return { success: true };
 }
 
