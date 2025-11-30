@@ -35,6 +35,7 @@ interface Watchlist {
     id: string
     name: string
     description: string | null
+    is_public: boolean
     items: WatchlistItem[]
 }
 
@@ -152,7 +153,7 @@ function WatchlistsContent() {
         try {
             const { data: watchlistsData, error: watchlistsError } = await supabase
                 .from('watchlists')
-                .select('id, name, description')
+                .select('id, name, description, is_public')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 

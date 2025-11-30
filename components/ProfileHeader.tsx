@@ -1,29 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/browser-client'
-import { User } from '@supabase/supabase-js'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useAuth } from '@/lib/auth/AuthContext'
 
 export default function ProfileHeader() {
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const supabase = createClient()
-                const { data: { user } } = await supabase.auth.getUser()
-                setUser(user)
-            } catch (error) {
-                console.error('Error fetching user:', error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchUser()
-    }, [])
+    const { user, profile, loading } = useAuth()
 
     if (loading) {
         return (
@@ -38,22 +20,22 @@ export default function ProfileHeader() {
         return null
     }
 
-    // Try to get avatar from user metadata (OAuth providers)
-    const avatarUrl = user.user_metadata?.avatar_url ||
+    // Get avatar URL (prioritize profile, then OAuth metadata)
+    const avatarUrl = profile?.avatar_url ||
+        user.user_metadata?.avatar_url ||
         user.user_metadata?.picture ||
         null
 
-    // Generate initials from email
-    const email = user.email || 'User'
-    const initials = email
-        .split('@')[0]
-        .split(/[._-]/)
+    // Generate initials
+    const displayText = profile?.display_name || user.email || 'User'
+    const initials = displayText
+        .split(' ')
         .map(part => part[0])
         .join('')
         .toUpperCase()
         .slice(0, 2)
 
-    return (
+    const ProfileContent = (
         <div className="flex flex-col items-center py-8">
             {/* Avatar */}
             <div className="w-20 h-20 rounded-full overflow-hidden mb-4 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
@@ -70,8 +52,26 @@ export default function ProfileHeader() {
                 )}
             </div>
 
-            {/* Email */}
-            <p className="text-lg font-medium text-gray-900">{email}</p>
+            {/* Display Name or Email */}
+            <p className="text-lg font-medium text-gray-900">
+                {profile?.display_name || user.email}
+            </p>
+
+            {/* Username */}
+            {profile?.username && (
+                <p className="text-sm text-gray-500">@{profile.username}</p>
+            )}
         </div>
     )
+
+    // If user has a profile, make it a link to their public profile
+    if (profile?.username) {
+        return (
+            <Link href={`/profile/${profile.username}`} className="hover:opacity-80 transition-opacity">
+                {ProfileContent}
+            </Link>
+        )
+    }
+
+    return ProfileContent
 }
