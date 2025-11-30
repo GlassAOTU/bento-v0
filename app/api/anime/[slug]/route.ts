@@ -153,7 +153,7 @@ export async function GET(
                 const anilistId = anilistResults[0].id
 
                 // Fetch similar anime from AniList
-                const anilistSimilar = await fetchSimilarAnime(anilistId, 6)
+                const anilistSimilar = await fetchSimilarAnime(anilistId, 12)
 
                 // For each similar anime, try to find TMDB match for better images
                 similar = await Promise.all(anilistSimilar.map(async (anime: any) => {
@@ -231,27 +231,30 @@ export async function GET(
             videos: videos
         }
 
-        // Save to Supabase in background (don't await)
+        // Save to Supabase cache
         if (animeId) {
-            saveAnimeData(
-                animeId,
-                enrichedDetails,
-                similar,
-                popular,
-                aiDescription,
-                originalDescription
-            ).then(success => {
+            try {
+                const success = await saveAnimeData(
+                    animeId,
+                    enrichedDetails,
+                    similar,
+                    popular,
+                    aiDescription,
+                    originalDescription
+                )
                 if (success) {
-                    console.log(`Saved hybrid data for "${details.title}" (ID: ${animeId})`)
+                    console.log(`Saved data for "${details.title}" (ID: ${animeId})`)
                 } else {
                     console.error(`Failed to save data for "${details.title}" (ID: ${animeId})`)
                 }
-            })
+            } catch (error) {
+                console.error(`Error saving data for "${details.title}":`, error)
+            }
         }
 
         // Return response with episode data
         return NextResponse.json({
-            details,
+            details: enrichedDetails,
             similar,
             popular,
             seasons: seasons,
@@ -259,7 +262,7 @@ export async function GET(
             videos: videos,
             aiDescription: aiDescription,
             tmdbId: isUsingTMDB && tmdbData ? tmdbData.tmdb_id : null,
-            dataSource: isUsingTMDB ? 'TMDB' : 'AniList' // For debugging
+            dataSource: isUsingTMDB ? 'TMDB' : 'AniList'
         })
 
     } catch (error) {
