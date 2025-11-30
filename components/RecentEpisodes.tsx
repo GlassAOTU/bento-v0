@@ -88,7 +88,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                         >
                             <span className="text-sm font-medium">
-                                season {selectedSeasonNumber}
+                                {regularSeasons.find(s => s.season_number === selectedSeasonNumber)?.name || `Season ${selectedSeasonNumber}`}
                             </span>
                             <svg
                                 className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
@@ -118,7 +118,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                                                     : ''
                                             }`}
                                         >
-                                            season {season.season_number}
+                                            {season.name || `Season ${season.season_number}`}
                                         </button>
                                     ))}
                                 </div>

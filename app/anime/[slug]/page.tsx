@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -66,6 +66,22 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
     const [latestSeasonEpisodes, setLatestSeasonEpisodes] = useState<any>(null)
     const [tmdbId, setTmdbId] = useState<number | null>(null)
     const [videos, setVideos] = useState<any[]>([])
+    const similarScrollRef = useRef<HTMLDivElement>(null)
+
+    const scrollSimilar = (direction: 'left' | 'right') => {
+        const container = similarScrollRef.current
+        if (!container) return
+
+        const scrollAmount = container.clientWidth * 0.8
+        const targetScroll = direction === 'left'
+            ? container.scrollLeft - scrollAmount
+            : container.scrollLeft + scrollAmount
+
+        container.scrollTo({
+            left: targetScroll,
+            behavior: 'smooth'
+        })
+    }
 
     useEffect(() => {
         // Get user auth status
@@ -267,7 +283,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                     </div>
                 </section>
 
-                <div className="container mx-auto max-w-7xl px-6 md:px-16 pt-6 pb-12">
+                <div className={`container mx-auto max-w-7xl px-6 md:px-16 pt-6 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pb-12' : 'pb-0'}`}>
                     {/* Description Section */}
                     <section className="mb-8">
                         {descriptionLoading ? (
@@ -315,6 +331,11 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
                                     </button>
                                 )}
                             </div>
+
+                            {/* Divider after buttons when no episodes/videos sections exist */}
+                            {!(seasons?.filter(s => s.season_number > 0).length > 0) && !(videos && videos.length > 0) && (
+                                <hr className="border-t border-gray-200 mt-16" />
+                            )}
                         </section>
                     )}
                 </div>
@@ -365,7 +386,7 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                 <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
                     {/* Details Section */}
-                    <section className="pt-16 mb-16">
+                    <section className={`mb-16 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pt-16' : ''}`}>
                         <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-6">Details</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                             {animeDetails.episodes && (
@@ -420,36 +441,75 @@ export default function AnimePage({ params }: { params: Promise<{ slug: string }
 
                     {/* Similar Anime Section */}
                     {similarAnime.length > 0 && (
-                        <section className="mb-16">
+                        <section className="mb-16 group/similar">
                             <h2 className="text-2xl font-bold mb-6">Similar Anime You Might Enjoy</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                {similarAnime.map((anime) => (
-                                    <Link
-                                        key={anime.id}
-                                        href={`/anime/${slugify(anime.title)}`}
-                                        className="flex flex-col group"
-                                        onClick={() => {
-                                            trackAnimeSimilarClicked({
-                                                source_anime: animeDetails.title,
-                                                target_anime: anime.title,
-                                                auth_status: getAuthStatus(user)
-                                            })
-                                        }}
-                                    >
-                                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                            <Image
-                                                src={anime.image}
-                                                alt={anime.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
-                                        {anime.rating && (
-                                            <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
-                                        )}
-                                    </Link>
-                                ))}
+                            <div className="relative">
+                                {/* Left Arrow */}
+                                <button
+                                    onClick={() => scrollSimilar('left')}
+                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
+                                    aria-label="Scroll left"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M15 18l-6-6 6-6"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {/* Right Arrow */}
+                                <button
+                                    onClick={() => scrollSimilar('right')}
+                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
+                                    aria-label="Scroll right"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M9 18l6-6-6-6"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {/* Mobile fade overlay */}
+                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+
+                                {/* Scrollable Container */}
+                                <div
+                                    ref={similarScrollRef}
+                                    className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+                                    style={{
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none',
+                                    }}
+                                >
+                                    {similarAnime.map((anime) => (
+                                        <Link
+                                            key={anime.id}
+                                            href={`/anime/${slugify(anime.title)}`}
+                                            className="flex-none w-[45%] md:w-[calc(25%-0.75rem)] snap-start group"
+                                            onClick={() => {
+                                                trackAnimeSimilarClicked({
+                                                    source_anime: animeDetails.title,
+                                                    target_anime: anime.title,
+                                                    auth_status: getAuthStatus(user)
+                                                })
+                                            }}
+                                        >
+                                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
+                                                <Image
+                                                    src={anime.image}
+                                                    alt={anime.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
+                                            {anime.rating && (
+                                                <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
+                                            )}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </section>
                     )}
