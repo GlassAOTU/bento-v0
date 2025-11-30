@@ -6,7 +6,13 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-const AI_PROMPT = `Write a short anime synopsis in a reflective and descriptive tone. Use third-person storytelling, focusing on the main premise, emotional themes, and character motivations. Keep it very concise - around 250 characters (approximately 2-3 sentences). Use natural, polished language — expressive but not flowery. Maintain a tone similar to official anime synopses found on MyAnimeList or streaming platforms. Focus on the core story hook and emotional resonance.`
+const AI_PROMPT = `Write an anime synopsis in a reflective and descriptive tone. Use third-person storytelling, focusing on the main premise, emotional themes, and character motivations.
+
+Structure the synopsis as two paragraphs:
+- First paragraph (3-5 sentences): Introduce the setting, main character(s), and the central premise or conflict.
+- Second paragraph (3-5 sentences): Expand on the emotional stakes, themes, or what makes the story compelling.
+
+Use natural, polished language — expressive but not flowery. Maintain a tone similar to official anime synopses found on MyAnimeList or streaming platforms. Focus on the core story hook and emotional resonance. Do not include spoilers.`
 
 export async function POST(request: Request) {
     try {

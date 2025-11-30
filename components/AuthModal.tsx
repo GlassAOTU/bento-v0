@@ -123,58 +123,46 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
     }, [view])
 
     const handleSignup = async (formData: FormData) => {
-        console.log('[AuthModal] handleSignup called')
-        console.log('[AuthModal] Email:', formData.get('email'))
 
         setError(null) // Clear previous errors
 
         const result = await signup(formData)
 
-        console.log('[AuthModal] Signup result:', result)
 
         if (result?.needsEmailConfirmation) {
-            console.log('[AuthModal] Email needs confirmation, showing confirmation view')
             setEmail(result.email || '')
             setView('confirmation')
         } else if (result?.error) {
             console.error('[AuthModal] Signup error:', result.error)
             setError(getErrorMessage(result.error, true))
         } else if (result?.success) {
-            console.log('[AuthModal] Signup successful, refreshing session and closing modal')
 
             // Manually refresh the session on the client side (triggers onAuthStateChange)
             const supabase = await createClient()
             const { data, error } = await supabase.auth.refreshSession()
-            console.log('[AuthModal] Session refreshed:', { user: data.user?.email, error })
 
             // Modal will auto-close via onAuthStateChange in NavigationBar
         }
     }
 
     const handleSignin = async (formData: FormData) => {
-        console.log('[AuthModal] handleSignin called')
-        console.log('[AuthModal] Email:', formData.get('email'))
 
         setError(null) // Clear previous errors
 
         const result = await signin(formData)
 
-        console.log('[AuthModal] Signin result:', result)
 
         if (result?.needsEmailConfirmation) {
-            console.log('[AuthModal] Email needs confirmation, showing confirmation view')
             setEmail(result.email || '')
             setView('confirmation')
         } else if (result?.error) {
             console.error('[AuthModal] Signin error:', result.error)
             setError(getErrorMessage(result.error, false))
         } else if (result?.success) {
-            console.log('[AuthModal] Signin successful, refreshing session and closing modal')
 
             // Manually refresh the session on the client side (triggers onAuthStateChange)
             const supabase = await createClient()
             const { data, error } = await supabase.auth.refreshSession()
-            console.log('[AuthModal] Session refreshed:', { user: data.user?.email, error })
 
             // Modal will auto-close via onAuthStateChange in NavigationBar
         }
@@ -218,7 +206,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                 console.error('[AuthModal] Password reset error:', error.message)
                 setError(error.message)
             } else {
-                console.log('[AuthModal] Password reset email sent to:', resetEmail)
                 setView('password-reset-sent')
             }
         } catch (err) {
@@ -230,7 +217,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
 
     const handleOAuthSignIn = async (provider: 'google' | 'facebook' | 'apple') => {
         try {
-            console.log(`[AuthModal] Starting ${provider} OAuth sign in`)
             const supabase = await createClient()
 
             const { data, error } = await supabase.auth.signInWithOAuth({
@@ -244,7 +230,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
                 console.error(`[AuthModal] ${provider} OAuth error:`, error.message)
                 setError(`Failed to sign in with ${provider}. Please try again.`)
             } else {
-                console.log(`[AuthModal] ${provider} OAuth initiated successfully`)
                 // User will be redirected to provider's auth page
                 // After auth, they'll be redirected back to /auth/callback
                 // The callback will handle the session and redirect to home
@@ -330,7 +315,6 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
 
                         <form onSubmit={async (e) => {
                             e.preventDefault()
-                            console.log('[AuthModal] Sign in form submitted')
                             const formData = new FormData(e.currentTarget)
                             await handleSignin(formData)
                         }} className="flex flex-col gap-5">

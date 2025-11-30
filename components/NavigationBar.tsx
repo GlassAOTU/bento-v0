@@ -55,10 +55,10 @@ export default function NavigationBar() {
                     {/* Desktop Navigation Links */}
                     <div className="flex-row gap-12 hidden md:flex md:justify-center">
                         <a href="/" className={pathname === '/' ? 'font-semibold' : ''}>
-                            discover
-                        </a>
-                        <a href="/recommendation" className={pathname === '/recommendation' ? 'font-semibold' : ''}>
                             recommendations
+                        </a>
+                        <a href="/discover" className={pathname === '/discover' ? 'font-semibold' : ''}>
+                            discover
                         </a>
                         {user && (
                             <a href="/watchlists?tab=watchlist" className={pathname === '/watchlists' ? 'font-semibold' : ''}>
@@ -156,14 +156,14 @@ export default function NavigationBar() {
                             className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/' ? 'font-semibold' : ''}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                            discover
+                            recommendations
                         </a>
                         <a
-                            href="/recommendation"
-                            className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/recommendation' ? 'font-semibold' : ''}`}
+                            href="/discover"
+                            className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/discover' ? 'font-semibold' : ''}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                            recommendations
+                            discover
                         </a>
                         {user && (
                             <a
