@@ -13,15 +13,17 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
   images: {
     unoptimized: true,
-    domains: ['s4.anilist.co']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's4.anilist.co',
+      },
+    ],
   },
   experimental: {
     webpackBuildWorker: true,
