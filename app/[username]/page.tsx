@@ -1,7 +1,6 @@
 'use client'
 
 import { use, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import NavigationBar from '@/components/NavigationBar'
@@ -36,22 +35,17 @@ interface Review {
     created_at: string
 }
 
-interface WatchlistItem {
-    id: string
-    title: string
-    image: string
-}
-
 interface Watchlist {
     id: string
     name: string
+    slug: string | null
     description: string | null
-    items: WatchlistItem[]
+    item_count: number
+    cover_image_url: string | null
 }
 
 export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
     const resolvedParams = use(params)
-    const router = useRouter()
     const [profile, setProfile] = useState<Profile | null>(null)
     const [stats, setStats] = useState<Stats>({ watchlist_count: 0, review_count: 0, following_count: 0, followers_count: 0 })
     const [isFollowing, setIsFollowing] = useState(false)
@@ -63,7 +57,6 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     const [currentUser, setCurrentUser] = useState<any>(null)
     const [followLoading, setFollowLoading] = useState(false)
 
-    // Convert text to Title Case
     const toTitleCase = (str: string) => {
         return str.toLowerCase().split(' ').map(word => {
             return word.charAt(0).toUpperCase() + word.slice(1)
@@ -76,9 +69,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     }, [resolvedParams.username])
 
     const fetchCurrentUser = async () => {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        setCurrentUser(user)
+        try {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            setCurrentUser(user)
+        } catch {
+            setCurrentUser(null)
+        }
     }
 
     const fetchProfileData = async () => {
@@ -86,7 +83,6 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             setLoading(true)
             setError('')
 
-            // Fetch profile data
             const profileResponse = await fetch(`/api/profile/${resolvedParams.username}`)
             const profileData = await profileResponse.json()
 
@@ -100,34 +96,29 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             setStats(profileData.stats)
             setIsFollowing(profileData.isFollowing)
 
-            // Fetch reviews
             const reviewsResponse = await fetch(`/api/reviews/user/${resolvedParams.username}?limit=10`)
             const reviewsData = await reviewsResponse.json()
             setReviews(reviewsData.reviews || [])
 
-            // Fetch public watchlists
             const supabase = createClient()
             const { data: watchlistsData, error: watchlistsError } = await supabase
                 .rpc('get_public_watchlists', { target_username: resolvedParams.username.toLowerCase() })
 
             if (!watchlistsError && watchlistsData) {
-                // Fetch items for each watchlist
-                const watchlistsWithItems = await Promise.all(
+                const watchlistsWithCounts = await Promise.all(
                     watchlistsData.map(async (watchlist: any) => {
-                        const { data: items } = await supabase
+                        const { count } = await supabase
                             .from('watchlist_items')
-                            .select('id, title, image')
+                            .select('*', { count: 'exact', head: true })
                             .eq('watchlist_id', watchlist.id)
-                            .order('added_at', { ascending: false })
-                            .limit(6)
 
                         return {
                             ...watchlist,
-                            items: items || []
+                            item_count: count || 0
                         }
                     })
                 )
-                setWatchlists(watchlistsWithItems)
+                setWatchlists(watchlistsWithCounts)
             }
 
             setLoading(false)
@@ -144,7 +135,6 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         setFollowLoading(true)
         try {
             if (isFollowing) {
-                // Unfollow
                 const response = await fetch(`/api/follows/unfollow/${profile.user_id}`, {
                     method: 'DELETE'
                 })
@@ -154,7 +144,6 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     setStats(prev => ({ ...prev, followers_count: prev.followers_count - 1 }))
                 }
             } else {
-                // Follow
                 const response = await fetch('/api/follows', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -188,6 +177,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 ))}
             </div>
         )
+    }
+
+    const getWatchlistSlug = (watchlist: Watchlist) => {
+        return watchlist.slug || slugify(watchlist.name)
     }
 
     if (loading) {
@@ -379,45 +372,35 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                                 <p className="text-gray-500">No public watchlists yet</p>
                             </div>
                         ) : (
-                            <div className="space-y-16">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {watchlists.map((watchlist) => (
-                                    <div key={watchlist.id}>
-                                        <div className="mb-6">
-                                            <h2 className="text-3xl font-bold">{watchlist.name}</h2>
-                                            {watchlist.description && (
-                                                <p className="text-sm text-gray-500 mt-1">{watchlist.description}</p>
-                                            )}
+                                    <Link
+                                        key={watchlist.id}
+                                        href={`/${profile.username}/${getWatchlistSlug(watchlist)}`}
+                                        className="group block max-w-[634px]"
+                                    >
+                                        <div>
+                                            <div className="relative w-full" style={{ aspectRatio: '634/280' }}>
+                                                <Image
+                                                    src={watchlist.cover_image_url || '/images/defaultwatchlistdisplay.png'}
+                                                    alt={watchlist.name}
+                                                    fill
+                                                    className="object-contain"
+                                                />
+                                            </div>
+                                            <div
+                                                className="bg-white rounded-b-[15px] py-4 px-4"
+                                                style={{ boxShadow: '0 1.43px 1.43px rgba(0, 0, 0, 0.12)' }}
+                                            >
+                                                <h3 className="font-bold text-xl text-center">
+                                                    {watchlist.name}
+                                                </h3>
+                                                <p className="text-gray-400 text-sm text-center mt-1">
+                                                    {watchlist.item_count} anime
+                                                </p>
+                                            </div>
                                         </div>
-
-                                        {watchlist.items.length === 0 ? (
-                                            <div className="text-center py-8 border border-gray-200 rounded-lg">
-                                                <p className="text-gray-400">This watchlist is empty</p>
-                                            </div>
-                                        ) : (
-                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                                {watchlist.items.map((item) => (
-                                                    <Link
-                                                        key={item.id}
-                                                        href={`/anime/${slugify(item.title)}`}
-                                                        className="flex flex-col items-center group"
-                                                    >
-                                                        <div className="relative w-full aspect-square rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                                            <Image
-                                                                src={item.image || '/images/banner-not-available.png'}
-                                                                alt={item.title}
-                                                                width={425}
-                                                                height={425}
-                                                                className="object-cover w-full h-full"
-                                                            />
-                                                        </div>
-                                                        <p className="mt-3 text-center font-medium text-sm tracking-wide group-hover:text-gray-700 transition-colors">
-                                                            {toTitleCase(item.title)}
-                                                        </p>
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         )}

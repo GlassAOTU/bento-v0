@@ -5,6 +5,7 @@ import './globals.css'
 
 import PostHogProvider from '@/util/posthog-provider'
 import { AuthProvider } from '@/lib/auth/AuthContext'
+import { Providers } from './providers'
 
 export const metadata: Metadata = {
     title: 'Bento Anime',
@@ -37,9 +38,11 @@ export default function RootLayout({
             <body>
                 <PostHogProvider>
                     <AuthProvider>
-                        {children}
-                        <Analytics />
-                        <SpeedInsights />
+                        <Providers>
+                            {children}
+                            <Analytics />
+                            <SpeedInsights />
+                        </Providers>
                     </AuthProvider>
                 </PostHogProvider>
             </body>

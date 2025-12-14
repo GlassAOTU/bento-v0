@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/browser-client'
 
+const RESERVED_USERNAMES = [
+    'discover', 'watchlists', 'anime', 'api', 'auth', 'profile',
+    'settings', 'admin', 'help', 'about', 'terms', 'privacy',
+    'login', 'signup', 'register', 'signout', 'logout', 'search',
+    'explore', 'home', 'feed', 'notifications', 'messages', 'user'
+]
+
 type UsernameSetupModalProps = {
     isOpen: boolean
     onClose: () => void
@@ -22,11 +29,18 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
     // Username validation regex
     const usernameRegex = /^[a-z0-9_-]{3,20}$/
     const isUsernameFormatValid = username.length === 0 || usernameRegex.test(username.toLowerCase())
+    const isReserved = RESERVED_USERNAMES.includes(username.toLowerCase())
 
     // Debounced username availability check
     useEffect(() => {
         if (!username || username.length < 3 || !isUsernameFormatValid) {
             setUsernameAvailable(null)
+            return
+        }
+
+        // Early check for reserved usernames
+        if (isReserved) {
+            setUsernameAvailable(false)
             return
         }
 
@@ -49,7 +63,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
         }, 500) // 500ms debounce
 
         return () => clearTimeout(timer)
-    }, [username, isUsernameFormatValid])
+    }, [username, isUsernameFormatValid, isReserved])
 
     // Pre-fill display name from user metadata if available
     useEffect(() => {
@@ -143,6 +157,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
 
     const canSubmit = username.length >= 3 &&
                      isUsernameFormatValid &&
+                     !isReserved &&
                      usernameAvailable === true &&
                      !loading
 
@@ -200,7 +215,12 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                                 Username must be 3-20 characters and contain only lowercase letters, numbers, underscores, and hyphens
                             </p>
                         )}
-                        {isUsernameFormatValid && usernameAvailable === false && (
+                        {isUsernameFormatValid && isReserved && (
+                            <p className="mt-1 text-xs text-red-600">
+                                This username is reserved
+                            </p>
+                        )}
+                        {isUsernameFormatValid && !isReserved && usernameAvailable === false && (
                             <p className="mt-1 text-xs text-red-600">
                                 Username is already taken
                             </p>

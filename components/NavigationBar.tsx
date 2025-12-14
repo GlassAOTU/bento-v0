@@ -80,7 +80,7 @@ export default function NavigationBar() {
                                     Sign Out
                                 </button>
                                 <a
-                                    href="/watchlists?tab=recent-searches"
+                                    href={profile?.username ? `/${profile.username}` : '/watchlists'}
                                     className="block"
                                 >
                                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
@@ -191,7 +191,7 @@ export default function NavigationBar() {
                                             Sign Out
                                         </button>
                                         <a
-                                            href="/watchlists?tab=recent-searches"
+                                            href={profile?.username ? `/${profile.username}` : '/watchlists'}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                         >
                                             <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">

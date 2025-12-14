@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/browser-client'
 import { X } from 'lucide-react'
 import Image from 'next/image'
+import { slugify } from '@/lib/utils/slugify'
 
 interface WatchlistItem {
     id: string
@@ -171,13 +172,14 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                     throw new Error(`Failed to delete watchlist: ${watchlistError.message}`)
                 }
             } else {
-                // Update watchlist metadata
+                // Update watchlist metadata including slug
                 const { error: updateError } = await supabase
                     .from('watchlists')
                     .update({
                         name: name.trim(),
                         description: description.trim() || null,
-                        is_public: isPublic
+                        is_public: isPublic,
+                        slug: slugify(name.trim())
                     })
                     .eq('id', watchlist.id)
 

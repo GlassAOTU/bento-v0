@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server-client'
 
+const RESERVED_USERNAMES = [
+    'discover', 'watchlists', 'anime', 'api', 'auth', 'profile',
+    'settings', 'admin', 'help', 'about', 'terms', 'privacy',
+    'login', 'signup', 'register', 'signout', 'logout', 'search',
+    'explore', 'home', 'feed', 'notifications', 'messages', 'user'
+]
+
 // GET /api/profile/check-username/[username] - Check if username is available
 export async function GET(
     _request: Request,
@@ -16,6 +23,14 @@ export async function GET(
             return NextResponse.json({
                 available: false,
                 error: 'Username must be 3-20 characters and contain only lowercase letters, numbers, underscores, and hyphens'
+            })
+        }
+
+        // Check if username is reserved
+        if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
+            return NextResponse.json({
+                available: false,
+                error: 'This username is reserved'
             })
         }
 

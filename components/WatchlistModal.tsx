@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/browser-client'
-import { X } from 'lucide-react'
+import { X, ChevronLeft } from 'lucide-react'
+import { slugify } from '@/lib/utils/slugify'
 import UnauthenticatedWatchlistOverlay from './UnauthenticatedWatchlistOverlay'
 import AuthModal from './AuthModal'
 import {
@@ -19,6 +20,8 @@ interface Watchlist {
     id: string
     name: string
     description: string | null
+    cover_image_url: string | null
+    item_count: number
 }
 
 interface AnimeItem {
@@ -50,6 +53,10 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
     const [mounted, setMounted] = useState(false)
     const [showUnauthOverlay, setShowUnauthOverlay] = useState(false)
     const [showAuthModal, setShowAuthModal] = useState(false)
+    const [selectedWatchlists, setSelectedWatchlists] = useState<Set<string>>(new Set())
+    const [isExpanded, setIsExpanded] = useState(false)
+    const [skippedWatchlists, setSkippedWatchlists] = useState<string[]>([])
+    const [isPublic, setIsPublic] = useState(false)
 
     // Set mounted state on client side
     useEffect(() => {
@@ -64,14 +71,16 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
             setSuccessWatchlistName('')
             setShowUnauthOverlay(false)
             setShowAuthModal(false)
-            // Prevent body scroll when modal is open
+            setSelectedWatchlists(new Set())
+            setIsExpanded(false)
+            setSkippedWatchlists([])
+            setError(null)
+            setIsPublic(false)
             document.body.style.overflow = 'hidden'
         } else {
-            // Re-enable body scroll when modal is closed
             document.body.style.overflow = 'unset'
         }
 
-        // Cleanup function to ensure scroll is re-enabled
         return () => {
             document.body.style.overflow = 'unset'
         }
@@ -119,7 +128,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
             const { data, error: fetchError } = await supabase
                 .from('watchlists')
-                .select('id, name, description')
+                .select('id, name, description, cover_image_url')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
@@ -127,15 +136,22 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 console.error('Error fetching watchlists:', fetchError)
                 setError('Failed to load watchlists')
             } else {
-                const watchlistData = data || []
-                setWatchlists(watchlistData)
+                const watchlistsWithCounts = await Promise.all(
+                    (data || []).map(async (w) => {
+                        const { count } = await supabase
+                            .from('watchlist_items')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('watchlist_id', w.id)
+                        return { ...w, item_count: count || 0 }
+                    })
+                )
+                setWatchlists(watchlistsWithCounts)
 
-                // Track modal opened
                 if (anime) {
                     trackWatchlistModalOpened({
                         anime_title: anime.title,
-                        has_existing_watchlists: watchlistData.length > 0,
-                        watchlist_count: watchlistData.length,
+                        has_existing_watchlists: watchlistsWithCounts.length > 0,
+                        watchlist_count: watchlistsWithCounts.length,
                         auth_status: 'authenticated'
                     })
                 }
@@ -174,7 +190,9 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 .insert({
                     user_id: user.id,
                     name: newWatchlistName.trim(),
-                    description: newWatchlistDescription.trim() || null
+                    description: newWatchlistDescription.trim() || null,
+                    slug: slugify(newWatchlistName.trim()),
+                    is_public: isPublic
                 })
                 .select()
                 .single()
@@ -183,7 +201,6 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 console.error('Error creating watchlist:', createError)
                 setError(`Failed to create watchlist: ${createError.message}`)
             } else if (data && anime) {
-                // Track watchlist created
                 trackWatchlistCreated({
                     watchlist_name: data.name,
                     watchlist_id: data.id,
@@ -191,9 +208,13 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     anime_title: anime.title
                 })
 
-                // Add the anime to the newly created watchlist
-                // Update watchlists state to include the new one
-                setWatchlists([...watchlists, { id: data.id, name: data.name, description: data.description }])
+                setWatchlists([...watchlists, {
+                    id: data.id,
+                    name: data.name,
+                    description: data.description,
+                    cover_image_url: null,
+                    item_count: 0
+                }])
                 await addAnimeToWatchlist(data.id)
             }
         } catch (err) {
@@ -358,14 +379,53 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
         >
             <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-                    <h2 className="text-xl font-bold">Add to Watchlist</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
-                    >
-                        <X size={24} />
-                    </button>
+                <div className="sticky top-0 bg-white border-b border-gray-200 p-4">
+                    <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                            {(isExpanded || view === 'create') && !success && (
+                                <button
+                                    onClick={() => {
+                                        if (view === 'create') {
+                                            setView('select')
+                                            setNewWatchlistName('')
+                                            setNewWatchlistDescription('')
+                                            setError(null)
+                                        } else {
+                                            setIsExpanded(false)
+                                        }
+                                    }}
+                                    className="text-gray-500 hover:text-gray-700 transition-colors -ml-1"
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+                            )}
+                            <div>
+                                <h2 className="text-xl font-bold">
+                                    {view === 'create' ? 'New Watchlist' : isExpanded ? 'All Watchlists' : 'Add to Watchlist'}
+                                </h2>
+                                {!success && (
+                                    <p className="text-sm text-gray-500 mt-0.5">
+                                        {view === 'create' ? 'Create a new collection' : isExpanded ? 'Select a list to add to' : 'Save this show for later'}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            {anime && !success && view !== 'create' && (
+                                <img
+                                    src={anime.image}
+                                    alt={anime.title}
+                                    className="w-16 h-20 rounded-md object-cover"
+                                />
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="text-gray-500 hover:text-gray-700 transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -377,20 +437,34 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     )}
 
                     {success ? (
-                        <div className="text-center py-8">
-                            <div className="mb-4 text-6xl">✓</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Added to Watchlist!</h3>
-                            <p className="text-gray-600 mb-1">{anime?.title}</p>
-                            <p className="text-sm text-gray-500">was added to <span className="font-medium">{successWatchlistName}</span></p>
+                        <div
+                            className="text-center py-8 cursor-pointer"
+                            onClick={() => {
+                                onClose()
+                                setView('select')
+                                setNewWatchlistName('')
+                                setNewWatchlistDescription('')
+                            }}
+                        >
+                            {anime && (
+                                <img
+                                    src={anime.image}
+                                    alt={anime.title}
+                                    className="w-24 h-32 rounded-lg object-cover mx-auto mb-4"
+                                />
+                            )}
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                Added to {successWatchlistName}!
+                            </h3>
+                            {skippedWatchlists.length > 0 && (
+                                <p className="text-sm text-gray-500 mb-2">
+                                    Already in {skippedWatchlists.join(', ')}
+                                </p>
+                            )}
+                            <p className="text-sm text-gray-400">Click anywhere to continue</p>
                         </div>
                     ) : (
                         <>
-                            {anime && (
-                                <div className="mb-6 pb-6 border-b border-gray-200">
-                                    <p className="text-sm text-gray-500 mb-1">Adding:</p>
-                                    <p className="font-semibold text-gray-900">{anime.title}</p>
-                                </div>
-                            )}
 
                             {view === 'select' && (
                         <div>
@@ -410,28 +484,73 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 </div>
                             ) : (
                                 <div>
-                                    <p className="text-sm text-gray-600 mb-3">Select a watchlist:</p>
-                                    <div className="space-y-2 mb-4">
-                                        {watchlists.map((watchlist) => (
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-sm text-gray-600">Select a list</p>
+                                        {watchlists.length > 2 && !isExpanded && (
                                             <button
-                                                key={watchlist.id}
-                                                onClick={() => addAnimeToWatchlist(watchlist.id)}
-                                                disabled={adding}
-                                                className="w-full text-left p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                onClick={() => setIsExpanded(true)}
+                                                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                                             >
-                                                <p className="font-medium text-gray-900">{watchlist.name}</p>
-                                                {watchlist.description && (
-                                                    <p className="text-sm text-gray-500 mt-1">{watchlist.description}</p>
-                                                )}
+                                                View all lists
                                             </button>
-                                        ))}
+                                        )}
                                     </div>
-                                    <button
-                                        onClick={() => setView('create')}
-                                        className="w-full py-3 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
-                                    >
-                                        Create New Watchlist
-                                    </button>
+                                    <div className="space-y-2 mb-4">
+                                        {(isExpanded ? watchlists : watchlists.slice(0, 2)).map((watchlist) => {
+                                            const isSelected = selectedWatchlists.has(watchlist.id)
+                                            return (
+                                                <button
+                                                    key={watchlist.id}
+                                                    onClick={() => {
+                                                        setSelectedWatchlists(prev => {
+                                                            const next = new Set(prev)
+                                                            if (next.has(watchlist.id)) {
+                                                                next.delete(watchlist.id)
+                                                            } else {
+                                                                next.add(watchlist.id)
+                                                            }
+                                                            return next
+                                                        })
+                                                    }}
+                                                    disabled={adding}
+                                                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <img
+                                                        src={watchlist.cover_image_url || '/images/defaultwatchlistdisplay.png'}
+                                                        alt={watchlist.name}
+                                                        className="w-24 h-12 rounded-md object-cover flex-shrink-0"
+                                                    />
+                                                    <div className="flex-1 text-left min-w-0">
+                                                        <p className="font-medium text-gray-900 truncate">
+                                                            {watchlist.name} <span className="text-gray-400 font-normal">•</span> <span className="text-gray-500 font-normal">{watchlist.item_count} {watchlist.item_count === 1 ? 'item' : 'items'}</span>
+                                                        </p>
+                                                    </div>
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-colors ${
+                                                        isSelected ? 'border-pink-400 bg-pink-400' : 'border-gray-300'
+                                                    }`} />
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+
+                                    {selectedWatchlists.size > 0 ? (
+                                        <button
+                                            onClick={() => {
+                                                selectedWatchlists.forEach(id => addAnimeToWatchlist(id))
+                                            }}
+                                            disabled={adding}
+                                            className="w-full py-3 bg-pink-300 text-pink-900 rounded-xl hover:bg-pink-400 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {adding ? 'Adding...' : 'Add?'}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => setView('create')}
+                                            className="w-full py-3 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
+                                        >
+                                            Create New Watchlist
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -441,58 +560,77 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                         <div>
                             <form onSubmit={handleCreateWatchlist}>
                                 <div className="mb-4">
-                                    <label htmlFor="watchlist-name" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Watchlist Name *
+                                    <label htmlFor="watchlist-name" className="block text-sm font-medium text-gray-900 mb-2">
+                                        Watchlist Name
                                     </label>
                                     <input
                                         id="watchlist-name"
                                         type="text"
                                         value={newWatchlistName}
                                         onChange={(e) => setNewWatchlistName(e.target.value)}
-                                        placeholder="e.g., Must Watch, Action Anime, etc."
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                                         maxLength={100}
                                         required
                                     />
                                 </div>
 
                                 <div className="mb-6">
-                                    <label htmlFor="watchlist-description" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Description (optional)
+                                    <label htmlFor="watchlist-description" className="block text-sm font-medium text-gray-900 mb-2">
+                                        Description (Optional)
                                     </label>
                                     <textarea
                                         id="watchlist-description"
                                         value={newWatchlistDescription}
                                         onChange={(e) => setNewWatchlistDescription(e.target.value)}
-                                        placeholder="What's this watchlist for?"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent resize-none"
                                         rows={3}
                                         maxLength={500}
                                     />
                                 </div>
 
-                                <div className="flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setView('select')
-                                            setNewWatchlistName('')
-                                            setNewWatchlistDescription('')
-                                            setError(null)
-                                        }}
-                                        disabled={creating}
-                                        className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-[6px] hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={creating || !newWatchlistName.trim()}
-                                        className="flex-1 py-3 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {creating ? 'Creating...' : 'Create & Add'}
-                                    </button>
+                                <div className="mb-6">
+                                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                                        Visibility
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsPublic(true)}
+                                            className={`p-4 rounded-xl border transition-colors ${
+                                                isPublic ? 'border-gray-300 bg-gray-100' : 'border-gray-200 hover:border-gray-300'
+                                            }`}
+                                        >
+                                            <svg className="w-6 h-6 mx-auto mb-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10" strokeWidth="1.5"/>
+                                                <path strokeWidth="1.5" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                            </svg>
+                                            <p className="font-medium text-gray-900">Public</p>
+                                            <p className="text-xs text-gray-500">Visible to everyone</p>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsPublic(false)}
+                                            className={`p-4 rounded-xl border transition-colors ${
+                                                !isPublic ? 'border-gray-300 bg-gray-100' : 'border-gray-200 hover:border-gray-300'
+                                            }`}
+                                        >
+                                            <svg className="w-6 h-6 mx-auto mb-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeWidth="1.5"/>
+                                                <path strokeWidth="1.5" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                            </svg>
+                                            <p className="font-medium text-gray-900">Private</p>
+                                            <p className="text-xs text-gray-500">Only you can see this</p>
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={creating || !newWatchlistName.trim()}
+                                    className="w-full py-3 bg-[#F9F9F9] text-black rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {creating ? 'Creating...' : 'Create Watchlist'}
+                                </button>
                             </form>
                         </div>
                     )}
