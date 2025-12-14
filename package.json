@@ -1,32 +1,32 @@
 {
-    "name": "bento",
-    "version": "0.1.0",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint"
-    },
-    "dependencies": {
-        "@supabase/ssr": "^0.7.0",
-        "@supabase/supabase-js": "^2.75.0",
-        "@vercel/analytics": "^1.5.0",
-        "@vercel/speed-insights": "^1.2.0",
-        "autoprefixer": "^10.4.20",
-        "lucide-react": "^0.546.0",
-        "next": "^15.5.5",
-        "openai": "^4.93.0",
-        "posthog-js": "^1.239.1",
-        "react": "^19",
-        "react-spinners": "^0.17.0",
-        "tailwindcss-animate": "^1.0.7"
-    },
-    "devDependencies": {
-        "@types/node": "^22",
-        "@types/react": "^19",
-        "postcss": "^8",
-        "tailwindcss": "^3.4.17",
-        "typescript": "^5"
-    }
+  "name": "bento",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.75.0",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
+    "autoprefixer": "^10.4.20",
+    "lucide-react": "^0.546.0",
+    "next": "15.5.9",
+    "openai": "^4.93.0",
+    "posthog-js": "^1.239.1",
+    "react": "^19",
+    "react-spinners": "^0.17.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5"
+  }
 }
