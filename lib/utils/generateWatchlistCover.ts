@@ -147,22 +147,6 @@ export async function generateWatchlistCover(imageUrls: string[]): Promise<Buffe
         return CARD_POSITIONS[aIndex].zIndex - CARD_POSITIONS[bIndex].zIndex
     })
 
-    const grayBgWidth = 1900
-    const grayBgHeight = 850
-    const grayBgRadius = 45
-    const grayBgMask = createRoundedCornersMask(grayBgWidth, grayBgHeight, grayBgRadius)
-    const grayBackground = await sharp({
-        create: {
-            width: grayBgWidth,
-            height: grayBgHeight,
-            channels: 4,
-            background: { r: 235, g: 235, b: 235, alpha: 1 }
-        }
-    })
-        .composite([{ input: grayBgMask, blend: 'dest-in' }])
-        .png()
-        .toBuffer()
-
     const composite = await sharp({
         create: {
             width: CANVAS_WIDTH,
@@ -171,10 +155,7 @@ export async function generateWatchlistCover(imageUrls: string[]): Promise<Buffe
             background: { r: 0, g: 0, b: 0, alpha: 0 }
         }
     })
-        .composite([
-            { input: grayBackground, left: Math.round((CANVAS_WIDTH - grayBgWidth) / 2), top: 400 },
-            ...sortedCards
-        ])
+        .composite(sortedCards)
         .png()
         .toBuffer()
 
