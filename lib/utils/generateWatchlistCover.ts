@@ -1,10 +1,11 @@
 import sharp from 'sharp'
 
-const CANVAS_WIDTH = 634
-const CANVAS_HEIGHT = 350
-const CARD_WIDTH = 160
-const CARD_HEIGHT = 213
-const BORDER_RADIUS = 16
+const CANVAS_WIDTH = 2174
+const CANVAS_HEIGHT = 1300
+const CARD_WIDTH = 750
+const CARD_HEIGHT = 850
+const BORDER_RADIUS = 60
+const BORDER_WIDTH = 8
 
 interface CardPosition {
     x: number
@@ -14,9 +15,9 @@ interface CardPosition {
 }
 
 const CARD_POSITIONS: CardPosition[] = [
-    { x: 100, y: 155, rotate: -12, zIndex: 1 },
-    { x: 237, y: 140, rotate: 0, zIndex: 3 },
-    { x: 374, y: 155, rotate: 12, zIndex: 2 },
+    { x: 650, y: 640, rotate: -12, zIndex: 1 },
+    { x: 1087, y: 760, rotate: 0, zIndex: 3 },
+    { x: 1524, y: 640, rotate: 12, zIndex: 2 },
 ]
 
 async function fetchImage(url: string): Promise<Buffer> {
@@ -53,9 +54,27 @@ async function processCard(imageUrl: string, position: CardPosition): Promise<{ 
         .png()
         .toBuffer()
 
-    const shadowPadding = 20
-    const rotatedWidth = CARD_WIDTH + shadowPadding * 2
-    const rotatedHeight = CARD_HEIGHT + shadowPadding * 2
+    const borderedWidth = CARD_WIDTH + BORDER_WIDTH * 2
+    const borderedHeight = CARD_HEIGHT + BORDER_WIDTH * 2
+    const whiteBorderMask = createRoundedCornersMask(borderedWidth, borderedHeight, BORDER_RADIUS + BORDER_WIDTH)
+    const withBorder = await sharp({
+        create: {
+            width: borderedWidth,
+            height: borderedHeight,
+            channels: 4,
+            background: { r: 255, g: 255, b: 255, alpha: 1 }
+        }
+    })
+        .composite([
+            { input: whiteBorderMask, blend: 'dest-in' },
+            { input: rounded, left: BORDER_WIDTH, top: BORDER_WIDTH }
+        ])
+        .png()
+        .toBuffer()
+
+    const shadowPadding = 50
+    const rotatedWidth = borderedWidth + shadowPadding * 2
+    const rotatedHeight = borderedHeight + shadowPadding * 2
 
     const withShadow = await sharp({
         create: {
@@ -69,24 +88,24 @@ async function processCard(imageUrl: string, position: CardPosition): Promise<{ 
             {
                 input: await sharp({
                     create: {
-                        width: CARD_WIDTH + 4,
-                        height: CARD_HEIGHT + 4,
+                        width: borderedWidth + 4,
+                        height: borderedHeight + 4,
                         channels: 4,
-                        background: { r: 0, g: 0, b: 0, alpha: 0.15 }
+                        background: { r: 0, g: 0, b: 0, alpha: 0.12 }
                     }
                 })
-                    .blur(8)
+                    .blur(6)
                     .composite([{
-                        input: createRoundedCornersMask(CARD_WIDTH + 4, CARD_HEIGHT + 4, BORDER_RADIUS + 2),
+                        input: createRoundedCornersMask(borderedWidth + 4, borderedHeight + 4, BORDER_RADIUS + BORDER_WIDTH + 2),
                         blend: 'dest-in'
                     }])
                     .png()
                     .toBuffer(),
                 left: shadowPadding - 2,
-                top: shadowPadding + 2
+                top: shadowPadding + 3
             },
             {
-                input: rounded,
+                input: withBorder,
                 left: shadowPadding,
                 top: shadowPadding
             }
@@ -128,6 +147,22 @@ export async function generateWatchlistCover(imageUrls: string[]): Promise<Buffe
         return CARD_POSITIONS[aIndex].zIndex - CARD_POSITIONS[bIndex].zIndex
     })
 
+    const grayBgWidth = 1900
+    const grayBgHeight = 850
+    const grayBgRadius = 45
+    const grayBgMask = createRoundedCornersMask(grayBgWidth, grayBgHeight, grayBgRadius)
+    const grayBackground = await sharp({
+        create: {
+            width: grayBgWidth,
+            height: grayBgHeight,
+            channels: 4,
+            background: { r: 235, g: 235, b: 235, alpha: 1 }
+        }
+    })
+        .composite([{ input: grayBgMask, blend: 'dest-in' }])
+        .png()
+        .toBuffer()
+
     const composite = await sharp({
         create: {
             width: CANVAS_WIDTH,
@@ -136,7 +171,10 @@ export async function generateWatchlistCover(imageUrls: string[]): Promise<Buffe
             background: { r: 0, g: 0, b: 0, alpha: 0 }
         }
     })
-        .composite(sortedCards)
+        .composite([
+            { input: grayBackground, left: Math.round((CANVAS_WIDTH - grayBgWidth) / 2), top: 400 },
+            ...sortedCards
+        ])
         .png()
         .toBuffer()
 

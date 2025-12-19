@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/browser-client'
-import { X, ChevronLeft } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 import { slugify } from '@/lib/utils/slugify'
 import UnauthenticatedWatchlistOverlay from './UnauthenticatedWatchlistOverlay'
 import AuthModal from './AuthModal'
@@ -22,6 +22,7 @@ interface Watchlist {
     description: string | null
     cover_image_url: string | null
     item_count: number
+    preview_images: string[]
 }
 
 interface AnimeItem {
@@ -142,7 +143,14 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                             .from('watchlist_items')
                             .select('*', { count: 'exact', head: true })
                             .eq('watchlist_id', w.id)
-                        return { ...w, item_count: count || 0 }
+                        const { data: items } = await supabase
+                            .from('watchlist_items')
+                            .select('image')
+                            .eq('watchlist_id', w.id)
+                            .order('created_at', { ascending: false })
+                            .limit(3)
+                        const preview_images = (items || []).map(item => item.image).filter(Boolean)
+                        return { ...w, item_count: count || 0, preview_images }
                     })
                 )
                 setWatchlists(watchlistsWithCounts)
@@ -213,7 +221,8 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     name: data.name,
                     description: data.description,
                     cover_image_url: null,
-                    item_count: 0
+                    item_count: 0,
+                    preview_images: []
                 }])
                 await addAnimeToWatchlist(data.id)
             }
@@ -314,6 +323,17 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     auth_status: 'authenticated'
                 })
 
+                // Regenerate cover image if watchlist has 3+ items (fire-and-forget)
+                const { count } = await supabase
+                    .from('watchlist_items')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('watchlist_id', watchlistId)
+
+                if (count && count >= 3) {
+                    fetch(`/api/watchlists/${watchlistId}/generate-cover`, { method: 'POST' })
+                        .catch(err => console.warn('Cover generation failed:', err))
+                }
+
                 // Success! Show success message
                 setSuccess(true)
                 setSuccessWatchlistName(watchlistName)
@@ -377,9 +397,9 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 }
             }}
         >
-            <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-[10px] w-[520px] max-w-[calc(100vw-32px)] max-h-[90vh] overflow-y-auto border border-black/20" style={{ borderWidth: '0.5px' }} onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 p-4">
+                <div className="p-4">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-2">
                             {(isExpanded || view === 'create') && !success && (
@@ -400,7 +420,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 </button>
                             )}
                             <div>
-                                <h2 className="text-xl font-bold">
+                                <h2 className="text-xl font-bold text-black">
                                     {view === 'create' ? 'New Watchlist' : isExpanded ? 'All Watchlists' : 'Add to Watchlist'}
                                 </h2>
                                 {!success && (
@@ -410,26 +430,21 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-start gap-3">
-                            {anime && !success && view !== 'create' && (
-                                <img
-                                    src={anime.image}
-                                    alt={anime.title}
-                                    className="w-16 h-20 rounded-md object-cover"
-                                />
-                            )}
-                            <button
-                                onClick={onClose}
-                                className="text-gray-500 hover:text-gray-700 transition-colors"
-                            >
-                                <X size={24} />
-                            </button>
-                        </div>
+                        {anime && !success && view !== 'create' && (
+                            <img
+                                src={anime.image}
+                                alt={anime.title}
+                                className="w-16 h-16 rounded-lg object-cover bg-gray-200"
+                            />
+                        )}
                     </div>
                 </div>
 
+                {/* Divider */}
+                {!success && view === 'select' && <div className="mx-4 border-t border-gray-200" />}
+
                 {/* Content */}
-                <div className="p-6">
+                <div className="p-4 pt-4">
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
                             {error}
@@ -477,9 +492,9 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                     <p className="text-gray-500 mb-4">You don't have any watchlists yet.</p>
                                     <button
                                         onClick={() => setView('create')}
-                                        className="w-full py-3 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
+                                        className="w-full py-4 bg-[#F9F9F9] text-black rounded-[10px] border border-gray-200 hover:bg-gray-100 transition-colors font-medium"
                                     >
-                                        Create Your First Watchlist
+                                        Create your first watchlist
                                     </button>
                                 </div>
                             ) : (
@@ -489,13 +504,13 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                         {watchlists.length > 2 && !isExpanded && (
                                             <button
                                                 onClick={() => setIsExpanded(true)}
-                                                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                                className="text-sm text-black hover:text-gray-600 font-medium"
                                             >
                                                 View all lists
                                             </button>
                                         )}
                                     </div>
-                                    <div className="space-y-2 mb-4">
+                                    <div className="space-y-3 mb-4">
                                         {(isExpanded ? watchlists : watchlists.slice(0, 2)).map((watchlist) => {
                                             const isSelected = selectedWatchlists.has(watchlist.id)
                                             return (
@@ -513,20 +528,20 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                                         })
                                                     }}
                                                     disabled={adding}
-                                                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    className="w-full flex items-center gap-4 p-4 rounded-[10px] border border-gray-200 hover:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     <img
                                                         src={watchlist.cover_image_url || '/images/defaultwatchlistdisplay.png'}
                                                         alt={watchlist.name}
-                                                        className="w-24 h-12 rounded-md object-cover flex-shrink-0"
+                                                        className="w-[160px] h-[80px] rounded-lg object-cover flex-shrink-0"
                                                     />
                                                     <div className="flex-1 text-left min-w-0">
-                                                        <p className="font-medium text-gray-900 truncate">
+                                                        <p className="font-semibold text-black">
                                                             {watchlist.name} <span className="text-gray-400 font-normal">•</span> <span className="text-gray-500 font-normal">{watchlist.item_count} {watchlist.item_count === 1 ? 'item' : 'items'}</span>
                                                         </p>
                                                     </div>
                                                     <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-colors ${
-                                                        isSelected ? 'border-pink-400 bg-pink-400' : 'border-gray-300'
+                                                        isSelected ? 'border-pink-300 bg-pink-300' : 'border-gray-300'
                                                     }`} />
                                                 </button>
                                             )
@@ -546,9 +561,9 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                     ) : (
                                         <button
                                             onClick={() => setView('create')}
-                                            className="w-full py-3 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium"
+                                            className="w-full py-4 bg-[#F9F9F9] text-black rounded-[10px] border border-gray-200 hover:bg-gray-100 transition-colors font-medium"
                                         >
-                                            Create New Watchlist
+                                            Create new watchlist
                                         </button>
                                     )}
                                 </div>

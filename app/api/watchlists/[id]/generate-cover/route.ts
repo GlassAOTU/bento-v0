@@ -37,7 +37,7 @@ export async function POST(
             .from('watchlist_items')
             .select('image')
             .eq('watchlist_id', watchlistId)
-            .order('added_at', { ascending: true })
+            .order('added_at', { ascending: false })
             .limit(3)
 
         if (itemsError) {

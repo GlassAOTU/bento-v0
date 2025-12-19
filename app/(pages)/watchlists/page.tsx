@@ -12,6 +12,7 @@ import RecentSearchCard from '@/components/RecentSearchCard'
 import EditWatchlistModal from '@/components/EditWatchlistModal'
 import { slugify } from '@/lib/utils/slugify'
 import { getRecentSearches, RecentSearch } from '@/lib/utils/localStorage'
+import { useAuth } from '@/lib/auth/AuthContext'
 import {
     trackMyAnimePageViewed,
     trackWatchlistTabSwitched,
@@ -36,6 +37,7 @@ interface Watchlist {
     name: string
     description: string | null
     is_public: boolean
+    slug: string
     items: WatchlistItem[]
 }
 
@@ -81,6 +83,9 @@ function WatchlistsContent() {
     const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editingWatchlist, setEditingWatchlist] = useState<Watchlist | null>(null)
+    const [shareDropdownId, setShareDropdownId] = useState<string | null>(null)
+    const [copiedId, setCopiedId] = useState<string | null>(null)
+    const { profile } = useAuth()
 
     // Get active tab from URL params, default to 'watchlist'
     const activeTab = searchParams.get('tab') || 'watchlist'
@@ -153,7 +158,7 @@ function WatchlistsContent() {
         try {
             const { data: watchlistsData, error: watchlistsError } = await supabase
                 .from('watchlists')
-                .select('id, name, description, is_public')
+                .select('id, name, description, is_public, slug')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
@@ -325,19 +330,79 @@ function WatchlistsContent() {
                                                 <p className="text-sm text-gray-500 mt-1">{watchlist.description}</p>
                                             )}
                                         </div>
-                                        <button
-                                            onClick={() => {
-                                                trackWatchlistEdited({
-                                                    watchlist_name: watchlist.name,
-                                                    watchlist_id: watchlist.id
-                                                })
-                                                setEditingWatchlist(watchlist)
-                                                setIsEditModalOpen(true)
-                                            }}
-                                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                                        >
-                                            Edit
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <div className="relative">
+                                                {watchlist.is_public && profile ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => setShareDropdownId(shareDropdownId === watchlist.id ? null : watchlist.id)}
+                                                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                                        >
+                                                            Share
+                                                        </button>
+                                                        {shareDropdownId === watchlist.id && (
+                                                            <>
+                                                                <div
+                                                                    className="fixed inset-0 z-10"
+                                                                    onClick={() => setShareDropdownId(null)}
+                                                                />
+                                                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const url = `${window.location.origin}/${profile.username}/${watchlist.slug}`
+                                                                            navigator.clipboard.writeText(url)
+                                                                            setCopiedId(watchlist.id)
+                                                                            setTimeout(() => setCopiedId(null), 2000)
+                                                                        }}
+                                                                        className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                                                                    >
+                                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                                        </svg>
+                                                                        {copiedId === watchlist.id ? 'Copied!' : 'Copy link'}
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const url = `${window.location.origin}/${profile.username}/${watchlist.slug}`
+                                                                            const text = 'Check out my anime watchlist!'
+                                                                            window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank')
+                                                                            setShareDropdownId(null)
+                                                                        }}
+                                                                        className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-t border-gray-100"
+                                                                    >
+                                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                                                        </svg>
+                                                                        Share on X
+                                                                    </button>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <button
+                                                        disabled
+                                                        title="Make this watchlist public to share"
+                                                        className="px-6 py-2 text-sm font-medium border border-gray-200 rounded-md text-gray-400 cursor-not-allowed"
+                                                    >
+                                                        Share
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    trackWatchlistEdited({
+                                                        watchlist_name: watchlist.name,
+                                                        watchlist_id: watchlist.id
+                                                    })
+                                                    setEditingWatchlist(watchlist)
+                                                    setIsEditModalOpen(true)
+                                                }}
+                                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                            >
+                                                Edit
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Anime Grid */}
