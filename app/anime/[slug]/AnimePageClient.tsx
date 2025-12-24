@@ -298,50 +298,6 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                             </p>
                         )}
                     </section>
-
-                    {/* Buttons Section */}
-                    {(animeDetails.externalLinks || animeDetails.trailer) && (
-                        <section className="mb-16">
-                            <div className="flex gap-3">
-                                {animeDetails.externalLinks && (
-                                    <a
-                                        href={animeDetails.externalLinks.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={() => {
-                                            trackAnimeExternalLinkClicked({
-                                                anime_title: animeDetails.title,
-                                                platform: animeDetails.externalLinks!.site
-                                            })
-                                        }}
-                                    >
-                                        <button className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">
-                                            {animeDetails.externalLinks.site}
-                                        </button>
-                                    </a>
-                                )}
-
-                                {animeDetails.trailer && animeDetails.trailer.id && (
-                                    <button
-                                        onClick={() => {
-                                            trackAnimeTrailerWatched({
-                                                anime_title: animeDetails.title
-                                            })
-                                            setActiveTrailer(animeDetails.trailer?.id || null)
-                                        }}
-                                        className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
-                                    >
-                                        Watch Trailer
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Divider after buttons when no episodes/videos sections exist */}
-                            {!(seasons?.filter(s => s.season_number > 0).length > 0) && !(videos && videos.length > 0) && (
-                                <hr className="border-t border-gray-200 mt-16" />
-                            )}
-                        </section>
-                    )}
                 </div>
 
                 {/* Divider before Recent Episodes */}
