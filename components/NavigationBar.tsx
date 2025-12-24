@@ -118,7 +118,7 @@ export default function NavigationBar() {
                                     }}
                                     className="text-sm p-2 rounded-md bg-mySecondary text-white hover:bg-[#2b2b2b] transition-colors"
                                 >
-                                    Join
+                                    Create Account
                                 </button>
                             </div>
                         )}
@@ -232,7 +232,7 @@ export default function NavigationBar() {
                                         }}
                                         className="block w-full text-center py-2 px-4 rounded-md bg-mySecondary text-white hover:bg-[#2b2b2b] transition-colors"
                                     >
-                                        Join
+                                        Create Account
                                     </button>
                                 </>
                             )}

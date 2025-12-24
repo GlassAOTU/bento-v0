@@ -178,7 +178,7 @@ function DiscoverContent() {
                     <section className="flex justify-center sm:px-10 mb-2">
                         <div className="relative max-w-[1200px]">
                             <Image
-                                src="/images/header-image.png"
+                                src="/images/header-image-2.png"
                                 alt="Banner"
                                 width={600}
                                 height={300}

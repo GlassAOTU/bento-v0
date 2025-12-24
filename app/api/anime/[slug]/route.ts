@@ -45,8 +45,31 @@ export async function GET(
         // If we have fresh cached data, return it
         if (cachedData && !shouldRefresh(cachedData.last_fetched, cachedData.status)) {
             console.log(`Using cached data for "${searchTerm}" (ID: ${animeId})`)
+
+            // Check if streamingLinks is missing from cached data - fetch if needed
+            let details = cachedData.details
+            if (!details.streamingLinks || details.streamingLinks.length === 0) {
+                try {
+                    const anilistDetails = await fetchFullAnimeDetails(searchTerm)
+                    if (anilistDetails.streamingLinks && anilistDetails.streamingLinks.length > 0) {
+                        details = { ...details, streamingLinks: anilistDetails.streamingLinks }
+                        // Update cache with streaming links
+                        saveAnimeData(
+                            animeId!,
+                            details,
+                            cachedData.similar_anime,
+                            cachedData.popular_anime,
+                            cachedData.ai_description,
+                            cachedData.original_description
+                        )
+                    }
+                } catch (err) {
+                    // Silent fail - streaming links are optional
+                }
+            }
+
             return NextResponse.json({
-                details: cachedData.details,
+                details,
                 similar: cachedData.similar_anime,
                 popular: cachedData.popular_anime,
                 seasons: cachedData.details.seasons || [],
@@ -99,12 +122,23 @@ export async function GET(
                 externalLinks: tmdbData.details.external_ids?.imdb_id ? {
                     url: `https://www.imdb.com/title/${tmdbData.details.external_ids.imdb_id}`,
                     site: 'IMDB'
-                } : null
+                } : null,
+                streamingLinks: [] // Will be populated from AniList below
             }
 
             latestSeasonEpisodes = tmdbData.latestSeasonEpisodes
             seasons = tmdbData.seasons?.seasons || []
             videos = tmdbData.details.videos || []
+
+            // Fetch streaming links from AniList (TMDB doesn't have this)
+            try {
+                const anilistDetails = await fetchFullAnimeDetails(searchTerm)
+                if (anilistDetails.streamingLinks && anilistDetails.streamingLinks.length > 0) {
+                    details.streamingLinks = anilistDetails.streamingLinks
+                }
+            } catch (err) {
+                // Silent fail - streaming links are optional
+            }
         } else {
             // Fallback to AniList
             try {
