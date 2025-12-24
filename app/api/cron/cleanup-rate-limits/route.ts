@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server-client'
 
-export const config = {
-  runtime: 'edge',
-}
+export const runtime = 'edge'
 
 export async function GET(request: Request) {
   // Verify the request is from Vercel Cron with the secret

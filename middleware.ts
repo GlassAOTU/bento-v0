@@ -8,8 +8,16 @@ export function isPublicRoute(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+
+    // Redirect /profile/{username} to /{username}
+    if (pathname.startsWith('/profile/')) {
+        const username = pathname.replace('/profile/', '');
+        return NextResponse.redirect(new URL(`/${username}`, request.url), 301);
+    }
+
     // update user session if he is authenticated
-    const { user, response } = await updateSession(request);
+    const { response } = await updateSession(request);
 
     return response;
 }

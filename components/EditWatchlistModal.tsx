@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/browser-client'
 import { X } from 'lucide-react'
 import Image from 'next/image'
+import { slugify } from '@/lib/utils/slugify'
 
 interface WatchlistItem {
     id: string
@@ -20,6 +21,7 @@ interface Watchlist {
     id: string
     name: string
     description: string | null
+    is_public?: boolean
     items: WatchlistItem[]
 }
 
@@ -33,6 +35,7 @@ interface EditWatchlistModalProps {
 export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave }: EditWatchlistModalProps) {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
+    const [isPublic, setIsPublic] = useState(false)
     const [itemsToRemove, setItemsToRemove] = useState<Set<string>>(new Set())
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -50,6 +53,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
         if (watchlist && isOpen) {
             setName(watchlist.name)
             setDescription(watchlist.description || '')
+            setIsPublic(watchlist.is_public || false)
             setItemsToRemove(new Set())
             setError(null)
             setSuccess(false)
@@ -85,6 +89,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
     const hasChanges = watchlist ? (
         name.trim() !== watchlist.name ||
         (description.trim() || null) !== watchlist.description ||
+        isPublic !== (watchlist.is_public || false) ||
         itemsToRemove.size > 0
     ) : false
 
@@ -167,12 +172,14 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                     throw new Error(`Failed to delete watchlist: ${watchlistError.message}`)
                 }
             } else {
-                // Update watchlist metadata
+                // Update watchlist metadata including slug
                 const { error: updateError } = await supabase
                     .from('watchlists')
                     .update({
                         name: name.trim(),
-                        description: description.trim() || null
+                        description: description.trim() || null,
+                        is_public: isPublic,
+                        slug: slugify(name.trim())
                     })
                     .eq('id', watchlist.id)
 
@@ -325,6 +332,32 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     rows={3}
                                     maxLength={500}
                                 />
+                            </div>
+
+                            {/* Visibility Toggle */}
+                            <div className="mb-6">
+                                <label className="flex items-center justify-between p-4 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
+                                    <div>
+                                        <span className="block text-sm font-medium text-gray-700">Make this watchlist public</span>
+                                        <span className="block text-xs text-gray-500 mt-1">Public watchlists will appear on your profile</span>
+                                    </div>
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            checked={isPublic}
+                                            onChange={(e) => setIsPublic(e.target.checked)}
+                                            disabled={willDeleteEntireWatchlist}
+                                            className="sr-only peer"
+                                        />
+                                        <div className={`w-11 h-6 rounded-full peer peer-focus:ring-2 peer-focus:ring-black transition-colors ${
+                                            isPublic ? 'bg-black' : 'bg-gray-300'
+                                        } ${willDeleteEntireWatchlist ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                            <div className={`absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform ${
+                                                isPublic ? 'translate-x-5' : 'translate-x-0'
+                                            }`}></div>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
 
                             {/* Items Section */}

@@ -7,10 +7,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-// tells vercel to run route as edge function
-export const config = {
-    runtime: 'edge',
-}
+export const runtime = 'edge'
 
 export async function POST(request: Request) {
 
