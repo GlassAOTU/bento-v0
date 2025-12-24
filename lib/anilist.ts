@@ -1,3 +1,9 @@
+const STREAMING_SITES = [
+    'Crunchyroll', 'Funimation', 'Netflix', 'Hulu',
+    'Amazon Prime Video', 'HIDIVE', 'VRV', 'Tubi',
+    'Disney Plus', 'HBO Max', 'Peacock', 'YouTube', 'Bilibili'
+]
+
 export async function fetchAnimeDetails(animeTitle: string) {
     const query = `
     query ($search: String) {
@@ -421,6 +427,12 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
             site: media.trailer.site
         } : null,
         externalLinks: media.externalLinks?.[0] || null,
+        streamingLinks: (media.externalLinks || [])
+            .filter((link: any) => STREAMING_SITES.some(site =>
+                link.site.toLowerCase().includes(site.toLowerCase())
+            ))
+            .slice(0, 3)
+            .map((link: any) => ({ url: link.url, site: link.site })),
         streamingEpisodes: media.streamingEpisodes || [],
         airingSchedule: media.airingSchedule?.nodes || []
     }

@@ -1,589 +1,153 @@
-'use client'
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import AnimePageClient from './AnimePageClient'
+import { unslugify } from '@/lib/utils/slugify'
+import { getAnimeDataBySlug } from '@/lib/anime-server'
 
-import { use, useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import Link from 'next/link'
-import NavigationBar from '@/components/NavigationBar'
-import Footer from '@/components/Footer'
-import WatchlistModal from '@/components/WatchlistModal'
-import RecentEpisodes from '@/components/RecentEpisodes'
-import VideosSection from '@/components/VideosSection'
-import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
-import { slugify } from '@/lib/utils/slugify'
-import {
-    trackAnimeDetailViewed,
-    trackAnimeTrailerWatched,
-    trackAnimeExternalLinkClicked,
-    trackAnimeSimilarClicked,
-    trackWatchlistAddClicked,
-    getReferrerPage,
-    getAuthStatus
-} from '@/lib/analytics/events'
-import { useAuth } from '@/lib/auth/AuthContext'
-
-interface AnimeDetails {
-    id: number
-    title: string
-    romajiTitle: string | null
-    bannerImage: string
-    coverImage: string
-    description: string
-    episodes: number | null
-    status: string
-    aired: string
-    premiered: string | null
-    studios: string
-    genres: string[]
-    duration: string | null
-    rating: number | null
-    trailer: { id: string; site: string } | null
-    externalLinks: { url: string; site: string } | null
+interface PageProps {
+    params: Promise<{ slug: string }>
 }
 
-interface AnimeCard {
-    id: number
-    title: string
-    image: string
-    rating: number | null
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params
+
+    try {
+        const data = await getAnimeDataBySlug(slug)
+
+        if (!data) {
+            return {
+                title: 'Anime Not Found | Bento Anime',
+                description: 'The anime you are looking for could not be found.',
+            }
+        }
+
+        const { details } = data
+        const streamingPlatforms = details.streamingLinks?.map((l: any) => l.site).join(', ') || ''
+        const hasStreaming = streamingPlatforms.length > 0
+
+        const title = hasStreaming
+            ? `Watch ${details.title} | Stream on ${streamingPlatforms}`
+            : `${details.title} | Bento Anime`
+
+        const description = hasStreaming
+            ? `Where to watch ${details.title}. Stream on ${streamingPlatforms}. ${details.description?.slice(0, 100) || ''}...`
+            : `${details.description?.slice(0, 150) || `Discover ${details.title} on Bento Anime`}...`
+
+        return {
+            title,
+            description,
+            keywords: [
+                details.title,
+                `watch ${details.title}`,
+                `where to watch ${details.title}`,
+                `${details.title} streaming`,
+                `${details.title} anime`,
+                ...(details.genres || []),
+                ...(hasStreaming ? streamingPlatforms.split(', ').map((p: string) => `${details.title} ${p}`) : []),
+            ],
+            openGraph: {
+                title: hasStreaming ? `Watch ${details.title}` : details.title,
+                description: hasStreaming
+                    ? `Stream ${details.title} on ${streamingPlatforms}`
+                    : details.description?.slice(0, 150) || `Discover ${details.title}`,
+                images: [
+                    {
+                        url: details.bannerImage || details.coverImage,
+                        width: 1200,
+                        height: 630,
+                        alt: details.title,
+                    }
+                ],
+                type: 'video.tv_show',
+                siteName: 'Bento Anime',
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: hasStreaming ? `Watch ${details.title}` : details.title,
+                description: hasStreaming
+                    ? `Stream ${details.title} on ${streamingPlatforms}`
+                    : details.description?.slice(0, 150) || '',
+                images: [details.bannerImage || details.coverImage],
+            },
+            alternates: {
+                canonical: `https://bentoanime.com/anime/${slug}`,
+            },
+        }
+    } catch (error) {
+        return {
+            title: 'Anime | Bento Anime',
+            description: 'Discover anime on Bento Anime',
+        }
+    }
 }
 
-export default function AnimePage({ params }: { params: Promise<{ slug: string }> }) {
-    const resolvedParams = use(params)
-    const router = useRouter()
-    const { user } = useAuth() // Get user from AuthContext
-    const [animeDetails, setAnimeDetails] = useState<AnimeDetails | null>(null)
-    const [similarAnime, setSimilarAnime] = useState<AnimeCard[]>([])
-    const [popularAnime, setPopularAnime] = useState<AnimeCard[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-    const [isWatchlistModalOpen, setIsWatchlistModalOpen] = useState(false)
-    const [aiDescription, setAiDescription] = useState<string | null>(null)
-    const [descriptionLoading, setDescriptionLoading] = useState(false)
-    const [activeTrailer, setActiveTrailer] = useState<string | null>(null)
-    const [seasons, setSeasons] = useState<any[]>([])
-    const [latestSeasonEpisodes, setLatestSeasonEpisodes] = useState<any>(null)
-    const [tmdbId, setTmdbId] = useState<number | null>(null)
-    const [videos, setVideos] = useState<any[]>([])
-    const similarScrollRef = useRef<HTMLDivElement>(null)
+function generateJsonLd(details: any, slug: string) {
+    const streamingActions = details.streamingLinks?.map((link: any) => ({
+        '@type': 'WatchAction',
+        target: {
+            '@type': 'EntryPoint',
+            urlTemplate: link.url,
+            actionPlatform: [
+                'http://schema.org/DesktopWebPlatform',
+                'http://schema.org/MobileWebPlatform'
+            ],
+        },
+        expectsAcceptanceOf: {
+            '@type': 'Offer',
+            availabilityStarts: details.premiered || details.aired?.split(' to ')[0],
+            category: 'subscription',
+        },
+    })) || []
 
-    const scrollSimilar = (direction: 'left' | 'right') => {
-        const container = similarScrollRef.current
-        if (!container) return
-
-        const scrollAmount = container.clientWidth * 0.8
-        const targetScroll = direction === 'left'
-            ? container.scrollLeft - scrollAmount
-            : container.scrollLeft + scrollAmount
-
-        container.scrollTo({
-            left: targetScroll,
-            behavior: 'smooth'
-        })
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'TVSeries',
+        name: details.title,
+        alternateName: details.romajiTitle,
+        description: details.description,
+        image: details.bannerImage || details.coverImage,
+        url: `https://bentoanime.com/anime/${slug}`,
+        numberOfEpisodes: details.episodes,
+        numberOfSeasons: details.seasons || 1,
+        genre: details.genres,
+        datePublished: details.premiered || details.aired?.split(' to ')[0],
+        productionCompany: details.studios ? {
+            '@type': 'Organization',
+            name: details.studios,
+        } : undefined,
+        aggregateRating: details.rating ? {
+            '@type': 'AggregateRating',
+            ratingValue: (details.rating / 10).toFixed(1),
+            bestRating: '10',
+            worstRating: '1',
+        } : undefined,
+        potentialAction: streamingActions.length > 0 ? streamingActions : undefined,
     }
+}
 
-    useEffect(() => {
-        async function fetchAnimeData() {
-            try {
-                setLoading(true)
-                setError(null)
-                setAiDescription(null)
+export default async function AnimePage({ params }: PageProps) {
+    const { slug } = await params
 
-                // Fetch from API route
-                const response = await fetch(`/api/anime/${resolvedParams.slug}`)
+    let jsonLd = null
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch anime data')
-                }
-
-                const data = await response.json()
-
-                setAnimeDetails(data.details)
-                setSimilarAnime(data.similar)
-                setPopularAnime(data.popular)
-                setSeasons(data.seasons || [])
-                setLatestSeasonEpisodes(data.latestSeasonEpisodes || null)
-                setTmdbId(data.tmdbId || null)
-                setVideos(data.videos || [])
-                setLoading(false)
-
-                // Track anime detail page view
-                trackAnimeDetailViewed({
-                    anime_id: data.details.id,
-                    anime_title: data.details.title,
-                    referrer_page: getReferrerPage(),
-                    auth_status: getAuthStatus(user)
-                })
-
-                // Check if AI description is already available
-                if (data.aiDescription) {
-                    setAiDescription(data.aiDescription)
-                } else {
-                    // Fetch AI description separately
-                    fetchAIDescription(data.details.id, data.details.description, data.details, data.similar, data.popular)
-                }
-
-                // DEV ONLY: Fetch TMDB comparison data for console logging
-                if (process.env.NODE_ENV === 'development') {
-                    fetchTMDBComparison(resolvedParams.slug, data.details)
-                }
-            } catch (err) {
-                console.error('Error fetching anime:', err)
-                setError('Failed to load anime details. The anime might not exist.')
-                setLoading(false)
-            }
+    try {
+        const data = await getAnimeDataBySlug(slug)
+        if (data?.details) {
+            jsonLd = generateJsonLd(data.details, slug)
         }
-
-        async function fetchTMDBComparison(slug: string, anilistDetails: any) {
-            try {
-                const response = await fetch(`/api/anime/tmdb-compare/${slug}`)
-                if (!response.ok) {
-                    console.warn('TMDB comparison failed:', response.status)
-                    return
-                }
-
-                const comparison = await response.json()
-
-                // Pretty print comparison to console
-
-
-                console.groupEnd()
-
-            } catch (error) {
-            }
-        }
-
-        async function fetchAIDescription(animeId: number, description: string, details: any, similar: any, popular: any) {
-            try {
-                setDescriptionLoading(true)
-
-                const response = await fetch('/api/anime/description', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        animeId,
-                        description,
-                        details,
-                        similar,
-                        popular
-                    }),
-                })
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch AI description')
-                }
-
-                const data = await response.json()
-                setAiDescription(data.description)
-            } catch (err) {
-                console.error('Error fetching AI description:', err)
-                // Fallback to original description
-                setAiDescription(description)
-            } finally {
-                setDescriptionLoading(false)
-            }
-        }
-
-        fetchAnimeData()
-    }, [resolvedParams.slug, user])
-
-    if (loading) {
-        return (
-            <div className="bg-white min-h-screen">
-                <NavigationBar />
-                <AnimePageSkeleton />
-                <Footer />
-            </div>
-        )
-    }
-
-    if (error || !animeDetails) {
-        return (
-            <div className="bg-white min-h-screen">
-                <NavigationBar />
-                <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Anime Not Found</h1>
-                    <p className="text-gray-600 mb-6">{error || 'The anime you\'re looking for doesn\'t exist.'}</p>
-                    <button
-                        onClick={() => router.push('/')}
-                        className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors"
-                    >
-                        Back to Recommendations
-                    </button>
-                </div>
-            </div>
-        )
+    } catch (error) {
+        // Continue without JSON-LD if data fetch fails
     }
 
     return (
-        <div className="bg-white">
-            <NavigationBar />
-
-            <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-                {/* Hero Section with Banner - Full Width */}
-                <section className="relative w-full h-[546px] bg-gray-900">
-                    {/* Banner Image - Full Width */}
-                    <div className="absolute inset-0 w-full">
-                        <Image
-                            src={animeDetails.bannerImage}
-                            alt={animeDetails.title}
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                        {/* Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                    </div>
-
-                    {/* Back Button */}
-                    <button
-                        onClick={() => router.back()}
-                        className="absolute top-6 left-6 md:left-16 z-20 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all backdrop-blur-sm"
-                        aria-label="Go back"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M19 12H5" />
-                            <path d="M12 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-
-                    {/* Hero Content */}
-                    <div className="relative z-10 h-full flex items-end">
-                        <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
-                            <button
-                                onClick={() => {
-                                    trackWatchlistAddClicked({
-                                        anime_title: animeDetails.title,
-                                        source_page: 'anime_detail',
-                                        auth_status: getAuthStatus(user)
-                                    })
-                                    setIsWatchlistModalOpen(true)
-                                }}
-                                className="px-6 py-2 mb-4 bg-white/90 hover:bg-white text-black font-semibold rounded-md transition-colors inline-block"
-                            >
-                                ADD TO WATCHLIST
-                            </button>
-                            <h1 className="text-4xl md:text-5xl font-bold text-white">
-                                {animeDetails.title}
-                            </h1>
-                        </div>
-                    </div>
-                </section>
-
-                <div className={`container mx-auto max-w-7xl px-6 md:px-16 pt-6 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pb-12' : 'pb-0'}`}>
-                    {/* Description Section */}
-                    <section className="mb-8">
-                        {descriptionLoading ? (
-                            <DescriptionSkeleton />
-                        ) : (
-                            <p className="text-md leading-relaxed whitespace-pre-line">
-                                {aiDescription || animeDetails.description}
-                            </p>
-                        )}
-                    </section>
-
-                    {/* Buttons Section */}
-                    {(animeDetails.externalLinks || animeDetails.trailer) && (
-                        <section className="mb-16">
-                            <div className="flex gap-3">
-                                {animeDetails.externalLinks && (
-                                    <a
-                                        href={animeDetails.externalLinks.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={() => {
-                                            trackAnimeExternalLinkClicked({
-                                                anime_title: animeDetails.title,
-                                                platform: animeDetails.externalLinks.site
-                                            })
-                                        }}
-                                    >
-                                        <button className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">
-                                            {animeDetails.externalLinks.site}
-                                        </button>
-                                    </a>
-                                )}
-
-                                {animeDetails.trailer && animeDetails.trailer.id && (
-                                    <button
-                                        onClick={() => {
-                                            trackAnimeTrailerWatched({
-                                                anime_title: animeDetails.title
-                                            })
-                                            setActiveTrailer(animeDetails.trailer?.id || null)
-                                        }}
-                                        className="px-4 py-2 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
-                                    >
-                                        Watch Trailer
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Divider after buttons when no episodes/videos sections exist */}
-                            {!(seasons?.filter(s => s.season_number > 0).length > 0) && !(videos && videos.length > 0) && (
-                                <hr className="border-t border-gray-200 mt-16" />
-                            )}
-                        </section>
-                    )}
-                </div>
-
-                {/* Divider before Recent Episodes */}
-                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
-                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                        <hr className="border-t border-gray-200" />
-                    </div>
-                )}
-
-                {/* Recent Episodes Section - Full Width */}
-                {seasons && seasons.length > 0 && (
-                    <RecentEpisodes
-                        seasons={seasons}
-                        latestSeasonEpisodes={latestSeasonEpisodes}
-                        onSeasonChange={async (seasonNumber: number) => {
-                            if (!tmdbId) return []
-                            const response = await fetch(`/api/anime/tmdb/season/${tmdbId}/${seasonNumber}`)
-                            if (!response.ok) return []
-                            const data = await response.json()
-                            return data.episodes || []
-                        }}
-                    />
-                )}
-
-                {/* Divider after Recent Episodes */}
-                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
-                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                        <hr className="border-t border-gray-200" />
-                    </div>
-                )}
-
-                {/* Videos Section */}
-                {videos && videos.length > 0 && (
-                    <VideosSection
-                        videos={videos}
-                        onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
-                    />
-                )}
-
-                {/* Divider after Videos */}
-                {videos && videos.length > 0 && (
-                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                        <hr className="border-t border-gray-200" />
-                    </div>
-                )}
-
-                <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
-                    {/* Details Section */}
-                    <section className={`mb-16 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pt-16' : ''}`}>
-                        <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-6">Details</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                            {animeDetails.episodes && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Episodes</span>
-                                    <span>{animeDetails.episodes}</span>
-                                </div>
-                            )}
-                            <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Status</span>
-                                <span>{animeDetails.status}</span>
-                            </div>
-                            <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Aired</span>
-                                <span>{animeDetails.aired}</span>
-                            </div>
-                            {animeDetails.premiered && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Premiered</span>
-                                    <span>{animeDetails.premiered}</span>
-                                </div>
-                            )}
-                            {animeDetails.studios && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Studio</span>
-                                    <span>{animeDetails.studios}</span>
-                                </div>
-                            )}
-                            {animeDetails.genres && animeDetails.genres.length > 0 && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Genre</span>
-                                    <span>{animeDetails.genres.join(", ")}</span>
-                                </div>
-                            )}
-                            {animeDetails.duration && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Duration</span>
-                                    <span>{animeDetails.duration}</span>
-                                </div>
-                            )}
-                            {animeDetails.rating && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Rating</span>
-                                    <span>{animeDetails.rating}/100</span>
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Divider after Details */}
-                    <hr className="border-t border-gray-200 mb-16" />
-
-                    {/* Similar Anime Section */}
-                    {similarAnime.length > 0 && (
-                        <section className="mb-16 group/similar">
-                            <h2 className="text-2xl font-bold mb-6">Similar Anime You Might Enjoy</h2>
-                            <div className="relative">
-                                {/* Left Arrow */}
-                                <button
-                                    onClick={() => scrollSimilar('left')}
-                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
-                                    aria-label="Scroll left"
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M15 18l-6-6 6-6"/>
-                                        </svg>
-                                    </div>
-                                </button>
-
-                                {/* Right Arrow */}
-                                <button
-                                    onClick={() => scrollSimilar('right')}
-                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
-                                    aria-label="Scroll right"
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M9 18l6-6-6-6"/>
-                                        </svg>
-                                    </div>
-                                </button>
-
-                                {/* Mobile fade overlay */}
-                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
-
-                                {/* Scrollable Container */}
-                                <div
-                                    ref={similarScrollRef}
-                                    className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-                                    style={{
-                                        scrollbarWidth: 'none',
-                                        msOverflowStyle: 'none',
-                                    }}
-                                >
-                                    {similarAnime.map((anime) => (
-                                        <Link
-                                            key={anime.id}
-                                            href={`/anime/${slugify(anime.title)}`}
-                                            className="flex-none w-[45%] md:w-[calc(25%-0.75rem)] snap-start group"
-                                            onClick={() => {
-                                                trackAnimeSimilarClicked({
-                                                    source_anime: animeDetails.title,
-                                                    target_anime: anime.title,
-                                                    auth_status: getAuthStatus(user)
-                                                })
-                                            }}
-                                        >
-                                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                                <Image
-                                                    src={anime.image}
-                                                    alt={anime.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                            <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
-                                            {anime.rating && (
-                                                <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
-                                            )}
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-                    )}
-
-                    {/* Divider */}
-                    {similarAnime.length > 0 && popularAnime.length > 0 && (
-                        <hr className="border-t border-gray-200 mb-16" />
-                    )}
-
-                    {/* Most Popular Section */}
-                    {popularAnime.length > 0 && (
-                        <section className="mb-16">
-                            <h2 className="text-2xl font-bold mb-6">Most Popular</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                {popularAnime.map((anime) => (
-                                    <Link
-                                        key={anime.id}
-                                        href={`/anime/${slugify(anime.title)}`}
-                                        className="flex flex-col group"
-                                    >
-                                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                            <Image
-                                                src={anime.image}
-                                                alt={anime.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
-                                        {anime.rating && (
-                                            <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
-                                        )}
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-                </div>
-            </div>
-
-            <Footer />
-
-            {/* Watchlist Modal */}
-            <WatchlistModal
-                isOpen={isWatchlistModalOpen}
-                onClose={() => setIsWatchlistModalOpen(false)}
-                anime={{
-                    title: animeDetails.title,
-                    reason: "Added from anime detail page",
-                    description: animeDetails.description,
-                    image: animeDetails.coverImage,
-                    externalLinks: animeDetails.externalLinks,
-                    trailer: animeDetails.trailer
-                }}
-            />
-
-            {/* Trailer Popup */}
-            {activeTrailer && (
-                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50" onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                        setActiveTrailer(null);
-                    }
-                }}>
-                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
-                        <button
-                            onClick={() => setActiveTrailer(null)}
-                            className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 6 6 18" />
-                                <path d="m6 6 12 12" />
-                            </svg>
-                        </button>
-                        <div className="relative w-full ph-no-capture" style={{ paddingTop: '56.25%' }}>
-                            <iframe
-                                className="absolute top-0 left-0 w-full h-full"
-                                src={`https://www.youtube.com/embed/${activeTrailer}`}
-                                title="YouTube video player"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
-                    </div>
-                </div>
+        <>
+            {jsonLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
             )}
-        </div>
+            <AnimePageClient slug={slug} />
+        </>
     )
 }
