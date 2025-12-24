@@ -2,8 +2,8 @@ import sharp from 'sharp'
 
 const CANVAS_WIDTH = 2174
 const CANVAS_HEIGHT = 1300
-const CARD_WIDTH = 750
-const CARD_HEIGHT = 850
+const CARD_WIDTH = 825
+const CARD_HEIGHT = 935
 const BORDER_RADIUS = 60
 const BORDER_WIDTH = 8
 
