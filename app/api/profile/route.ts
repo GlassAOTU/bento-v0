@@ -8,6 +8,18 @@ const RESERVED_USERNAMES = [
     'explore', 'home', 'feed', 'notifications', 'messages', 'user'
 ]
 
+const PROFILE_AVATARS = [
+    '/images/profiles/edward2.png',
+    '/images/profiles/gojo2.png',
+    '/images/profiles/maomao2.png',
+    '/images/profiles/momo2.png',
+    '/images/profiles/tanjiro2.png',
+]
+
+function getRandomAvatar(): string {
+    return PROFILE_AVATARS[Math.floor(Math.random() * PROFILE_AVATARS.length)]
+}
+
 // GET /api/profile - Get current user's profile
 export async function GET() {
     try {
@@ -109,7 +121,7 @@ export async function POST(request: Request) {
                 username: username.toLowerCase(),
                 display_name: display_name || null,
                 bio: bio || null,
-                avatar_url: avatar_url || null
+                avatar_url: avatar_url || getRandomAvatar()
             })
             .select()
             .single()
