@@ -45,7 +45,7 @@ export default function ProfileHeader() {
                         alt="Profile"
                         width={80}
                         height={80}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                     />
                 ) : (
                     <span className="text-white text-2xl font-bold">{initials}</span>

@@ -136,12 +136,12 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
             console.error('[AuthModal] Signup error:', result.error)
             setError(getErrorMessage(result.error, true))
         } else if (result?.success) {
-
             // Manually refresh the session on the client side (triggers onAuthStateChange)
-            const supabase = await createClient()
-            const { data, error } = await supabase.auth.refreshSession()
+            const supabase = createClient()
+            await supabase.auth.refreshSession()
 
-            // Modal will auto-close via onAuthStateChange in NavigationBar
+            // Close modal after successful sign-up
+            onClose()
         }
     }
 
@@ -159,12 +159,12 @@ export default function AuthModal({ isOpen, onClose, initialView = 'signin' }: A
             console.error('[AuthModal] Signin error:', result.error)
             setError(getErrorMessage(result.error, false))
         } else if (result?.success) {
-
             // Manually refresh the session on the client side (triggers onAuthStateChange)
-            const supabase = await createClient()
-            const { data, error } = await supabase.auth.refreshSession()
+            const supabase = createClient()
+            await supabase.auth.refreshSession()
 
-            // Modal will auto-close via onAuthStateChange in NavigationBar
+            // Close modal after successful sign-in
+            onClose()
         }
     }
 
