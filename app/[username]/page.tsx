@@ -250,15 +250,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         <p className="text-center text-gray-700 max-w-2xl mb-6">{profile.bio}</p>
                     )}
 
-                    {/* Follow/Edit Button */}
-                    {isOwnProfile ? (
-                        <Link
-                            href="/watchlists"
-                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                        >
-                            Edit Profile
-                        </Link>
-                    ) : currentUser ? (
+                    {/* Follow Button */}
+                    {!isOwnProfile && currentUser ? (
                         <button
                             onClick={handleFollow}
                             disabled={followLoading}

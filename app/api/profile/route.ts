@@ -166,7 +166,7 @@ export async function PATCH(request: Request) {
         }
 
         const body = await request.json()
-        const { display_name, bio, avatar_url } = body
+        const { username, display_name, bio, avatar_url } = body
 
         // Validate bio length if provided
         if (bio && bio.length > 500) {
@@ -176,8 +176,27 @@ export async function PATCH(request: Request) {
             )
         }
 
+        // Validate username if provided
+        if (username !== undefined) {
+            const usernameRegex = /^[a-z0-9_-]{3,20}$/
+            if (!usernameRegex.test(username)) {
+                return NextResponse.json(
+                    { error: 'Username must be 3-20 characters and contain only lowercase letters, numbers, underscores, and hyphens' },
+                    { status: 400 }
+                )
+            }
+
+            if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
+                return NextResponse.json(
+                    { error: 'This username is reserved' },
+                    { status: 400 }
+                )
+            }
+        }
+
         // Build update object (only include provided fields)
         const updates: any = {}
+        if (username !== undefined) updates.username = username.toLowerCase()
         if (display_name !== undefined) updates.display_name = display_name
         if (bio !== undefined) updates.bio = bio
         if (avatar_url !== undefined) updates.avatar_url = avatar_url
@@ -191,6 +210,12 @@ export async function PATCH(request: Request) {
             .single()
 
         if (updateError) {
+            if (updateError.code === '23505') {
+                return NextResponse.json(
+                    { error: 'Username already taken' },
+                    { status: 409 }
+                )
+            }
             console.error('Error updating profile:', updateError)
             return NextResponse.json(
                 { error: 'Failed to update profile' },

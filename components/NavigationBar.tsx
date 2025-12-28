@@ -8,6 +8,7 @@ import Image from 'next/image';
 import WaitlistPopup from './WaitlistPopup';
 import AuthModal from './AuthModal';
 import UsernameSetupModal from './UsernameSetupModal';
+import EditProfileModal from './EditProfileModal';
 import { trackUserSignout } from '@/lib/analytics/events';
 import { useAuth } from '@/lib/auth/AuthContext';
 
@@ -19,6 +20,7 @@ export default function NavigationBar() {
     const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUsernameSetupOpen, setIsUsernameSetupOpen] = useState(false);
+    const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
     // Show username setup modal only after both auth and profile checks are complete
     useEffect(() => {
@@ -79,18 +81,18 @@ export default function NavigationBar() {
                                 >
                                     Sign Out
                                 </button>
-                                <a
-                                    href={profile?.username ? `/${profile.username}` : '/watchlists'}
+                                <button
+                                    onClick={() => setIsEditProfileModalOpen(true)}
                                     className="block"
                                 >
                                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
-                                        {user.user_metadata?.avatar_url ? (
+                                        {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                                             <Image
-                                                src={user.user_metadata.avatar_url}
+                                                src={profile?.avatar_url || user.user_metadata?.avatar_url}
                                                 alt="Profile"
                                                 width={40}
                                                 height={40}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-contain"
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg">
@@ -98,7 +100,7 @@ export default function NavigationBar() {
                                             </div>
                                         )}
                                     </div>
-                                </a>
+                                </button>
                             </div>
                         ) : (
                             <div className="flex gap-2">
@@ -190,18 +192,20 @@ export default function NavigationBar() {
                                         >
                                             Sign Out
                                         </button>
-                                        <a
-                                            href={profile?.username ? `/${profile.username}` : '/watchlists'}
-                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        <button
+                                            onClick={() => {
+                                                setIsEditProfileModalOpen(true)
+                                                setIsMobileMenuOpen(false)
+                                            }}
                                         >
                                             <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
-                                                {user.user_metadata?.avatar_url ? (
+                                                {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                                                     <Image
-                                                        src={user.user_metadata.avatar_url}
+                                                        src={profile?.avatar_url || user.user_metadata?.avatar_url}
                                                         alt="Profile"
                                                         width={40}
                                                         height={40}
-                                                        className="w-full h-full object-cover"
+                                                        className="w-full h-full object-contain"
                                                     />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg">
@@ -209,7 +213,7 @@ export default function NavigationBar() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </a>
+                                        </button>
                                     </div>
                                 </>
                             ) : (
@@ -260,6 +264,23 @@ export default function NavigationBar() {
                     setIsUsernameSetupOpen(false);
                 }}
             />
+
+            {/* Edit Profile Modal */}
+            {profile && (
+                <EditProfileModal
+                    isOpen={isEditProfileModalOpen}
+                    onClose={() => setIsEditProfileModalOpen(false)}
+                    onSuccess={refreshProfile}
+                    profile={{
+                        username: profile.username,
+                        display_name: profile.display_name,
+                        bio: profile.bio,
+                        avatar_url: profile.avatar_url
+                    }}
+                    userEmail={user?.email}
+                    isEmailProvider={!user?.app_metadata?.provider || user?.app_metadata?.provider === 'email'}
+                />
+            )}
         </>
     );
 }
