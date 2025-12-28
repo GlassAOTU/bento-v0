@@ -8,11 +8,11 @@ type RateLimitConfig = {
 // Tiered rate limit configurations
 const CONFIGS: Record<string, RateLimitConfig> = {
   'recommendations_anonymous': {
-    maxRequests: 3,
+    maxRequests: 5,
     windowMinutes: 10
   },
   'recommendations_authenticated': {
-    maxRequests: 10,
+    maxRequests: 15,
     windowMinutes: 10
   },
 }

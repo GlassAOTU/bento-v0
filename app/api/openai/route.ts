@@ -47,8 +47,8 @@ export async function POST(request: Request) {
         return NextResponse.json(
             {
                 error: user
-                    ? 'Rate limit exceeded. Authenticated users can make 10 requests per 10 minutes.'
-                    : 'Rate limit exceeded. Anonymous users can make 3 requests per 10 minutes. Sign in for higher limits.',
+                    ? 'Rate limit exceeded. Authenticated users can make 15 requests per 10 minutes.'
+                    : 'Rate limit exceeded. Anonymous users can make 5 requests per 10 minutes. Sign in for higher limits.',
                 resetAt: rateLimitResult.resetAt
             },
             {
@@ -63,12 +63,12 @@ export async function POST(request: Request) {
     }
 
     const prompt = `You are an anime recommendation engine.
-                    Based on the following input, recommend exactly 5 distinct animes, matching the described themes or genres, and/or the provided tags.
+                    Based on the following input, recommend exactly 7 distinct animes, matching the described themes or genres, and/or the provided tags.
                     Do not recommend any pornographic animes.
                     Only allow animes from the same franchise if the description explicitly allows it.
                     Include both modern and classic animes where appropriate.
                     Respond in plaintext only. No extra commentary.
-                    Respond with the official anime title as listed on AniList only. 
+                    Respond with the official anime title as listed on AniList only.
                     Avoid including extra subtitles, editions, or years unless it is essential.
                     Give only official anime titles, no fan-made or unofficial titles, no fandubs, no expansions, extra content, or spin-offs.
                     If the anime has a remake, use the remake title.
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
 
 
                     Format the response as:
-                    [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason]
+                    [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason]
                     Input:
                     Description: ${description || "None"}
                     Tags: ${tags.length ? tags.join(", ") : "None"}`
