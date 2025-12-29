@@ -11,6 +11,7 @@ import UsernameSetupModal from './UsernameSetupModal';
 import EditProfileModal from './EditProfileModal';
 import { trackUserSignout } from '@/lib/analytics/events';
 import { useAuth } from '@/lib/auth/AuthContext';
+import ThemeToggle from './ThemeToggle';
 
 export default function NavigationBar() {
     const pathname = usePathname();
@@ -45,7 +46,7 @@ export default function NavigationBar() {
     return (
         <>
             <div className="flex justify-center">
-                <div className="w-full px-10 m-4 items-center bg-white flex flex-row max-w-5xl justify-between">
+                <div className="w-full px-10 m-4 items-center bg-white dark:bg-gray-900 flex flex-row max-w-5xl justify-between">
                     {/* Logo */}
                     <a href="/" className="flex-shrink-0">
                         <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,8 +72,9 @@ export default function NavigationBar() {
 
                     {/* Desktop Auth Buttons */}
                     <div className="hidden md:flex gap-4 items-center">
+                        <ThemeToggle />
                         {loading ? (
-                            <div className="text-sm text-gray-500">Loading...</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Loading...</div>
                         ) : user ? (
                             <div className="flex gap-4 items-center">
                                 <button
@@ -129,7 +131,7 @@ export default function NavigationBar() {
                     {/* Mobile Hamburger Menu Button */}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+                        className="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         aria-label="Toggle menu"
                     >
                         {isMobileMenuOpen ? (
@@ -150,7 +152,7 @@ export default function NavigationBar() {
 
             {/* Mobile Menu Dropdown */}
             {isMobileMenuOpen && (
-                <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+                <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg">
                     <div className="max-w-5xl mx-auto px-10 py-6 space-y-4">
                         {/* Navigation Links */}
                         <a
@@ -177,9 +179,14 @@ export default function NavigationBar() {
                             </a>
                         )}
 
-                        <div className="pt-4 border-t border-gray-200 space-y-3">
+                        <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                            <span className="text-sm text-gray-500 dark:text-gray-400">Theme</span>
+                            <ThemeToggle />
+                        </div>
+
+                        <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
                             {loading ? (
-                                <div className="text-sm text-gray-500">Loading...</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">Loading...</div>
                             ) : user ? (
                                 <>
                                     <div className="flex items-center justify-between gap-4">

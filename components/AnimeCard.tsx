@@ -65,13 +65,13 @@ export default function AnimeCard({ item, onTrailerClick }: {
 
             {/* </div> */}
             <div className="flex flex-col justify-between flex-1">
-                <Link href={`/anime/${slugify(item.title)}`} className="hover:text-gray-700 transition-colors">
-                    <h3 className="text-xl font-bold text-mySecondary mb-2 tracking-tighter">
+                <Link href={`/anime/${slugify(item.title)}`} className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                    <h3 className="text-xl font-bold text-mySecondary dark:text-gray-100 mb-2 tracking-tighter">
                         {item.title}
                     </h3>
                 </Link>
-                <b className="italic mb-3">{item.reason}</b>
-                <p className="text-md text-mySecondary mb-4 tracking-tighter leading-relaxed">
+                <b className="italic mb-3 text-gray-800 dark:text-gray-200">{item.reason}</b>
+                <p className="text-md text-mySecondary dark:text-gray-300 mb-4 tracking-tighter leading-relaxed">
                     {item.description}
                 </p>
 
@@ -86,14 +86,14 @@ export default function AnimeCard({ item, onTrailerClick }: {
                                 className="inline-block"
                                 onClick={handleExternalLinkClick}
                             >
-                                <button className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm">{item.externalLinks.site}</button>
+                                <button className="px-4 py-1 rounded-md border border-mySecondary/50 dark:border-gray-500 hover:bg-mySecondary/10 dark:hover:bg-gray-700 hover:border-mySecondary dark:hover:border-gray-400 transition-colors font-medium text-sm">{item.externalLinks.site}</button>
                             </a>
                         )}
 
                         {item.trailer && item.trailer.id && item.trailer.site && (
                             <button
                                 onClick={handleTrailerClick}
-                                className="px-4 py-1 rounded-md border border-mySecondary/50 hover:bg-mySecondary/10 hover:border-mySecondary transition-colors font-medium text-sm"
+                                className="px-4 py-1 rounded-md border border-mySecondary/50 dark:border-gray-500 hover:bg-mySecondary/10 dark:hover:bg-gray-700 hover:border-mySecondary dark:hover:border-gray-400 transition-colors font-medium text-sm"
                             >
                                 Watch Trailer
                             </button>
@@ -110,7 +110,7 @@ export default function AnimeCard({ item, onTrailerClick }: {
                             })
                             setIsWatchlistModalOpen(true)
                         }}
-                        className="px-4 py-1 rounded-md bg-[#F9F9F9] text-black border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-sm"
+                        className="px-4 py-1 rounded-md bg-[#F9F9F9] dark:bg-gray-700 text-black dark:text-white border-[0.5px] border-black dark:border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium text-sm"
                     >
                         Add to Watchlist
                     </button>

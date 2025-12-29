@@ -213,7 +213,7 @@ function DiscoverContent() {
     }
 
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-900">
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
@@ -247,7 +247,7 @@ function DiscoverContent() {
                                 placeholder="search"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-6 py-4 border border-gray-300 rounded-lg focus:outline-none focus:border-mySecondary transition-colors text-sm"
+                                className="w-full px-6 py-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:border-mySecondary transition-colors text-sm"
                             />
                             {searchQuery && (
                                 <button
@@ -297,7 +297,7 @@ function DiscoverContent() {
                                 </h2>
                                 <button
                                     onClick={handleClearSearch}
-                                    className="text-sm text-gray-600 hover:text-black underline transition-colors"
+                                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline transition-colors"
                                 >
                                     Clear Search
                                 </button>
@@ -308,9 +308,9 @@ function DiscoverContent() {
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {[...Array(8)].map((_, i) => (
                                         <div key={i} className="flex flex-col gap-2">
-                                            <div className="w-full aspect-[309/455] bg-gray-200 animate-pulse rounded-md" />
-                                            <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4" />
-                                            <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2" />
+                                            <div className="w-full aspect-[309/455] bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md" />
+                                            <div className="h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded w-3/4" />
+                                            <div className="h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded w-1/2" />
                                         </div>
                                     ))}
                                 </div>
@@ -355,28 +355,28 @@ function DiscoverContent() {
                                     anime={animeData.mostPopular}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
 
                                 <CategorySection
                                     title="Top Rated"
                                     anime={animeData.topRated}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
 
                                 <CategorySection
                                     title="Shonen"
                                     anime={animeData.shonen}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
 
                                 <CategorySection
                                     title="Slice of Life"
                                     anime={animeData.sliceOfLife}
                                 />
 
-                                <hr className="border-t border-gray-200" />
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
 
                                 <CategorySection
                                     title="Found Family with No Incest Plotlines"

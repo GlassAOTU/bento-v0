@@ -225,11 +225,11 @@ function RecommendationContent() {
     };
 
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-900">
 
             <NavigationBar />
 
-            <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
+            <div className="min-h-screen text-mySecondary dark:text-gray-200 pb-16 font-instrument-sans">
 
                 {/* Page content */}
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">
@@ -260,7 +260,7 @@ function RecommendationContent() {
                         <p className="mb-4 text-xl">We'll handle the rest.</p>
                         <input
                             placeholder="Write your description..."
-                            className="w-full rounded-md border border-mySecondary/50 px-4 py-6 bg-white focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
+                            className="w-full rounded-md border border-mySecondary/50 dark:border-gray-600 px-4 py-6 bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
@@ -268,7 +268,7 @@ function RecommendationContent() {
 
                     <div className="px-10 flex items-center gap-0">
                         <div className="w-6 border-t border-mySecondary/50"></div>
-                        <span className="px-2 py-1 text-sm text-mySecondary bg-[#F9F9F9] border border-black/20 rounded">OR</span>
+                        <span className="px-2 py-1 text-sm text-mySecondary dark:text-gray-300 bg-[#F9F9F9] dark:bg-gray-800 border border-black/20 dark:border-gray-600 rounded">OR</span>
                         <div className="flex-1 border-t border-mySecondary/50"></div>
                     </div>
 
@@ -281,7 +281,7 @@ function RecommendationContent() {
                     {/* Search Button */}
                     <div className="px-10">
                         <button
-                            className={`w-full mx-auto py-4 rounded-lg transition-colors text-white flex items-center justify-center gap-2
+                            className={`w-full mx-auto py-4 rounded-lg transition-colors text-white flex items-center justify-center gap-2 dark:border dark:border-gray-600
                                 ${isButtonDisabled
                                     ? "bg-[#000000] cursor-not-allowed"
                                     : "bg-mySecondary hover:bg-[#2b2b2b] cursor-pointer"
@@ -334,22 +334,22 @@ function RecommendationContent() {
                                                     <div className='flex flex-col gap-1 mt-8 mb-4'>
                                                         {/* Query Description */}
                                                         {history.description.length !== 0 && (
-                                                            <p className='text-xl font-normal text-black'>
+                                                            <p className='text-xl font-normal text-black dark:text-white'>
                                                                 {history.description.charAt(0).toLowerCase() + history.description.slice(1)}
                                                             </p>
                                                         )}
 
                                                         {/* Tags or "no tags selected" */}
                                                         {history.tags.length > 0 ? (
-                                                            <p className='text-sm text-black'>
+                                                            <p className='text-sm text-black dark:text-gray-300'>
                                                                 {history.tags.join(', ')}
                                                             </p>
                                                         ) : (
-                                                            <p className='text-sm text-black'>no tags selected</p>
+                                                            <p className='text-sm text-black dark:text-gray-300'>no tags selected</p>
                                                         )}
 
                                                         {/* Timestamp */}
-                                                        <p className='text-sm text-gray-400'>
+                                                        <p className='text-sm text-gray-400 dark:text-gray-500'>
                                                             {new Date(history.timestamp).toLocaleDateString('en-US', {
                                                                 month: '2-digit',
                                                                 day: '2-digit',
@@ -368,10 +368,10 @@ function RecommendationContent() {
                                             <div className="flex flex-col gap-10">
                                                 {[1, 2, 3, 4, 5].map((_, i) => (
                                                     <div key={i} className="rounded-lg overflow-hidden pb-5">
-                                                        <div className="h-72 bg-gray-200 animate-pulse"></div>
+                                                        <div className="h-72 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
                                                         <div className="p-4 space-y-2">
-                                                            <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                                                            <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                                                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                                                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse"></div>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -406,10 +406,10 @@ function RecommendationContent() {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
-                            className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
+                            className="absolute -top-2 -right-2 bg-white dark:bg-gray-700 rounded-full p-1 border border-mySecondary/50 dark:border-gray-600 hover:border-mySecondary"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 6 6 18" />
@@ -459,7 +459,7 @@ export default function RecommendationPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-gray-600">Loading...</div>
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
             </div>
         }>
             <RecommendationContent />

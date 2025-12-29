@@ -202,25 +202,25 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                 />
 
                 {/* Modal */}
-                <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
+                <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-200">
-                        <h2 className="text-xl font-bold">Edit Profile</h2>
-                        <p className="text-sm text-gray-500 mt-1">Manage your public profile and account settings.</p>
+                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h2 className="text-xl font-bold dark:text-white">Edit Profile</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your public profile and account settings.</p>
                     </div>
 
                     {/* Content */}
                     <div className="flex min-h-[400px]">
                         {/* Sidebar */}
-                        <div className="w-48 border-r border-gray-200 py-4">
+                        <div className="w-48 border-r border-gray-200 dark:border-gray-700 py-4">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`w-full flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
                                         activeTab === tab.id
-                                            ? 'bg-gray-100 text-black'
-                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                            ? 'bg-gray-100 dark:bg-gray-800 text-black dark:text-white'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                                     }`}
                                 >
                                     {tab.icon}
@@ -232,7 +232,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                         {/* Tab Content */}
                         <div className="flex-1 p-6">
                             {error && (
-                                <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-md">
+                                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm rounded-md">
                                     {error}
                                 </div>
                             )}
@@ -245,7 +245,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                             className="flex items-center gap-4 cursor-pointer group"
                                             onClick={() => setShowAvatarPicker(!showAvatarPicker)}
                                         >
-                                            <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center group-hover:opacity-80 transition-opacity">
+                                            <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center group-hover:opacity-80 transition-opacity">
                                                 {avatarUrl ? (
                                                     <Image
                                                         src={avatarUrl}
@@ -255,21 +255,21 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                                         className="w-full h-full object-contain"
                                                     />
                                                 ) : (
-                                                    <span className="text-gray-400 text-2xl font-bold">
+                                                    <span className="text-gray-400 dark:text-gray-500 text-2xl font-bold">
                                                         {profile.username.charAt(0).toUpperCase()}
                                                     </span>
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="font-medium">Profile photo</p>
-                                                <p className="text-sm text-gray-500">Click to change</p>
+                                                <p className="font-medium dark:text-white">Profile photo</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">Click to change</p>
                                             </div>
                                         </div>
 
                                         {/* Avatar Picker */}
                                         {showAvatarPicker && (
-                                            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                                                <p className="text-sm font-medium text-gray-700 mb-3">Choose your avatar</p>
+                                            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Choose your avatar</p>
                                                 <div className="grid grid-cols-5 gap-3">
                                                     {AVATAR_OPTIONS.map((avatar) => (
                                                         <button
@@ -280,7 +280,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                                             }}
                                                             className={`relative w-12 h-12 rounded-lg overflow-hidden transition-all ${
                                                                 avatarUrl === avatar
-                                                                    ? 'ring-2 ring-black ring-offset-2'
+                                                                    ? 'ring-2 ring-black dark:ring-white ring-offset-2 dark:ring-offset-gray-800'
                                                                     : 'hover:opacity-80'
                                                             }`}
                                                         >
@@ -300,7 +300,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
 
                                     {/* Display Name */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Display Name
                                         </label>
                                         <input
@@ -308,13 +308,13 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                             value={displayName}
                                             onChange={(e) => setDisplayName(e.target.value)}
                                             placeholder="Enter display name"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
                                     </div>
 
                                     {/* Bio */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Bio
                                         </label>
                                         <textarea
@@ -323,9 +323,9 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                             placeholder="Tell us about yourself"
                                             rows={4}
                                             maxLength={500}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent resize-none bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
-                                        <p className="text-xs text-gray-400 mt-1">{bio.length}/500</p>
+                                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{bio.length}/500</p>
                                     </div>
                                 </div>
                             )}
@@ -334,7 +334,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                 <div className="space-y-6">
                                     {/* Username */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Username
                                         </label>
                                         <input
@@ -349,29 +349,29 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                                     checkUsernameAvailability(username)
                                                 }
                                             }}
-                                            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${
-                                                usernameError ? 'border-red-500' : 'border-gray-300'
+                                            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white ${
+                                                usernameError ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                                             }`}
                                         />
                                         {usernameError && (
-                                            <p className="text-xs text-red-500 mt-1">{usernameError}</p>
+                                            <p className="text-xs text-red-500 dark:text-red-400 mt-1">{usernameError}</p>
                                         )}
                                     </div>
 
                                     {/* Email - only for email/password users */}
                                     {isEmailProvider && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                 Email
                                             </label>
                                             <input
                                                 type="email"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                             />
                                             {email !== userEmail && (
-                                                <p className="text-xs text-gray-500 mt-1">A confirmation email will be sent to verify the new address</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">A confirmation email will be sent to verify the new address</p>
                                             )}
                                         </div>
                                     )}
@@ -381,7 +381,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                         <div>
                                             <button
                                                 onClick={() => setShowPasswordModal(true)}
-                                                className="w-full py-3 px-4 border border-red-400 text-red-500 rounded-md hover:bg-red-50 transition-colors font-medium"
+                                                className="w-full py-3 px-4 border border-red-400 dark:border-red-500 text-red-500 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium"
                                             >
                                                 Change Password
                                             </button>
@@ -394,18 +394,18 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                     </div>
 
                     {/* Footer */}
-                    <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
                         <button
                             onClick={onClose}
                             disabled={saving}
-                            className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 dark:text-gray-300"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={saving || !!usernameError}
-                            className="px-4 py-2 text-sm font-medium bg-black text-white rounded-md hover:bg-gray-800 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-md hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
                         >
                             {saving ? 'Saving...' : 'Save Changes'}
                         </button>
@@ -420,47 +420,47 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                         className="absolute inset-0 bg-black/50"
                         onClick={() => setShowPasswordModal(false)}
                     />
-                    <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
-                        <h3 className="text-lg font-bold mb-4">Change Password</h3>
+                    <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+                        <h3 className="text-lg font-bold mb-4 dark:text-white">Change Password</h3>
 
                         {passwordError && (
-                            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-md">
+                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm rounded-md">
                                 {passwordError}
                             </div>
                         )}
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Current Password
                                 </label>
                                 <input
                                     type="password"
                                     value={currentPassword}
                                     onChange={(e) => setCurrentPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     New Password
                                 </label>
                                 <input
                                     type="password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Confirm New Password
                                 </label>
                                 <input
                                     type="password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white"
                                 />
                             </div>
                         </div>
