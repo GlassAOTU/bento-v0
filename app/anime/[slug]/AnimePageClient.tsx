@@ -10,7 +10,8 @@ import WatchlistModal from '@/components/WatchlistModal'
 import RecentEpisodes from '@/components/RecentEpisodes'
 import VideosSection from '@/components/VideosSection'
 import AnimeSection from '@/components/anime/AnimeSection'
-import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
+import ExpandableDescription from '@/components/anime/ExpandableDescription'
+import AnimePageSkeleton from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 import {
     trackAnimeDetailViewed,
@@ -71,6 +72,8 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
     const [tmdbId, setTmdbId] = useState<number | null>(null)
     const [videos, setVideos] = useState<any[]>([])
     const similarScrollRef = useRef<HTMLDivElement>(null)
+    const popularScrollRef = useRef<HTMLDivElement>(null)
+    const [mostPopularAnime, setMostPopularAnime] = useState<AnimeCard[]>([])
 
     const scrollSimilar = (direction: 'left' | 'right') => {
         const container = similarScrollRef.current
@@ -86,6 +89,28 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
             behavior: 'smooth'
         })
     }
+
+    const scrollPopular = (direction: 'left' | 'right') => {
+        const container = popularScrollRef.current
+        if (!container) return
+
+        const scrollAmount = container.clientWidth * 0.8
+        const targetScroll = direction === 'left'
+            ? container.scrollLeft - scrollAmount
+            : container.scrollLeft + scrollAmount
+
+        container.scrollTo({
+            left: targetScroll,
+            behavior: 'smooth'
+        })
+    }
+
+    useEffect(() => {
+        fetch('/data/popular-anime.json')
+            .then(res => res.json())
+            .then(data => setMostPopularAnime(data.mostPopular || []))
+            .catch(err => console.error('Failed to load popular anime:', err))
+    }, [])
 
     useEffect(() => {
         async function fetchAnimeData() {
@@ -290,18 +315,15 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
                 {/* Description Section */}
                 <AnimeSection divider={seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)}>
-                    {descriptionLoading ? (
-                        <DescriptionSkeleton />
-                    ) : (
-                        <p className="text-md leading-relaxed whitespace-pre-line">
-                            {aiDescription || animeDetails.description}
-                        </p>
-                    )}
+                    <ExpandableDescription
+                        description={aiDescription || animeDetails.description}
+                        loading={descriptionLoading}
+                    />
                 </AnimeSection>
 
                 {/* Recent Episodes Section */}
                 {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
-                    <AnimeSection divider={videos && videos.length > 0}>
+                    <AnimeSection divider={videos && videos.length > 0} noPaddingTop>
                         <RecentEpisodes
                             seasons={seasons}
                             latestSeasonEpisodes={latestSeasonEpisodes}
@@ -318,7 +340,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
                 {/* Videos Section */}
                 {videos && videos.length > 0 && (
-                    <AnimeSection divider>
+                    <AnimeSection divider noPaddingTop>
                         <VideosSection
                             videos={videos}
                             onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
@@ -327,7 +349,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 )}
 
                 {/* Details Section */}
-                <AnimeSection title="Details" divider>
+                <AnimeSection title="Details" divider noPaddingTop>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         {animeDetails.episodes && (
                             <div className="flex">
@@ -378,7 +400,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
                 {/* Similar Anime Section */}
                 {similarAnime.length > 0 && (
-                    <AnimeSection divider={popularAnime.length > 0}>
+                    <AnimeSection divider={mostPopularAnime.length > 0} noPaddingTop>
                         <div className="group/similar">
                             <h2 className="text-2xl font-bold mb-6">Similar Anime You Might Enjoy</h2>
                             <div className="relative">
@@ -454,30 +476,71 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 )}
 
                 {/* Most Popular Section */}
-                {popularAnime.length > 0 && (
-                    <AnimeSection>
-                        <h2 className="text-2xl font-bold mb-6">Most Popular</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {popularAnime.map((anime) => (
-                                <Link
-                                    key={anime.id}
-                                    href={`/anime/${slugify(anime.title)}`}
-                                    className="flex flex-col group"
+                {mostPopularAnime.length > 0 && (
+                    <AnimeSection noPaddingTop>
+                        <div className="group/popular">
+                            <h2 className="text-2xl font-bold mb-6">Most Popular</h2>
+                            <div className="relative">
+                                {/* Left Arrow */}
+                                <button
+                                    onClick={() => scrollPopular('left')}
+                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
+                                    aria-label="Scroll left"
                                 >
-                                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                        <Image
-                                            src={anime.image}
-                                            alt={anime.title}
-                                            fill
-                                            className="object-cover"
-                                        />
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M15 18l-6-6 6-6"/>
+                                        </svg>
                                     </div>
-                                    <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
-                                    {anime.rating && (
-                                        <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
-                                    )}
-                                </Link>
-                            ))}
+                                </button>
+
+                                {/* Right Arrow */}
+                                <button
+                                    onClick={() => scrollPopular('right')}
+                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
+                                    aria-label="Scroll right"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M9 18l6-6-6-6"/>
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                {/* Mobile fade overlay */}
+                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+
+                                {/* Scrollable Container */}
+                                <div
+                                    ref={popularScrollRef}
+                                    className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+                                    style={{
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none',
+                                    }}
+                                >
+                                    {mostPopularAnime.map((anime) => (
+                                        <Link
+                                            key={anime.id}
+                                            href={`/anime/${slugify(anime.title)}`}
+                                            className="flex-none w-[45%] md:w-[calc(25%-0.75rem)] snap-start group"
+                                        >
+                                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
+                                                <Image
+                                                    src={anime.image}
+                                                    alt={anime.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
+                                            {anime.rating && (
+                                                <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
+                                            )}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </AnimeSection>
                 )}
