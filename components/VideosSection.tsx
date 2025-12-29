@@ -47,49 +47,47 @@ export default function VideosSection({ videos, onVideoClick }: VideosSectionPro
     const remainingCount = sortedVideos.length - 2
 
     return (
-        <section className="w-full py-12">
-            <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                {/* Header */}
-                <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-8">
-                    Videos
-                </h2>
+        <>
+            {/* Header */}
+            <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-8">
+                Videos
+            </h2>
 
-                {/* Videos Grid - 2 columns */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {displayedVideos.map((video) => (
-                        <VideoCard
-                            key={video.id}
-                            video={video}
-                            onClick={() => onVideoClick(video.key)}
-                        />
-                    ))}
-                </div>
-
-                {/* Show More Button */}
-                {!showAll && remainingCount > 0 && (
-                    <div className="flex justify-center mt-8">
-                        <button
-                            onClick={() => setShowAll(true)}
-                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                        >
-                            show {remainingCount} more
-                        </button>
-                    </div>
-                )}
-
-                {/* Show Less Button */}
-                {showAll && sortedVideos.length > 2 && (
-                    <div className="flex justify-center mt-8">
-                        <button
-                            onClick={() => setShowAll(false)}
-                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                        >
-                            show less
-                        </button>
-                    </div>
-                )}
+            {/* Videos Grid - 2 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {displayedVideos.map((video) => (
+                    <VideoCard
+                        key={video.id}
+                        video={video}
+                        onClick={() => onVideoClick(video.key)}
+                    />
+                ))}
             </div>
-        </section>
+
+            {/* Show More Button */}
+            {!showAll && remainingCount > 0 && (
+                <div className="flex justify-center mt-8">
+                    <button
+                        onClick={() => setShowAll(true)}
+                        className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        show {remainingCount} more
+                    </button>
+                </div>
+            )}
+
+            {/* Show Less Button */}
+            {showAll && sortedVideos.length > 2 && (
+                <div className="flex justify-center mt-8">
+                    <button
+                        onClick={() => setShowAll(false)}
+                        className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        show less
+                    </button>
+                </div>
+            )}
+        </>
     )
 }
 

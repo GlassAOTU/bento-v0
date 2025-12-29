@@ -73,111 +73,109 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
     }
 
     return (
-        <section className="w-full py-12">
-            <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                {/* Header with Season Dropdown */}
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans">
-                        Recent Episodes
-                    </h2>
+        <>
+            {/* Header with Season Dropdown */}
+            <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans">
+                    Recent Episodes
+                </h2>
 
-                    {/* Season Dropdown */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                {/* Season Dropdown */}
+                <div className="relative">
+                    <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        <span className="text-sm font-medium">
+                            {regularSeasons.find(s => s.season_number === selectedSeasonNumber)?.name || `Season ${selectedSeasonNumber}`}
+                        </span>
+                        <svg
+                            className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                         >
-                            <span className="text-sm font-medium">
-                                {regularSeasons.find(s => s.season_number === selectedSeasonNumber)?.name || `Season ${selectedSeasonNumber}`}
-                            </span>
-                            <svg
-                                className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
 
-                        {/* Dropdown Menu */}
-                        {isDropdownOpen && (
-                            <>
-                                <div
-                                    className="fixed inset-0 z-10"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                />
-                                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
-                                    {regularSeasons.map((season) => (
-                                        <button
-                                            key={season.id}
-                                            onClick={() => handleSeasonChange(season.season_number)}
-                                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                                                season.season_number === selectedSeasonNumber
-                                                    ? 'bg-gray-50 font-medium'
-                                                    : ''
-                                            }`}
-                                        >
-                                            {season.name || `Season ${season.season_number}`}
-                                        </button>
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* Episodes Grid */}
-                {isLoadingEpisodes ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse">
-                                <div className="w-full aspect-video bg-gray-200 rounded-lg mb-4" />
-                                <div className="h-5 bg-gray-200 rounded mb-2 w-3/4" />
-                                <div className="h-4 bg-gray-200 rounded mb-1" />
-                                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                    {/* Dropdown Menu */}
+                    {isDropdownOpen && (
+                        <>
+                            <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setIsDropdownOpen(false)}
+                            />
+                            <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
+                                {regularSeasons.map((season) => (
+                                    <button
+                                        key={season.id}
+                                        onClick={() => handleSeasonChange(season.season_number)}
+                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                                            season.season_number === selectedSeasonNumber
+                                                ? 'bg-gray-50 font-medium'
+                                                : ''
+                                        }`}
+                                    >
+                                        {season.name || `Season ${season.season_number}`}
+                                    </button>
+                                ))}
                             </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Episodes Grid */}
+            {isLoadingEpisodes ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="animate-pulse">
+                            <div className="w-full aspect-video bg-gray-200 rounded-lg mb-4" />
+                            <div className="h-5 bg-gray-200 rounded mb-2 w-3/4" />
+                            <div className="h-4 bg-gray-200 rounded mb-1" />
+                            <div className="h-4 bg-gray-200 rounded w-2/3" />
+                        </div>
+                    ))}
+                </div>
+            ) : episodes.length > 0 ? (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {displayedEpisodes.map((episode) => (
+                            <EpisodeCard key={episode.id} episode={episode} />
                         ))}
                     </div>
-                ) : episodes.length > 0 ? (
-                    <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {displayedEpisodes.map((episode) => (
-                                <EpisodeCard key={episode.id} episode={episode} />
-                            ))}
+
+                    {/* Show More Button */}
+                    {!showAll && remainingCount > 0 && (
+                        <div className="flex justify-center mt-8">
+                            <button
+                                onClick={() => setShowAll(true)}
+                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                            >
+                                show {remainingCount} more
+                            </button>
                         </div>
+                    )}
 
-                        {/* Show More Button */}
-                        {!showAll && remainingCount > 0 && (
-                            <div className="flex justify-center mt-8">
-                                <button
-                                    onClick={() => setShowAll(true)}
-                                    className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                                >
-                                    show {remainingCount} more
-                                </button>
-                            </div>
-                        )}
-
-                        {/* Show Less Button */}
-                        {showAll && episodes.length > 3 && (
-                            <div className="flex justify-center mt-8">
-                                <button
-                                    onClick={() => setShowAll(false)}
-                                    className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                                >
-                                    show less
-                                </button>
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className="text-center py-8 text-gray-500">
-                        No episodes available for this season
-                    </div>
-                )}
-            </div>
-        </section>
+                    {/* Show Less Button */}
+                    {showAll && episodes.length > 3 && (
+                        <div className="flex justify-center mt-8">
+                            <button
+                                onClick={() => setShowAll(false)}
+                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                            >
+                                show less
+                            </button>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="text-center py-8 text-gray-500">
+                    No episodes available for this season
+                </div>
+            )}
+        </>
     )
 }
 

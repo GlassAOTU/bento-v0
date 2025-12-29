@@ -9,6 +9,7 @@ import Footer from '@/components/Footer'
 import WatchlistModal from '@/components/WatchlistModal'
 import RecentEpisodes from '@/components/RecentEpisodes'
 import VideosSection from '@/components/VideosSection'
+import AnimeSection from '@/components/anime/AnimeSection'
 import AnimePageSkeleton, { DescriptionSkeleton } from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 import {
@@ -287,121 +288,98 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                     </div>
                 </section>
 
-                <div className={`container mx-auto max-w-7xl px-6 md:px-16 pt-6 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pb-12' : 'pb-0'}`}>
-                    {/* Description Section */}
-                    <section className="mb-8">
-                        {descriptionLoading ? (
-                            <DescriptionSkeleton />
-                        ) : (
-                            <p className="text-md leading-relaxed whitespace-pre-line">
-                                {aiDescription || animeDetails.description}
-                            </p>
-                        )}
-                    </section>
-                </div>
+                {/* Description Section */}
+                <AnimeSection divider={seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)}>
+                    {descriptionLoading ? (
+                        <DescriptionSkeleton />
+                    ) : (
+                        <p className="text-md leading-relaxed whitespace-pre-line">
+                            {aiDescription || animeDetails.description}
+                        </p>
+                    )}
+                </AnimeSection>
 
-                {/* Divider before Recent Episodes */}
+                {/* Recent Episodes Section */}
                 {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
-                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                        <hr className="border-t border-gray-200" />
-                    </div>
-                )}
-
-                {/* Recent Episodes Section - Full Width */}
-                {seasons && seasons.length > 0 && (
-                    <RecentEpisodes
-                        seasons={seasons}
-                        latestSeasonEpisodes={latestSeasonEpisodes}
-                        onSeasonChange={async (seasonNumber: number) => {
-                            if (!tmdbId) return []
-                            const response = await fetch(`/api/anime/tmdb/season/${tmdbId}/${seasonNumber}`)
-                            if (!response.ok) return []
-                            const data = await response.json()
-                            return data.episodes || []
-                        }}
-                    />
-                )}
-
-                {/* Divider after Recent Episodes */}
-                {seasons && seasons.filter(s => s.season_number > 0).length > 0 && (
-                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                        <hr className="border-t border-gray-200" />
-                    </div>
+                    <AnimeSection divider={videos && videos.length > 0}>
+                        <RecentEpisodes
+                            seasons={seasons}
+                            latestSeasonEpisodes={latestSeasonEpisodes}
+                            onSeasonChange={async (seasonNumber: number) => {
+                                if (!tmdbId) return []
+                                const response = await fetch(`/api/anime/tmdb/season/${tmdbId}/${seasonNumber}`)
+                                if (!response.ok) return []
+                                const data = await response.json()
+                                return data.episodes || []
+                            }}
+                        />
+                    </AnimeSection>
                 )}
 
                 {/* Videos Section */}
                 {videos && videos.length > 0 && (
-                    <VideosSection
-                        videos={videos}
-                        onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
-                    />
+                    <AnimeSection divider>
+                        <VideosSection
+                            videos={videos}
+                            onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
+                        />
+                    </AnimeSection>
                 )}
 
-                {/* Divider after Videos */}
-                {videos && videos.length > 0 && (
-                    <div className="container mx-auto max-w-7xl px-6 md:px-16">
-                        <hr className="border-t border-gray-200" />
-                    </div>
-                )}
-
-                <div className="container mx-auto max-w-7xl px-6 md:px-16 pb-12">
-                    {/* Details Section */}
-                    <section className={`mb-16 ${(seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)) ? 'pt-16' : ''}`}>
-                        <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-6">Details</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                            {animeDetails.episodes && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Episodes</span>
-                                    <span>{animeDetails.episodes}</span>
-                                </div>
-                            )}
+                {/* Details Section */}
+                <AnimeSection title="Details" divider>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        {animeDetails.episodes && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Status</span>
-                                <span>{animeDetails.status}</span>
+                                <span className="font-semibold min-w-[140px]">Episodes</span>
+                                <span>{animeDetails.episodes}</span>
                             </div>
-                            <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Aired</span>
-                                <span>{animeDetails.aired}</span>
-                            </div>
-                            {animeDetails.premiered && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Premiered</span>
-                                    <span>{animeDetails.premiered}</span>
-                                </div>
-                            )}
-                            {animeDetails.studios && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Studio</span>
-                                    <span>{animeDetails.studios}</span>
-                                </div>
-                            )}
-                            {animeDetails.genres && animeDetails.genres.length > 0 && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Genre</span>
-                                    <span>{animeDetails.genres.join(", ")}</span>
-                                </div>
-                            )}
-                            {animeDetails.duration && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Duration</span>
-                                    <span>{animeDetails.duration}</span>
-                                </div>
-                            )}
-                            {animeDetails.rating && (
-                                <div className="flex">
-                                    <span className="font-semibold min-w-[140px]">Rating</span>
-                                    <span>{animeDetails.rating}/100</span>
-                                </div>
-                            )}
+                        )}
+                        <div className="flex">
+                            <span className="font-semibold min-w-[140px]">Status</span>
+                            <span>{animeDetails.status}</span>
                         </div>
-                    </section>
+                        <div className="flex">
+                            <span className="font-semibold min-w-[140px]">Aired</span>
+                            <span>{animeDetails.aired}</span>
+                        </div>
+                        {animeDetails.premiered && (
+                            <div className="flex">
+                                <span className="font-semibold min-w-[140px]">Premiered</span>
+                                <span>{animeDetails.premiered}</span>
+                            </div>
+                        )}
+                        {animeDetails.studios && (
+                            <div className="flex">
+                                <span className="font-semibold min-w-[140px]">Studio</span>
+                                <span>{animeDetails.studios}</span>
+                            </div>
+                        )}
+                        {animeDetails.genres && animeDetails.genres.length > 0 && (
+                            <div className="flex">
+                                <span className="font-semibold min-w-[140px]">Genre</span>
+                                <span>{animeDetails.genres.join(", ")}</span>
+                            </div>
+                        )}
+                        {animeDetails.duration && (
+                            <div className="flex">
+                                <span className="font-semibold min-w-[140px]">Duration</span>
+                                <span>{animeDetails.duration}</span>
+                            </div>
+                        )}
+                        {animeDetails.rating && (
+                            <div className="flex">
+                                <span className="font-semibold min-w-[140px]">Rating</span>
+                                <span>{animeDetails.rating}/100</span>
+                            </div>
+                        )}
+                    </div>
+                </AnimeSection>
 
-                    {/* Divider after Details */}
-                    <hr className="border-t border-gray-200 mb-16" />
-
-                    {/* Similar Anime Section */}
-                    {similarAnime.length > 0 && (
-                        <section className="mb-16 group/similar">
+                {/* Similar Anime Section */}
+                {similarAnime.length > 0 && (
+                    <AnimeSection divider={popularAnime.length > 0}>
+                        <div className="group/similar">
                             <h2 className="text-2xl font-bold mb-6">Similar Anime You Might Enjoy</h2>
                             <div className="relative">
                                 {/* Left Arrow */}
@@ -471,43 +449,38 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     ))}
                                 </div>
                             </div>
-                        </section>
-                    )}
+                        </div>
+                    </AnimeSection>
+                )}
 
-                    {/* Divider */}
-                    {similarAnime.length > 0 && popularAnime.length > 0 && (
-                        <hr className="border-t border-gray-200 mb-16" />
-                    )}
-
-                    {/* Most Popular Section */}
-                    {popularAnime.length > 0 && (
-                        <section className="mb-16">
-                            <h2 className="text-2xl font-bold mb-6">Most Popular</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                {popularAnime.map((anime) => (
-                                    <Link
-                                        key={anime.id}
-                                        href={`/anime/${slugify(anime.title)}`}
-                                        className="flex flex-col group"
-                                    >
-                                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
-                                            <Image
-                                                src={anime.image}
-                                                alt={anime.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
-                                        {anime.rating && (
-                                            <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
-                                        )}
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-                </div>
+                {/* Most Popular Section */}
+                {popularAnime.length > 0 && (
+                    <AnimeSection>
+                        <h2 className="text-2xl font-bold mb-6">Most Popular</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {popularAnime.map((anime) => (
+                                <Link
+                                    key={anime.id}
+                                    href={`/anime/${slugify(anime.title)}`}
+                                    className="flex flex-col group"
+                                >
+                                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
+                                        <Image
+                                            src={anime.image}
+                                            alt={anime.title}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
+                                    {anime.rating && (
+                                        <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
+                                    )}
+                                </Link>
+                            ))}
+                        </div>
+                    </AnimeSection>
+                )}
             </div>
 
             <Footer />
