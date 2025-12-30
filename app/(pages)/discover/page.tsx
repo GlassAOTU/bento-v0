@@ -6,12 +6,26 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser-client'
-import { searchAnimeEnhanced } from '@/lib/anilist-enhanced'
+import { searchAnimeEnhanced, AnimeFormat } from '@/lib/anilist-enhanced'
 import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
 import CategorySection from '../../../components/CategorySection'
 import DiscoverAnimeCard from '../../../components/DiscoverAnimeCard'
-import { trackDiscoverSearch, trackDiscoverSearchCleared, getAuthStatus } from '@/lib/analytics/events'
+import { trackDiscoverSearch, trackDiscoverSearchCleared, trackDiscoverFormatFilter, getAuthStatus } from '@/lib/analytics/events'
+
+type FormatFilter = 'all' | 'tv' | 'movie'
+
+const FORMAT_MAP: Record<FormatFilter, AnimeFormat[] | undefined> = {
+    all: ['TV', 'TV_SHORT', 'MOVIE', 'OVA', 'ONA', 'SPECIAL'],
+    tv: ['TV', 'TV_SHORT'],
+    movie: ['MOVIE']
+}
+
+const FORMAT_LABELS: Record<FormatFilter, string> = {
+    all: 'All',
+    tv: 'TV Show',
+    movie: 'Movies'
+}
 
 type Anime = {
     id: number
@@ -42,16 +56,22 @@ function DiscoverContent() {
     const [searchError, setSearchError] = useState<string | null>(null)
     const [isRestoringFromCache, setIsRestoringFromCache] = useState(false)
 
+    // Format filter state (derived from URL, defaults to 'tv')
+    const urlType = searchParams.get('type')
+    const formatFilter: FormatFilter = (urlType === 'all' || urlType === 'tv' || urlType === 'movie') ? urlType : 'tv'
+
     // Restore search from URL params and sessionStorage on mount
     useEffect(() => {
         const urlQuery = searchParams.get('q')
         if (urlQuery && urlQuery.length >= 2) {
             setSearchQuery(urlQuery)
 
-            // Try to restore from sessionStorage
+            // Try to restore from sessionStorage (cache key includes format)
             try {
-                const cached = sessionStorage.getItem('discover_search_results')
-                if (cached) {
+                const cacheKey = `discover_search_${formatFilter}_results`
+                const cached = sessionStorage.getItem(cacheKey)
+                const cachedQuery = sessionStorage.getItem(`discover_search_${formatFilter}_query`)
+                if (cached && cachedQuery === urlQuery) {
                     const parsedResults = JSON.parse(cached)
                     setSearchResults(parsedResults)
                     setHasSearched(true)
@@ -61,7 +81,7 @@ function DiscoverContent() {
                 console.error('Failed to restore search from cache:', error)
             }
         }
-    }, [searchParams])
+    }, [searchParams, formatFilter])
 
     useEffect(() => {
         const initAuth = async () => {
@@ -106,7 +126,8 @@ function DiscoverContent() {
                 // Clear search if query is too short
                 setHasSearched(false)
                 setSearchResults([])
-                sessionStorage.removeItem('discover_search_results')
+                sessionStorage.removeItem(`discover_search_${formatFilter}_results`)
+                sessionStorage.removeItem(`discover_search_${formatFilter}_query`)
                 router.push('/discover', { scroll: false })
             }
             return
@@ -116,12 +137,14 @@ function DiscoverContent() {
             // Get the trimmed query
             const trimmedQuery = searchQuery.trim()
 
-            // Check if this query was already searched (avoid duplicate searches)
-            const cachedResults = sessionStorage.getItem('discover_search_results')
-            const cachedQuery = sessionStorage.getItem('discover_last_query')
+            // Check if this query+format was already searched (avoid duplicate searches)
+            const cacheKey = `discover_search_${formatFilter}_results`
+            const cacheQueryKey = `discover_search_${formatFilter}_query`
+            const cachedResults = sessionStorage.getItem(cacheKey)
+            const cachedQuery = sessionStorage.getItem(cacheQueryKey)
 
             if (cachedQuery === trimmedQuery && cachedResults) {
-                // Already searched this exact query, don't search again
+                // Already searched this exact query with same format, don't search again
                 return
             }
 
@@ -129,7 +152,7 @@ function DiscoverContent() {
             setSearchError(null)
 
             try {
-                const results = await searchAnimeEnhanced(trimmedQuery)
+                const results = await searchAnimeEnhanced(trimmedQuery, 20, FORMAT_MAP[formatFilter])
                 setSearchResults(results)
                 setHasSearched(true)
 
@@ -141,9 +164,9 @@ function DiscoverContent() {
                 })
 
                 // Save to sessionStorage and update URL
-                sessionStorage.setItem('discover_search_results', JSON.stringify(results))
-                sessionStorage.setItem('discover_last_query', trimmedQuery)
-                router.push(`/discover?q=${encodeURIComponent(trimmedQuery)}`, { scroll: false })
+                sessionStorage.setItem(cacheKey, JSON.stringify(results))
+                sessionStorage.setItem(cacheQueryKey, trimmedQuery)
+                router.push(`/discover?q=${encodeURIComponent(trimmedQuery)}&type=${formatFilter}`, { scroll: false })
             } catch (error) {
                 console.error('Search error:', error)
                 setSearchError('Failed to search anime. Please try again.')
@@ -154,7 +177,7 @@ function DiscoverContent() {
         }, 500) // Increased to 500ms debounce for better UX
 
         return () => clearTimeout(debounceTimer)
-    }, [searchQuery, hasSearched, isRestoringFromCache, router, user])
+    }, [searchQuery, hasSearched, isRestoringFromCache, router, user, formatFilter])
 
     const handleClearSearch = () => {
         trackDiscoverSearchCleared()
@@ -162,9 +185,31 @@ function DiscoverContent() {
         setSearchResults([])
         setHasSearched(false)
         setSearchError(null)
-        sessionStorage.removeItem('discover_search_results')
-        sessionStorage.removeItem('discover_last_query')
+        // Clear all format caches
+        ;(['all', 'tv', 'movie'] as const).forEach(type => {
+            sessionStorage.removeItem(`discover_search_${type}_results`)
+            sessionStorage.removeItem(`discover_search_${type}_query`)
+        })
         router.push('/', { scroll: false })
+    }
+
+    const handleFormatChange = (newFormat: FormatFilter) => {
+        if (newFormat === formatFilter) return
+
+        // Track format change
+        trackDiscoverFormatFilter({
+            format: newFormat,
+            had_query: searchQuery.trim().length >= 2,
+            auth_status: getAuthStatus(user)
+        })
+
+        // Update URL with new format
+        const params = new URLSearchParams()
+        if (searchQuery.trim().length >= 2) {
+            params.set('q', searchQuery.trim())
+        }
+        params.set('type', newFormat)
+        router.push(`/discover?${params.toString()}`, { scroll: false })
     }
 
     return (
@@ -218,6 +263,29 @@ function DiscoverContent() {
                             )}
                         </div>
                     </section>
+
+                    {/* Format Filter Tabs - only show when searching */}
+                    {hasSearched && (
+                        <section className="px-10 -mt-4">
+                            <div className="flex items-center gap-1 text-sm">
+                                {(['all', 'tv', 'movie'] as const).map((type, index) => (
+                                    <div key={type} className="flex items-center">
+                                        {index > 0 && <span className="text-gray-300 mx-2">|</span>}
+                                        <button
+                                            onClick={() => handleFormatChange(type)}
+                                            className={`transition-colors ${
+                                                formatFilter === type
+                                                    ? 'text-mySecondary font-medium'
+                                                    : 'text-gray-400 hover:text-gray-600'
+                                            }`}
+                                        >
+                                            {FORMAT_LABELS[type]}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
 
                     {/* Search Results or Categories */}
                     {hasSearched ? (

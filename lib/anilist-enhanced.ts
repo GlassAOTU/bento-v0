@@ -126,10 +126,16 @@ async function getTMDBImage(romajiTitle: string, englishTitle: string | null = n
     return null;
 }
 
+export type AnimeFormat = 'TV' | 'TV_SHORT' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL'
+
 /**
  * Enhanced search anime with season filtering and TMDB images
  */
-export async function searchAnimeEnhanced(searchQuery: string, limit: number = 20) {
+export async function searchAnimeEnhanced(
+    searchQuery: string,
+    limit: number = 20,
+    formats?: AnimeFormat[]
+) {
     const query = `
     query ($search: String, $perPage: Int) {
       Page(perPage: $perPage) {
@@ -209,18 +215,23 @@ export async function searchAnimeEnhanced(searchQuery: string, limit: number = 2
         }
         seenBaseNames.add(baseName.toLowerCase())
 
-        // Filter out less relevant formats for search
+        // Always filter out MUSIC format
         if (anime.format === 'MUSIC') continue
 
-        // Be stricter with OVAs and Specials in search results
-        if ((anime.format === 'SPECIAL' || anime.format === 'OVA' || anime.format === 'ONA')) {
-            // Skip if it looks like a season-specific special
-            if (displayTitle.includes(':') || /\d/.test(displayTitle)) {
-                continue
-            }
-            // Skip if popularity is too low (obscure titles)
-            if (anime.popularity < 5000) {
-                continue
+        // If specific formats requested, filter to only those
+        if (formats && formats.length > 0) {
+            if (!formats.includes(anime.format)) continue
+        } else {
+            // Default behavior: be stricter with OVAs and Specials in search results
+            if ((anime.format === 'SPECIAL' || anime.format === 'OVA' || anime.format === 'ONA')) {
+                // Skip if it looks like a season-specific special
+                if (displayTitle.includes(':') || /\d/.test(displayTitle)) {
+                    continue
+                }
+                // Skip if popularity is too low (obscure titles)
+                if (anime.popularity < 5000) {
+                    continue
+                }
             }
         }
 
