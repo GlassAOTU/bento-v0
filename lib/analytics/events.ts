@@ -69,6 +69,14 @@ export function trackCategoryCarouselScroll(properties: {
   posthog.capture('category_carousel_scroll', properties)
 }
 
+export function trackDiscoverFormatFilter(properties: {
+  format: 'all' | 'tv' | 'movie'
+  had_query: boolean
+  auth_status: 'authenticated' | 'anonymous'
+}) {
+  posthog.capture('discover_format_filter', properties)
+}
+
 // ============================================================================
 // RECOMMENDATIONS PAGE
 // ============================================================================
