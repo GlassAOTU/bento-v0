@@ -11,6 +11,7 @@ import RecentEpisodes from '@/components/RecentEpisodes'
 import VideosSection from '@/components/VideosSection'
 import AnimeSection from '@/components/anime/AnimeSection'
 import ExpandableDescription from '@/components/anime/ExpandableDescription'
+import ReviewsSection from '@/components/anime/ReviewsSection'
 import AnimePageSkeleton from '@/components/AnimePageSkeleton'
 import { slugify } from '@/lib/utils/slugify'
 import {
@@ -396,6 +397,15 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                             </div>
                         )}
                     </div>
+                </AnimeSection>
+
+                {/* Reviews Section */}
+                <AnimeSection divider={similarAnime.length > 0} noPaddingTop>
+                    <ReviewsSection
+                        animeId={animeDetails.id}
+                        animeTitle={animeDetails.title}
+                        animeImage={animeDetails.coverImage}
+                    />
                 </AnimeSection>
 
                 {/* Similar Anime Section */}
