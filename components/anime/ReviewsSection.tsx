@@ -18,9 +18,10 @@ interface Review {
 interface ReviewsSectionProps {
     animeId: number
     animeTitle: string
+    animeImage: string
 }
 
-export default function ReviewsSection({ animeId, animeTitle }: ReviewsSectionProps) {
+export default function ReviewsSection({ animeId, animeTitle, animeImage }: ReviewsSectionProps) {
     const { user, profile } = useAuth()
     const [reviews, setReviews] = useState<Review[]>([])
     const [userReview, setUserReview] = useState<Review | null>(null)
@@ -167,7 +168,7 @@ export default function ReviewsSection({ animeId, animeTitle }: ReviewsSectionPr
             <ReviewModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                anime={{ id: animeId, title: animeTitle }}
+                anime={{ id: animeId, title: animeTitle, image: animeImage }}
                 existingReview={userReview ? {
                     id: userReview.id,
                     rating: userReview.rating,

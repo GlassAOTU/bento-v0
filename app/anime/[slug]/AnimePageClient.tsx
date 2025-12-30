@@ -404,6 +404,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                     <ReviewsSection
                         animeId={animeDetails.id}
                         animeTitle={animeDetails.title}
+                        animeImage={animeDetails.coverImage}
                     />
                 </AnimeSection>
 

@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 interface ReviewModalProps {
     isOpen: boolean
     onClose: () => void
-    anime: { id: number; title: string }
+    anime: { id: number; title: string; image: string }
     existingReview?: { id: string; rating: number; review_text: string } | null
     onSuccess: () => void
 }
@@ -125,7 +126,18 @@ export default function ReviewModal({
                 <h2 className="text-xl font-bold mb-1">
                     {isEditing ? 'Edit Review' : 'Write a Review'}
                 </h2>
-                <p className="text-gray-500 text-sm mb-6">{anime.title}</p>
+                <p className="text-gray-500 text-sm mb-4">{anime.title}</p>
+
+                {/* Anime Image */}
+                <div className="mb-4">
+                    <Image
+                        src={anime.image}
+                        alt={anime.title}
+                        width={80}
+                        height={120}
+                        className="rounded-md object-cover"
+                    />
+                </div>
 
                 {/* Star Rating */}
                 <div className="mb-4">
