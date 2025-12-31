@@ -23,7 +23,12 @@ const config = {
                 sans: ['var(--font-instrument-sans)'],
             },
             colors: {
-                
+                gray: {
+                    600: '#4a4a4a',
+                    700: '#3a3a3a',
+                    800: '#333333',
+                    900: '#292929',
+                },
                 mySecondary: '#3c3c3c',
 
                 border: "hsl(var(--border))",
