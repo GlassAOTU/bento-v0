@@ -231,21 +231,21 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                 }
             }}
         >
-            <div className="bg-white rounded-lg max-w-[800px] w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-gray-900 rounded-lg max-w-[800px] w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between z-10">
-                    <h2 className="text-2xl font-bold">Edit Watchlist</h2>
+                <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10">
+                    <h2 className="text-2xl font-bold dark:text-white">Edit Watchlist</h2>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setShowDeleteConfirm(true)}
                             disabled={saving}
-                            className="text-sm text-red-600 hover:text-red-700 underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Delete Watchlist
                         </button>
                         <button
                             onClick={onClose}
-                            className="text-gray-500 hover:text-gray-700 transition-colors"
+                            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                         >
                             <X size={24} />
                         </button>
@@ -255,23 +255,23 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                 {/* Content */}
                 <div className="p-6">
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-red-600 dark:text-red-400 text-sm">
                             {error}
                         </div>
                     )}
 
                     {/* Delete Confirmation */}
                     {showDeleteConfirm && !success && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-md">
-                            <h4 className="text-sm font-semibold text-red-900 mb-2">Delete this watchlist?</h4>
-                            <p className="text-xs text-red-700 mb-4">
+                        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-md">
+                            <h4 className="text-sm font-semibold text-red-900 dark:text-red-300 mb-2">Delete this watchlist?</h4>
+                            <p className="text-xs text-red-700 dark:text-red-400 mb-4">
                                 This will permanently delete "{watchlist?.name}" and all {watchlist?.items.length} anime in it. This action cannot be undone.
                             </p>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setShowDeleteConfirm(false)}
                                     disabled={saving}
-                                    className="flex-1 py-2 px-3 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Cancel
                                 </button>
@@ -289,10 +289,10 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                     {success ? (
                         <div className="text-center py-8">
                             <div className="mb-4 text-6xl">✓</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                                 {willDeleteEntireWatchlist ? 'Watchlist Deleted!' : 'Changes Saved!'}
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 dark:text-gray-400">
                                 {willDeleteEntireWatchlist
                                     ? 'The watchlist has been removed'
                                     : 'Your watchlist has been updated'}
@@ -302,7 +302,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                         <>
                             {/* Form Inputs */}
                             <div className="mb-6">
-                                <label htmlFor="watchlist-name" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="watchlist-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Watchlist Name *
                                 </label>
                                 <input
@@ -312,14 +312,14 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     onChange={(e) => setName(e.target.value)}
                                     disabled={willDeleteEntireWatchlist}
                                     placeholder="e.g., Must Watch, Action Anime, etc."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-gray-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                                     maxLength={100}
                                     required
                                 />
                             </div>
 
                             <div className="mb-6">
-                                <label htmlFor="watchlist-description" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="watchlist-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Description (optional)
                                 </label>
                                 <textarea
@@ -328,7 +328,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     onChange={(e) => setDescription(e.target.value)}
                                     disabled={willDeleteEntireWatchlist}
                                     placeholder="What's this watchlist for?"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-gray-500 focus:border-transparent resize-none disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                                     rows={3}
                                     maxLength={500}
                                 />
@@ -336,10 +336,10 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
 
                             {/* Visibility Toggle */}
                             <div className="mb-6">
-                                <label className="flex items-center justify-between p-4 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
+                                <label className="flex items-center justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
                                     <div>
-                                        <span className="block text-sm font-medium text-gray-700">Make this watchlist public</span>
-                                        <span className="block text-xs text-gray-500 mt-1">Public watchlists will appear on your profile</span>
+                                        <span className="block text-sm font-medium text-gray-700 dark:text-gray-300">Make this watchlist public</span>
+                                        <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1">Public watchlists will appear on your profile</span>
                                     </div>
                                     <div className="relative">
                                         <input
@@ -349,10 +349,10 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                             disabled={willDeleteEntireWatchlist}
                                             className="sr-only peer"
                                         />
-                                        <div className={`w-11 h-6 rounded-full peer peer-focus:ring-2 peer-focus:ring-black transition-colors ${
-                                            isPublic ? 'bg-black' : 'bg-gray-300'
+                                        <div className={`w-11 h-6 rounded-full peer peer-focus:ring-2 peer-focus:ring-black dark:peer-focus:ring-gray-500 transition-colors ${
+                                            isPublic ? 'bg-black dark:bg-white' : 'bg-gray-300 dark:bg-gray-600'
                                         } ${willDeleteEntireWatchlist ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                                            <div className={`absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform ${
+                                            <div className={`absolute top-0.5 left-0.5 bg-white dark:bg-gray-900 w-5 h-5 rounded-full transition-transform ${
                                                 isPublic ? 'translate-x-5' : 'translate-x-0'
                                             }`}></div>
                                         </div>
@@ -362,13 +362,13 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
 
                             {/* Items Section */}
                             <div className="mb-6">
-                                <h3 className="text-lg font-semibold mb-3">
+                                <h3 className="text-lg font-semibold mb-3 dark:text-white">
                                     Anime in this watchlist ({remainingItems.length})
                                 </h3>
 
                                 {watchlist.items.length === 0 ? (
-                                    <div className="text-center py-8 border border-gray-200 rounded-lg">
-                                        <p className="text-gray-400">This watchlist is empty</p>
+                                    <div className="text-center py-8 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <p className="text-gray-400 dark:text-gray-500">This watchlist is empty</p>
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -382,7 +382,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                                     }`}
                                                 >
                                                     <div className={`relative w-full aspect-square rounded-lg overflow-hidden ${
-                                                        isMarkedForRemoval ? 'border-2 border-red-500' : 'border border-gray-200'
+                                                        isMarkedForRemoval ? 'border-2 border-red-500' : 'border border-gray-200 dark:border-gray-700'
                                                     }`}>
                                                         <Image
                                                             src={item.image || '/images/banner-not-available.png'}
@@ -403,7 +403,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                                             <X size={16} />
                                                         </button>
                                                     </div>
-                                                    <p className="mt-2 text-xs text-center font-medium text-gray-900 line-clamp-2">
+                                                    <p className="mt-2 text-xs text-center font-medium text-gray-900 dark:text-white line-clamp-2">
                                                         {item.title}
                                                     </p>
                                                 </div>
@@ -415,13 +415,13 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
 
                             {/* Warning for full deletion */}
                             {willDeleteEntireWatchlist && (
-                                <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-md flex items-start gap-3">
-                                    <span className="text-orange-600 text-xl">⚠️</span>
+                                <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-md flex items-start gap-3">
+                                    <span className="text-orange-600 dark:text-orange-400 text-xl">⚠️</span>
                                     <div>
-                                        <p className="text-sm font-medium text-orange-800">
+                                        <p className="text-sm font-medium text-orange-800 dark:text-orange-300">
                                             Warning: Removing all anime will delete this watchlist
                                         </p>
-                                        <p className="text-xs text-orange-700 mt-1">
+                                        <p className="text-xs text-orange-700 dark:text-orange-400 mt-1">
                                             This action cannot be undone.
                                         </p>
                                     </div>
@@ -429,12 +429,12 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                             )}
 
                             {/* Footer Buttons */}
-                            <div className="flex gap-3 pt-4 border-t border-gray-200">
+                            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <button
                                     type="button"
                                     onClick={onClose}
                                     disabled={saving}
-                                    className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Cancel
                                 </button>
@@ -444,8 +444,8 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     disabled={saving || !hasChanges || (!willDeleteEntireWatchlist && !name.trim())}
                                     className={`flex-1 py-3 rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
                                         willDeleteEntireWatchlist
-                                            ? 'bg-red-50 text-red-700 border border-red-300 hover:bg-red-100'
-                                            : 'bg-[#F9F9F9] text-black border border-black hover:bg-gray-200'
+                                            ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30'
+                                            : 'bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
                                     }`}
                                 >
                                     {saving

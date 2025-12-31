@@ -163,24 +163,24 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
 
     return (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="relative bg-white rounded-lg w-full max-w-md p-8">
-                <h2 className="text-4xl font-bold mb-2 text-center">Claim your username</h2>
-                <p className="text-base text-gray-400 mb-8 text-center">
+            <div className="relative bg-white dark:bg-gray-900 rounded-lg w-full max-w-md p-8">
+                <h2 className="text-4xl font-bold mb-2 text-center dark:text-white">Claim your username</h2>
+                <p className="text-base text-gray-400 dark:text-gray-500 mb-8 text-center">
                     Choose a unique username for your public profile
                 </p>
 
                 {/* Error Message */}
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
-                        <span className="text-red-600 text-sm">⚠️</span>
-                        <p className="text-sm text-red-600">{error}</p>
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md flex items-start gap-2">
+                        <span className="text-red-600 dark:text-red-400 text-sm">⚠️</span>
+                        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     {/* Username Field */}
                     <div>
-                        <label htmlFor="username" className="block text-base font-normal mb-2">
+                        <label htmlFor="username" className="block text-base font-normal mb-2 dark:text-white">
                             Username <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
@@ -192,41 +192,41 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                                 onChange={(e) => setUsername(e.target.value.toLowerCase())}
                                 onBlur={() => setUsernameTouched(true)}
                                 placeholder="yourhandle"
-                                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 ${
+                                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 ${
                                     usernameTouched && !isUsernameFormatValid
-                                        ? 'border-red-300 focus:ring-red-500'
+                                        ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
                                         : usernameAvailable === false
-                                        ? 'border-red-300 focus:ring-red-500'
+                                        ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
                                         : usernameAvailable === true
-                                        ? 'border-green-300 focus:ring-green-500'
-                                        : 'border-gray-300 focus:ring-blue-500'
+                                        ? 'border-green-300 dark:border-green-700 focus:ring-green-500'
+                                        : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
                                 }`}
                             />
                             {checkingUsername && (
                                 <div className="absolute right-3 top-3">
-                                    <div className="animate-spin h-5 w-5 border-2 border-gray-300 border-t-blue-500 rounded-full" />
+                                    <div className="animate-spin h-5 w-5 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full" />
                                 </div>
                             )}
                         </div>
 
                         {/* Username validation feedback */}
                         {usernameTouched && username.length > 0 && !isUsernameFormatValid && (
-                            <p className="mt-1 text-xs text-red-600">
+                            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                                 Username must be 3-20 characters and contain only lowercase letters, numbers, underscores, and hyphens
                             </p>
                         )}
                         {isUsernameFormatValid && isReserved && (
-                            <p className="mt-1 text-xs text-red-600">
+                            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                                 This username is reserved
                             </p>
                         )}
                         {isUsernameFormatValid && !isReserved && usernameAvailable === false && (
-                            <p className="mt-1 text-xs text-red-600">
+                            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                                 Username is already taken
                             </p>
                         )}
                         {isUsernameFormatValid && usernameAvailable === true && (
-                            <p className="mt-1 text-xs text-green-600">
+                            <p className="mt-1 text-xs text-green-600 dark:text-green-400">
                                 ✓ Username is available!
                             </p>
                         )}
@@ -234,8 +234,8 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
 
                     {/* Display Name Field */}
                     <div>
-                        <label htmlFor="display-name" className="block text-base font-normal mb-2">
-                            Display Name <span className="text-gray-400">(optional)</span>
+                        <label htmlFor="display-name" className="block text-base font-normal mb-2 dark:text-white">
+                            Display Name <span className="text-gray-400 dark:text-gray-500">(optional)</span>
                         </label>
                         <input
                             id="display-name"
@@ -243,17 +243,17 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                             value={displayName}
                             onChange={(e) => setDisplayName(e.target.value)}
                             placeholder="Your Name"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                         />
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             This will be shown on your profile
                         </p>
                     </div>
 
                     {/* Bio Field */}
                     <div>
-                        <label htmlFor="bio" className="block text-base font-normal mb-2">
-                            Bio <span className="text-gray-400">(optional)</span>
+                        <label htmlFor="bio" className="block text-base font-normal mb-2 dark:text-white">
+                            Bio <span className="text-gray-400 dark:text-gray-500">(optional)</span>
                         </label>
                         <textarea
                             id="bio"
@@ -262,9 +262,9 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                             placeholder="Tell us about yourself..."
                             rows={3}
                             maxLength={500}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                         />
-                        <p className="mt-1 text-xs text-gray-500 text-right">
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 text-right">
                             {bio.length}/500 characters
                         </p>
                     </div>
@@ -273,13 +273,13 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                     <button
                         type="submit"
                         disabled={!canSubmit}
-                        className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white rounded-[6px] border-[0.5px] border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Creating profile...' : 'Create profile'}
                     </button>
                 </form>
 
-                <p className="mt-4 text-xs text-center text-gray-500">
+                <p className="mt-4 text-xs text-center text-gray-500 dark:text-gray-400">
                     You can update your profile information later in settings
                 </p>
             </div>

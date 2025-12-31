@@ -210,7 +210,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
     if (loading) {
         return (
-            <div className="bg-white min-h-screen">
+            <div className="bg-white dark:bg-gray-900 min-h-screen">
                 <NavigationBar />
                 <AnimePageSkeleton />
                 <Footer />
@@ -220,11 +220,11 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
     if (error || !animeDetails) {
         return (
-            <div className="bg-white min-h-screen">
+            <div className="bg-white dark:bg-gray-900 min-h-screen">
                 <NavigationBar />
                 <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Anime Not Found</h1>
-                    <p className="text-gray-600 mb-6">{error || 'The anime you\'re looking for doesn\'t exist.'}</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Anime Not Found</h1>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'The anime you\'re looking for doesn\'t exist.'}</p>
                     <button
                         onClick={() => router.push('/')}
                         className="px-6 py-3 bg-mySecondary text-white rounded-md hover:bg-[#2b2b2b] transition-colors"
@@ -237,7 +237,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
     }
 
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-900">
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
@@ -280,7 +280,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     })
                                     setIsWatchlistModalOpen(true)
                                 }}
-                                className="px-6 py-2 mb-4 bg-white/90 hover:bg-white text-black font-semibold rounded-md transition-colors inline-block"
+                                className="px-6 py-2 mb-4 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors inline-block dark:border dark:border-white/40"
                             >
                                 ADD TO WATCHLIST
                             </button>
@@ -302,7 +302,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                                         platform: link.site
                                                     })
                                                 }}
-                                                className="px-6 py-2 bg-white/90 hover:bg-white text-black font-semibold rounded-md transition-colors"
+                                                className="px-6 py-2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors dark:border dark:border-white/40"
                                             >
                                                 {link.site}
                                             </a>
@@ -354,46 +354,46 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         {animeDetails.episodes && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Episodes</span>
-                                <span>{animeDetails.episodes}</span>
+                                <span className="font-semibold min-w-[140px] dark:text-white">Episodes</span>
+                                <span className="dark:text-gray-300">{animeDetails.episodes}</span>
                             </div>
                         )}
                         <div className="flex">
-                            <span className="font-semibold min-w-[140px]">Status</span>
-                            <span>{animeDetails.status}</span>
+                            <span className="font-semibold min-w-[140px] dark:text-white">Status</span>
+                            <span className="dark:text-gray-300">{animeDetails.status}</span>
                         </div>
                         <div className="flex">
-                            <span className="font-semibold min-w-[140px]">Aired</span>
-                            <span>{animeDetails.aired}</span>
+                            <span className="font-semibold min-w-[140px] dark:text-white">Aired</span>
+                            <span className="dark:text-gray-300">{animeDetails.aired}</span>
                         </div>
                         {animeDetails.premiered && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Premiered</span>
-                                <span>{animeDetails.premiered}</span>
+                                <span className="font-semibold min-w-[140px] dark:text-white">Premiered</span>
+                                <span className="dark:text-gray-300">{animeDetails.premiered}</span>
                             </div>
                         )}
                         {animeDetails.studios && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Studio</span>
-                                <span>{animeDetails.studios}</span>
+                                <span className="font-semibold min-w-[140px] dark:text-white">Studio</span>
+                                <span className="dark:text-gray-300">{animeDetails.studios}</span>
                             </div>
                         )}
                         {animeDetails.genres && animeDetails.genres.length > 0 && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Genre</span>
-                                <span>{animeDetails.genres.join(", ")}</span>
+                                <span className="font-semibold min-w-[140px] dark:text-white">Genre</span>
+                                <span className="dark:text-gray-300">{animeDetails.genres.join(", ")}</span>
                             </div>
                         )}
                         {animeDetails.duration && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Duration</span>
-                                <span>{animeDetails.duration}</span>
+                                <span className="font-semibold min-w-[140px] dark:text-white">Duration</span>
+                                <span className="dark:text-gray-300">{animeDetails.duration}</span>
                             </div>
                         )}
                         {animeDetails.rating && (
                             <div className="flex">
-                                <span className="font-semibold min-w-[140px]">Rating</span>
-                                <span>{animeDetails.rating}/100</span>
+                                <span className="font-semibold min-w-[140px] dark:text-white">Rating</span>
+                                <span className="dark:text-gray-300">{animeDetails.rating}/100</span>
                             </div>
                         )}
                     </div>
@@ -412,15 +412,15 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 {similarAnime.length > 0 && (
                     <AnimeSection divider={mostPopularAnime.length > 0} noPaddingTop>
                         <div className="group/similar">
-                            <h2 className="text-2xl font-bold mb-6">Similar Anime You Might Enjoy</h2>
+                            <h2 className="text-2xl font-bold mb-6 dark:text-white">Similar Anime You Might Enjoy</h2>
                             <div className="relative">
                                 {/* Left Arrow */}
                                 <button
                                     onClick={() => scrollSimilar('left')}
-                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
+                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll left"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M15 18l-6-6 6-6"/>
                                         </svg>
@@ -430,10 +430,10 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                 {/* Right Arrow */}
                                 <button
                                     onClick={() => scrollSimilar('right')}
-                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
+                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll right"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M9 18l6-6-6-6"/>
                                         </svg>
@@ -441,7 +441,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                 </button>
 
                                 {/* Mobile fade overlay */}
-                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none z-10" />
 
                                 {/* Scrollable Container */}
                                 <div
@@ -473,9 +473,9 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                                     className="object-cover"
                                                 />
                                             </div>
-                                            <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
+                                            <p className="mt-3 font-medium text-sm line-clamp-2 dark:text-white">{anime.title}</p>
                                             {anime.rating && (
-                                                <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">★ {anime.rating}/100</p>
                                             )}
                                         </Link>
                                     ))}
@@ -489,15 +489,15 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 {mostPopularAnime.length > 0 && (
                     <AnimeSection noPaddingTop>
                         <div className="group/popular">
-                            <h2 className="text-2xl font-bold mb-6">Most Popular</h2>
+                            <h2 className="text-2xl font-bold mb-6 dark:text-white">Most Popular</h2>
                             <div className="relative">
                                 {/* Left Arrow */}
                                 <button
                                     onClick={() => scrollPopular('left')}
-                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white via-white to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
+                                    className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll left"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M15 18l-6-6 6-6"/>
                                         </svg>
@@ -507,10 +507,10 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                 {/* Right Arrow */}
                                 <button
                                     onClick={() => scrollPopular('right')}
-                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white via-white to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
+                                    className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll right"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M9 18l6-6-6-6"/>
                                         </svg>
@@ -518,7 +518,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                 </button>
 
                                 {/* Mobile fade overlay */}
-                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+                                <div className="md:hidden absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none z-10" />
 
                                 {/* Scrollable Container */}
                                 <div
@@ -543,9 +543,9 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                                     className="object-cover"
                                                 />
                                             </div>
-                                            <p className="mt-3 font-medium text-sm line-clamp-2">{anime.title}</p>
+                                            <p className="mt-3 font-medium text-sm line-clamp-2 dark:text-white">{anime.title}</p>
                                             {anime.rating && (
-                                                <p className="text-xs text-gray-500">★ {anime.rating}/100</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">★ {anime.rating}/100</p>
                                             )}
                                         </Link>
                                     ))}
@@ -579,10 +579,10 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
-                            className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
+                            className="absolute -top-2 -right-2 bg-white dark:bg-gray-700 rounded-full p-1 border border-mySecondary/50 dark:border-gray-600 hover:border-mySecondary"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 6 6 18" />

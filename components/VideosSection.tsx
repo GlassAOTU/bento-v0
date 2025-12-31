@@ -49,7 +49,7 @@ export default function VideosSection({ videos, onVideoClick }: VideosSectionPro
     return (
         <>
             {/* Header */}
-            <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans mb-8">
+            <h2 className="text-2xl font-bold text-mySecondary dark:text-white font-instrument-sans mb-8">
                 Videos
             </h2>
 
@@ -69,7 +69,7 @@ export default function VideosSection({ videos, onVideoClick }: VideosSectionPro
                 <div className="flex justify-center mt-8">
                     <button
                         onClick={() => setShowAll(true)}
-                        className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                        className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     >
                         show {remainingCount} more
                     </button>
@@ -81,7 +81,7 @@ export default function VideosSection({ videos, onVideoClick }: VideosSectionPro
                 <div className="flex justify-center mt-8">
                     <button
                         onClick={() => setShowAll(false)}
-                        className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                        className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     >
                         show less
                     </button>
@@ -110,7 +110,7 @@ function VideoCard({ video, onClick }: { video: Video; onClick: () => void }) {
             className="flex flex-col text-left group cursor-pointer"
         >
             {/* Video Thumbnail */}
-            <div className="relative w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-4">
+            <div className="relative w-full aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
                 {thumbnailUrl && !imageError ? (
                     <>
                         <Image
@@ -134,9 +134,9 @@ function VideoCard({ video, onClick }: { video: Video; onClick: () => void }) {
                         </div>
                     </>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600">
                         <svg
-                            className="w-12 h-12 text-gray-400"
+                            className="w-12 h-12 text-gray-400 dark:text-gray-500"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ function VideoCard({ video, onClick }: { video: Video; onClick: () => void }) {
             </div>
 
             {/* Video Info */}
-            <h3 className="text-sm font-bold text-mySecondary font-instrument-sans uppercase">
+            <h3 className="text-sm font-bold text-mySecondary dark:text-white font-instrument-sans uppercase">
                 {formatType(video.type)}
             </h3>
         </button>

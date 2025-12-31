@@ -72,18 +72,18 @@ export default function EpisodesModal({ isOpen, onClose, tmdbId, seasons, curren
 
             {/* Modal */}
             <div className="flex min-h-full items-center justify-center p-4">
-                <div className="relative w-full max-w-6xl bg-white rounded-lg shadow-xl">
+                <div className="relative w-full max-w-6xl bg-white dark:bg-gray-900 rounded-lg shadow-xl">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b">
-                        <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans">
+                    <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
+                        <h2 className="text-2xl font-bold text-mySecondary dark:text-white font-instrument-sans">
                             ALL EPISODES
                         </h2>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                         >
                             <svg
-                                className="w-6 h-6 text-gray-600"
+                                className="w-6 h-6 text-gray-600 dark:text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -99,7 +99,7 @@ export default function EpisodesModal({ isOpen, onClose, tmdbId, seasons, curren
                     </div>
 
                     {/* Season Selector */}
-                    <div className="p-6 border-b bg-gray-50">
+                    <div className="p-6 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {regularSeasons.map((season) => (
                                 <button
@@ -108,7 +108,7 @@ export default function EpisodesModal({ isOpen, onClose, tmdbId, seasons, curren
                                     className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                                         selectedSeasonNumber === season.season_number
                                             ? 'bg-mySecondary text-white'
-                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
                                     }`}
                                 >
                                     {season.name}
@@ -121,10 +121,10 @@ export default function EpisodesModal({ isOpen, onClose, tmdbId, seasons, curren
                     <div className="p-6 max-h-[600px] overflow-y-auto">
                         {loading ? (
                             <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mySecondary" />
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mySecondary dark:border-white" />
                             </div>
                         ) : episodes.length === 0 ? (
-                            <div className="text-center py-12 text-gray-500">
+                            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                                 No episodes available for this season.
                             </div>
                         ) : (
@@ -153,9 +153,9 @@ function EpisodeItem({ episode }: { episode: Episode }) {
         : 'TBA'
 
     return (
-        <div className="flex gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+        <div className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             {/* Thumbnail */}
-            <div className="relative flex-shrink-0 w-40 h-24 bg-gray-200 rounded overflow-hidden">
+            <div className="relative flex-shrink-0 w-40 h-24 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
                 {episode.still_url_w300 && !imageError ? (
                     <Image
                         src={episode.still_url_w300}
@@ -165,9 +165,9 @@ function EpisodeItem({ episode }: { episode: Episode }) {
                         onError={() => setImageError(true)}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600">
                         <svg
-                            className="w-8 h-8 text-gray-400"
+                            className="w-8 h-8 text-gray-400 dark:text-gray-500"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -185,13 +185,13 @@ function EpisodeItem({ episode }: { episode: Episode }) {
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-mySecondary mb-1 font-instrument-sans">
+                <h3 className="font-bold text-mySecondary dark:text-white mb-1 font-instrument-sans">
                     {episode.episode_number}. {episode.name}
                 </h3>
-                <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
                     {episode.overview || 'No description available.'}
                 </p>
-                <div className="flex gap-4 text-xs text-gray-500">
+                <div className="flex gap-4 text-xs text-gray-500 dark:text-gray-400">
                     <span>{formattedDate}</span>
                     {episode.runtime && <span>{episode.runtime} min</span>}
                 </div>

@@ -13,6 +13,7 @@ import EditWatchlistModal from '@/components/EditWatchlistModal'
 import { slugify } from '@/lib/utils/slugify'
 import { getRecentSearches, RecentSearch } from '@/lib/utils/localStorage'
 import { useAuth } from '@/lib/auth/AuthContext'
+import { useTheme } from '@/lib/theme/ThemeContext'
 import {
     trackMyAnimePageViewed,
     trackWatchlistTabSwitched,
@@ -86,6 +87,7 @@ function WatchlistsContent() {
     const [shareDropdownId, setShareDropdownId] = useState<string | null>(null)
     const [copiedId, setCopiedId] = useState<string | null>(null)
     const { profile } = useAuth()
+    const { theme } = useTheme()
 
     // Get active tab from URL params, default to 'watchlist'
     const activeTab = searchParams.get('tab') || 'watchlist'
@@ -240,30 +242,30 @@ function WatchlistsContent() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-gray-600">Loading...</div>
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
             </div>
         )
     }
 
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-900">
             <NavigationBar />
 
-            <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
+            <div className="min-h-screen text-mySecondary dark:text-gray-200 pb-16 font-instrument-sans">
                 <div className="max-w-5xl flex flex-col mx-auto gap-2">
 
                     {/* Banner */}
                     <section className="flex justify-center sm:px-10">
                         <div className="relative max-w-[1200px]">
                             <Image
-                                src="/images/header-image.png"
+                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}
                                 className="hidden sm:inline w-full h-auto"
                             />
                             <Image
-                                src="/images/header-image-mobile.png"
+                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image-mobile.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}
@@ -281,20 +283,20 @@ function WatchlistsContent() {
                         <div className="flex justify-center gap-0 mb-12">
                             <button
                                 onClick={() => switchTab('watchlist')}
-                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 ${
+                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 dark:border-gray-600 border-l-0 ${
                                     activeTab === 'watchlist'
-                                        ? 'bg-[#F9F9F9] text-black'
-                                        : 'bg-white text-gray-400 hover:text-gray-600'
+                                        ? 'bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white'
+                                        : 'bg-white dark:bg-gray-900 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                 }`}
                             >
                                 my anime
                             </button>
                             <button
                                 onClick={() => switchTab('recent-searches')}
-                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 border-l-0 border-r-0 ${
+                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 dark:border-gray-600 border-l-0 border-r-0 ${
                                     activeTab === 'recent-searches'
-                                        ? 'bg-[#F9F9F9] text-black'
-                                        : 'bg-white text-gray-400 hover:text-gray-600'
+                                        ? 'bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white'
+                                        : 'bg-white dark:bg-gray-900 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                 }`}
                             >
                                 recent searches
@@ -308,8 +310,8 @@ function WatchlistsContent() {
                                 {/* Watchlists */}
                 {watchlists.length === 0 ? (
                     <div className="text-center py-16">
-                        <p className="text-gray-500 text-lg mb-4">You don't have any watchlists yet.</p>
-                        <p className="text-gray-400">Start adding anime to your watchlists from the recommendations page!</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">You don't have any watchlists yet.</p>
+                        <p className="text-gray-400 dark:text-gray-500">Start adding anime to your watchlists from the recommendations page!</p>
                     </div>
                 ) : (
                     <div className="space-y-16">
@@ -327,7 +329,7 @@ function WatchlistsContent() {
                                                 {watchlist.name}
                                             </h2>
                                             {watchlist.description && (
-                                                <p className="text-sm text-gray-500 mt-1">{watchlist.description}</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{watchlist.description}</p>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -336,7 +338,7 @@ function WatchlistsContent() {
                                                     <>
                                                         <button
                                                             onClick={() => setShareDropdownId(shareDropdownId === watchlist.id ? null : watchlist.id)}
-                                                            className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                                            className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                                         >
                                                             Share
                                                         </button>
@@ -346,7 +348,7 @@ function WatchlistsContent() {
                                                                     className="fixed inset-0 z-10"
                                                                     onClick={() => setShareDropdownId(null)}
                                                                 />
-                                                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                                                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20">
                                                                     <button
                                                                         onClick={() => {
                                                                             const url = `${window.location.origin}/${profile.username}/${watchlist.slug}`
@@ -354,7 +356,7 @@ function WatchlistsContent() {
                                                                             setCopiedId(watchlist.id)
                                                                             setTimeout(() => setCopiedId(null), 2000)
                                                                         }}
-                                                                        className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
+                                                                        className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
                                                                     >
                                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
@@ -368,7 +370,7 @@ function WatchlistsContent() {
                                                                             window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank')
                                                                             setShareDropdownId(null)
                                                                         }}
-                                                                        className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-t border-gray-100"
+                                                                        className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 border-t border-gray-100 dark:border-gray-700"
                                                                     >
                                                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -383,7 +385,7 @@ function WatchlistsContent() {
                                                     <button
                                                         disabled
                                                         title="Make this watchlist public to share"
-                                                        className="px-6 py-2 text-sm font-medium border border-gray-200 rounded-md text-gray-400 cursor-not-allowed"
+                                                        className="px-6 py-2 text-sm font-medium border border-gray-200 dark:border-gray-700 rounded-md text-gray-400 dark:text-gray-500 cursor-not-allowed"
                                                     >
                                                         Share
                                                     </button>
@@ -398,7 +400,7 @@ function WatchlistsContent() {
                                                     setEditingWatchlist(watchlist)
                                                     setIsEditModalOpen(true)
                                                 }}
-                                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                                className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                             >
                                                 Edit
                                             </button>
@@ -407,8 +409,8 @@ function WatchlistsContent() {
 
                                     {/* Anime Grid */}
                                     {watchlist.items.length === 0 ? (
-                                        <div className="text-center py-8 border border-gray-200 rounded-lg">
-                                            <p className="text-gray-400">This watchlist is empty</p>
+                                        <div className="text-center py-8 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                            <p className="text-gray-400 dark:text-gray-500">This watchlist is empty</p>
                                         </div>
                                     ) : (
                                         <>
@@ -428,7 +430,7 @@ function WatchlistsContent() {
                                                                 className="object-cover w-full h-full"
                                                             />
                                                         </div>
-                                                        <p className="mt-3 text-center font-medium text-sm tracking-wide group-hover:text-gray-700 transition-colors">
+                                                        <p className="mt-3 text-center font-medium text-sm tracking-wide group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
                                                             {toTitleCase(item.title)}
                                                         </p>
                                                     </Link>
@@ -440,7 +442,7 @@ function WatchlistsContent() {
                                                 <div className="flex justify-center mt-8">
                                                     <button
                                                         onClick={() => toggleExpanded(watchlist.id)}
-                                                        className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                                        className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                                     >
                                                         {isExpanded ? 'Show Less' : 'See All'}
                                                     </button>
@@ -460,8 +462,8 @@ function WatchlistsContent() {
                                 <h2 className="text-3xl font-bold mb-6">Recent Searches</h2>
                                 {recentSearches.length === 0 ? (
                                     <div className="text-center py-16">
-                                        <p className="text-gray-500 text-lg mb-4">You haven't searched for anything yet.</p>
-                                        <p className="text-gray-400">Try the recommendations page to discover new anime!</p>
+                                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">You haven't searched for anything yet.</p>
+                                        <p className="text-gray-400 dark:text-gray-500">Try the recommendations page to discover new anime!</p>
                                     </div>
                                 ) : (
                                     <div>
@@ -502,10 +504,10 @@ function WatchlistsContent() {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
-                            className="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-mySecondary/50 hover:border-mySecondary"
+                            className="absolute -top-2 -right-2 bg-white dark:bg-gray-700 rounded-full p-1 border border-mySecondary/50 dark:border-gray-600 hover:border-mySecondary"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 6 6 18" />
@@ -532,7 +534,7 @@ export default function WatchlistsPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-gray-600">Loading...</div>
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
             </div>
         }>
             <WatchlistsContent />

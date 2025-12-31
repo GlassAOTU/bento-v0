@@ -26,7 +26,7 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
                     className={`w-4 h-4 ${
                         star <= rating
                             ? 'fill-yellow-400 text-yellow-400'
-                            : 'fill-gray-200 text-gray-200'
+                            : 'fill-gray-200 dark:fill-gray-600 text-gray-200 dark:text-gray-600'
                     }`}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -46,7 +46,7 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
     }
 
     return (
-        <div className={`p-4 rounded-lg border ${isOwn ? 'border-black/20 bg-gray-50' : 'border-gray-200'}`}>
+        <div className={`p-4 rounded-lg border ${isOwn ? 'border-black/20 dark:border-white/20 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700'}`}>
             <div className="flex items-start gap-3">
                 {/* Avatar */}
                 <Link href={`/${review.username}`} className="flex-shrink-0">
@@ -73,18 +73,18 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
                         <div className="flex items-center gap-2 min-w-0">
                             <Link
                                 href={`/${review.username}`}
-                                className="font-medium hover:underline truncate"
+                                className="font-medium hover:underline truncate dark:text-white"
                             >
                                 {review.display_name || review.username}
                             </Link>
                             {isOwn && (
-                                <span className="text-xs bg-black text-white px-2 py-0.5 rounded">You</span>
+                                <span className="text-xs bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 rounded">You</span>
                             )}
                         </div>
                         {isOwn && onEdit && (
                             <button
                                 onClick={onEdit}
-                                className="text-sm text-gray-500 hover:text-black transition-colors"
+                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                             >
                                 Edit
                             </button>
@@ -93,10 +93,10 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
 
                     <div className="flex items-center gap-2 mt-1">
                         {renderStars(review.rating)}
-                        <span className="text-xs text-gray-400">{formatDate(review.created_at)}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{formatDate(review.created_at)}</span>
                     </div>
 
-                    <p className="mt-2 text-gray-700 text-sm whitespace-pre-wrap">
+                    <p className="mt-2 text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap">
                         {review.review_text}
                     </p>
                 </div>

@@ -168,7 +168,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 {[1, 2, 3, 4, 5].map((star) => (
                     <svg
                         key={star}
-                        className={`w-5 h-5 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'}`}
+                        className={`w-5 h-5 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 dark:fill-gray-600 text-gray-200 dark:text-gray-600'}`}
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                     >
@@ -185,10 +185,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
     if (loading) {
         return (
-            <div className="bg-white min-h-screen">
+            <div className="bg-white dark:bg-gray-900 min-h-screen">
                 <NavigationBar />
                 <div className="max-w-5xl mx-auto px-10 py-16">
-                    <div className="text-center text-gray-600">Loading profile...</div>
+                    <div className="text-center text-gray-600 dark:text-gray-400">Loading profile...</div>
                 </div>
                 <Footer />
             </div>
@@ -197,13 +197,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
     if (error || !profile) {
         return (
-            <div className="bg-white min-h-screen">
+            <div className="bg-white dark:bg-gray-900 min-h-screen">
                 <NavigationBar />
                 <div className="max-w-5xl mx-auto px-10 py-16">
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold mb-4">Profile Not Found</h1>
-                        <p className="text-gray-600 mb-6">{error || 'This profile does not exist'}</p>
-                        <Link href="/" className="text-mySecondary hover:underline">
+                        <h1 className="text-3xl font-bold mb-4 dark:text-white">Profile Not Found</h1>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'This profile does not exist'}</p>
+                        <Link href="/" className="text-mySecondary dark:text-white hover:underline">
                             Go back home
                         </Link>
                     </div>
@@ -216,7 +216,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     const isOwnProfile = currentUser?.id === profile.user_id
 
     return (
-        <div className="bg-white min-h-screen">
+        <div className="bg-white dark:bg-gray-900 min-h-screen">
             <NavigationBar />
 
             <div className="max-w-5xl mx-auto px-10 py-16 font-instrument-sans">
@@ -240,14 +240,14 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     </div>
 
                     {/* Username and Display Name */}
-                    <h1 className="text-2xl font-bold mb-1">
+                    <h1 className="text-2xl font-bold mb-1 dark:text-white">
                         {profile.display_name || profile.username}
                     </h1>
-                    <p className="text-gray-500 mb-4">@{profile.username}</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">@{profile.username}</p>
 
                     {/* Bio */}
                     {profile.bio && (
-                        <p className="text-center text-gray-700 max-w-2xl mb-6">{profile.bio}</p>
+                        <p className="text-center text-gray-700 dark:text-gray-300 max-w-2xl mb-6">{profile.bio}</p>
                     )}
 
                     {/* Follow Button */}
@@ -257,8 +257,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                             disabled={followLoading}
                             className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
                                 isFollowing
-                                    ? 'border border-gray-300 hover:bg-gray-50'
-                                    : 'bg-black text-white hover:bg-gray-800'
+                                    ? 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-white'
+                                    : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200'
                             } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                             {followLoading ? '...' : isFollowing ? 'Following' : 'Follow'}
@@ -268,32 +268,32 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     {/* Stats */}
                     <div className="flex gap-8 mt-6 text-center">
                         <div>
-                            <div className="text-2xl font-bold">{stats.watchlist_count}</div>
-                            <div className="text-sm text-gray-500">watchlists</div>
+                            <div className="text-2xl font-bold dark:text-white">{stats.watchlist_count}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">watchlists</div>
                         </div>
                         <div>
-                            <div className="text-2xl font-bold">{stats.review_count}</div>
-                            <div className="text-sm text-gray-500">reviews</div>
+                            <div className="text-2xl font-bold dark:text-white">{stats.review_count}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">reviews</div>
                         </div>
                         <div>
-                            <div className="text-2xl font-bold">{stats.following_count}</div>
-                            <div className="text-sm text-gray-500">following</div>
+                            <div className="text-2xl font-bold dark:text-white">{stats.following_count}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">following</div>
                         </div>
                         <div>
-                            <div className="text-2xl font-bold">{stats.followers_count}</div>
-                            <div className="text-sm text-gray-500">followers</div>
+                            <div className="text-2xl font-bold dark:text-white">{stats.followers_count}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">followers</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex justify-center gap-0 mb-12 border-b border-gray-200">
+                <div className="flex justify-center gap-0 mb-12 border-b border-gray-200 dark:border-gray-700">
                     <button
                         onClick={() => setActiveTab('reviews')}
                         className={`px-8 py-4 font-semibold transition-colors ${
                             activeTab === 'reviews'
-                                ? 'border-b-2 border-black text-black'
-                                : 'text-gray-400 hover:text-gray-600'
+                                ? 'border-b-2 border-black dark:border-white text-black dark:text-white'
+                                : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                         }`}
                     >
                         Recent Reviews
@@ -302,8 +302,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         onClick={() => setActiveTab('watchlists')}
                         className={`px-8 py-4 font-semibold transition-colors ${
                             activeTab === 'watchlists'
-                                ? 'border-b-2 border-black text-black'
-                                : 'text-gray-400 hover:text-gray-600'
+                                ? 'border-b-2 border-black dark:border-white text-black dark:text-white'
+                                : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                         }`}
                     >
                         Watchlists
@@ -315,7 +315,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     <div>
                         {reviews.length === 0 ? (
                             <div className="text-center py-16">
-                                <p className="text-gray-500">No reviews yet</p>
+                                <p className="text-gray-500 dark:text-gray-400">No reviews yet</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-6">
@@ -323,7 +323,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                                     <Link
                                         key={review.id}
                                         href={`/anime/${slugify(review.anime_title)}`}
-                                        className="flex gap-4 p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                                        className="flex gap-4 p-6 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow"
                                     >
                                         {/* Anime Poster */}
                                         <div className="flex-shrink-0">
@@ -338,14 +338,14 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
                                         {/* Review Content */}
                                         <div className="flex-1">
-                                            <h3 className="text-lg font-bold mb-2">
+                                            <h3 className="text-lg font-bold mb-2 dark:text-white">
                                                 {toTitleCase(review.anime_title)}
                                             </h3>
                                             {renderStars(review.rating)}
-                                            <p className="text-gray-700 mt-3 line-clamp-3">
+                                            <p className="text-gray-700 dark:text-gray-300 mt-3 line-clamp-3">
                                                 {review.review_text}
                                             </p>
-                                            <p className="text-sm text-gray-400 mt-2">
+                                            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
                                                 {new Date(review.created_at).toLocaleDateString('en-US', {
                                                     year: 'numeric',
                                                     month: 'long',
@@ -362,7 +362,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     <div>
                         {watchlists.length === 0 ? (
                             <div className="text-center py-16">
-                                <p className="text-gray-500">No public watchlists yet</p>
+                                <p className="text-gray-500 dark:text-gray-400">No public watchlists yet</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -382,13 +382,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                                                 />
                                             </div>
                                             <div
-                                                className="bg-white rounded-b-[15px] py-4 px-4"
+                                                className="bg-white dark:bg-gray-800 rounded-b-[15px] py-4 px-4"
                                                 style={{ boxShadow: '0 1.43px 1.43px rgba(0, 0, 0, 0.12)' }}
                                             >
-                                                <h3 className="font-bold text-xl text-center">
+                                                <h3 className="font-bold text-xl text-center dark:text-white">
                                                     {watchlist.name}
                                                 </h3>
-                                                <p className="text-gray-400 text-sm text-center mt-1">
+                                                <p className="text-gray-400 dark:text-gray-500 text-sm text-center mt-1">
                                                     {watchlist.item_count} anime
                                                 </p>
                                             </div>

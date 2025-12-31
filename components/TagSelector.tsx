@@ -50,7 +50,7 @@ export default function TagSelector({ selectedTags, onTagsChange }: TagSelectorP
     return (
         <section className="px-10">
             <div className="flex flex-col justify-between gap-3">
-                <p className="text-xl">Tags (Choose up to 5)</p>
+                <p className="text-xl dark:text-gray-200">Tags (Choose up to 5)</p>
                 <div className="flex flex-wrap gap-x-3 gap-y-2">
                     {TAGS.map((tag) => (
                         <TagButton
@@ -81,7 +81,7 @@ export default function TagSelector({ selectedTags, onTagsChange }: TagSelectorP
                             value={customTag}
                             onChange={handleInputChange}
                             onKeyDown={handleInputKeyDown}
-                            className="text-sm px-2 py-1.5 rounded-md border border-mySecondary/50 w-48 focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
+                            className="text-sm px-2 py-1.5 rounded-md border border-mySecondary/50 dark:border-gray-600 w-48 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
                         />
                     )}
                 </div>

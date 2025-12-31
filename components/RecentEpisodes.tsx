@@ -76,7 +76,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
         <>
             {/* Header with Season Dropdown */}
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-mySecondary font-instrument-sans">
+                <h2 className="text-2xl font-bold text-mySecondary dark:text-white font-instrument-sans">
                     Recent Episodes
                 </h2>
 
@@ -84,7 +84,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                 <div className="relative">
                     <button
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     >
                         <span className="text-sm font-medium">
                             {regularSeasons.find(s => s.season_number === selectedSeasonNumber)?.name || `Season ${selectedSeasonNumber}`}
@@ -106,14 +106,14 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                                 className="fixed inset-0 z-10"
                                 onClick={() => setIsDropdownOpen(false)}
                             />
-                            <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
+                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
                                 {regularSeasons.map((season) => (
                                     <button
                                         key={season.id}
                                         onClick={() => handleSeasonChange(season.season_number)}
-                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors dark:text-white ${
                                             season.season_number === selectedSeasonNumber
-                                                ? 'bg-gray-50 font-medium'
+                                                ? 'bg-gray-50 dark:bg-gray-700 font-medium'
                                                 : ''
                                         }`}
                                     >
@@ -131,10 +131,10 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="animate-pulse">
-                            <div className="w-full aspect-video bg-gray-200 rounded-lg mb-4" />
-                            <div className="h-5 bg-gray-200 rounded mb-2 w-3/4" />
-                            <div className="h-4 bg-gray-200 rounded mb-1" />
-                            <div className="h-4 bg-gray-200 rounded w-2/3" />
+                            <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-4" />
+                            <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4" />
+                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
                         </div>
                     ))}
                 </div>
@@ -151,7 +151,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                         <div className="flex justify-center mt-8">
                             <button
                                 onClick={() => setShowAll(true)}
-                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                             >
                                 show {remainingCount} more
                             </button>
@@ -163,7 +163,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                         <div className="flex justify-center mt-8">
                             <button
                                 onClick={() => setShowAll(false)}
-                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                             >
                                 show less
                             </button>
@@ -171,7 +171,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                     )}
                 </>
             ) : (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     No episodes available for this season
                 </div>
             )}
@@ -201,7 +201,7 @@ function EpisodeCard({ episode }: { episode: Episode }) {
     return (
         <div className="flex flex-col">
             {/* Episode Thumbnail */}
-            <div className="relative w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-4">
+            <div className="relative w-full aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
                 {episode.still_url_w300 && !imageError ? (
                     <Image
                         src={episode.still_url_w300}
@@ -211,9 +211,9 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                         onError={() => setImageError(true)}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600">
                         <svg
-                            className="w-12 h-12 text-gray-400"
+                            className="w-12 h-12 text-gray-400 dark:text-gray-500"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -231,13 +231,13 @@ function EpisodeCard({ episode }: { episode: Episode }) {
 
             {/* Episode Info */}
             <div className="space-y-2">
-                <h3 className="text-sm font-bold text-mySecondary font-instrument-sans uppercase">
+                <h3 className="text-sm font-bold text-mySecondary dark:text-white font-instrument-sans uppercase">
                     EPISODE {episode.episode_number} : {episode.name.toUpperCase()}
                 </h3>
-                <p className="text-sm text-gray-600 line-clamp-3 font-instrument-sans">
+                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 font-instrument-sans">
                     {truncatedDescription}
                 </p>
-                <p className="text-xs text-gray-400 font-instrument-sans uppercase">
+                <p className="text-xs text-gray-400 dark:text-gray-500 font-instrument-sans uppercase">
                     {formattedDate}
                 </p>
             </div>

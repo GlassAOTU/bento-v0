@@ -32,22 +32,22 @@ export default function RecentSearchCard({ search, onTrailerClick }: RecentSearc
             >
                 {/* Query Description */}
                 {search.description && search.description.length !== 0 && (
-                    <p className='text-xl font-normal text-black'>
+                    <p className='text-xl font-normal text-black dark:text-white'>
                         {search.description.charAt(0).toLowerCase() + search.description.slice(1)}
                     </p>
                 )}
 
                 {/* Tags or "no tags selected" */}
                 {search.tags.length > 0 ? (
-                    <p className='text-sm text-black'>
+                    <p className='text-sm text-black dark:text-gray-300'>
                         {search.tags.join(', ')}
                     </p>
                 ) : (
-                    <p className='text-sm text-black'>no tags selected</p>
+                    <p className='text-sm text-black dark:text-gray-300'>no tags selected</p>
                 )}
 
                 {/* Timestamp */}
-                <p className='text-sm text-gray-400'>
+                <p className='text-sm text-gray-400 dark:text-gray-500'>
                     {new Date(search.timestamp).toLocaleDateString('en-US', {
                         month: '2-digit',
                         day: '2-digit',
@@ -73,7 +73,7 @@ export default function RecentSearchCard({ search, onTrailerClick }: RecentSearc
                         <div key={idx}>
                             <AnimeCard item={animeItem} onTrailerClick={onTrailerClick} />
                             {idx !== search.results.length - 1 && (
-                                <hr className="my-5 border-t" />
+                                <hr className="my-5 border-t dark:border-gray-700" />
                             )}
                         </div>
                     )

@@ -21,7 +21,7 @@ export default function ExpandableDescription({ description, loading = false }: 
 
     if (!hasMultipleParagraphs) {
         return (
-            <p className="text-md leading-relaxed whitespace-pre-line">
+            <p className="text-md leading-relaxed whitespace-pre-line dark:text-gray-300">
                 {description}
             </p>
         )
@@ -30,13 +30,13 @@ export default function ExpandableDescription({ description, loading = false }: 
     if (expanded) {
         return (
             <div>
-                <p className="text-md leading-relaxed whitespace-pre-line">
+                <p className="text-md leading-relaxed whitespace-pre-line dark:text-gray-300">
                     {description}
                 </p>
                 <div className="flex justify-center mt-6">
                     <button
                         onClick={() => setExpanded(false)}
-                        className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                        className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     >
                         Show Less
                     </button>
@@ -48,15 +48,15 @@ export default function ExpandableDescription({ description, loading = false }: 
     return (
         <div>
             <div className="relative">
-                <p className="text-md leading-relaxed whitespace-pre-line">
+                <p className="text-md leading-relaxed whitespace-pre-line dark:text-gray-300">
                     {firstParagraph}
                 </p>
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none" />
             </div>
             <div className="flex justify-center mt-6">
                 <button
                     onClick={() => setExpanded(true)}
-                    className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                 >
                     Show More
                 </button>

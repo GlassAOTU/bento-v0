@@ -61,12 +61,12 @@ export default function DiscoverAnimeCard({ anime, category = 'unknown', positio
                 />
             </div>
             <div className="flex flex-col gap-2">
-                <h3 className="text-xs font-semibold tracking-tight line-clamp-2 group-hover:text-gray-700 transition-colors">
+                <h3 className="text-xs font-semibold tracking-tight line-clamp-2 group-hover:text-gray-700 dark:text-white dark:group-hover:text-gray-300 transition-colors">
                     {toTitleCase(anime.title)}
                 </h3>
-                <div className="inline-flex items-center gap-1 self-start px-2 py-0.5 rounded-full bg-[#EEEEEE]/15 border border-black/[0.46]">
-                    <span className="text-xs font-medium">{(anime.rating / 10).toFixed(1)}</span>
-                    <span className="text-xs">☆</span>
+                <div className="inline-flex items-center gap-1 self-start px-2 py-0.5 rounded-full bg-[#EEEEEE]/15 dark:bg-white/10 border border-black/[0.46] dark:border-white/[0.46]">
+                    <span className="text-xs font-medium dark:text-white">{(anime.rating / 10).toFixed(1)}</span>
+                    <span className="text-xs dark:text-white">☆</span>
                 </div>
             </div>
         </Link>

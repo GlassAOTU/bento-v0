@@ -10,8 +10,8 @@ export default function ProfileHeader() {
     if (loading) {
         return (
             <div className="flex flex-col items-center py-8">
-                <div className="w-20 h-20 rounded-full bg-gray-200 animate-pulse mb-4" />
-                <div className="h-4 w-48 bg-gray-200 animate-pulse rounded" />
+                <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse mb-4" />
+                <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
             </div>
         )
     }
@@ -53,13 +53,13 @@ export default function ProfileHeader() {
             </div>
 
             {/* Display Name or Email */}
-            <p className="text-lg font-medium text-gray-900">
+            <p className="text-lg font-medium text-gray-900 dark:text-white">
                 {profile?.display_name || user.email}
             </p>
 
             {/* Username */}
             {profile?.username && (
-                <p className="text-sm text-gray-500">@{profile.username}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">@{profile.username}</p>
             )}
         </div>
     )
