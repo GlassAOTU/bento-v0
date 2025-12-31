@@ -72,7 +72,7 @@ export default function UnauthenticatedWatchlistOverlay({
                 </h2>
                 <button
                     onClick={onCreateAccount}
-                    className="px-8 py-4 bg-white text-black rounded-md hover:bg-gray-100 transition-colors font-semibold text-lg"
+                    className="px-8 py-4 bg-white dark:bg-gray-800 text-black dark:text-white rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-semibold text-lg"
                 >
                     Create an Account
                 </button>

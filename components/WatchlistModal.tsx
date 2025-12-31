@@ -446,7 +446,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 {/* Content */}
                 <div className="p-4 pt-4">
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-red-600 dark:text-red-400 text-sm">
                             {error}
                         </div>
                     )}

@@ -76,17 +76,17 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
     if (loading) {
         return (
             <div>
-                <h2 className="text-2xl font-bold mb-6">Reviews</h2>
+                <h2 className="text-2xl font-bold mb-6 dark:text-white">Reviews</h2>
                 <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="animate-pulse">
-                            <div className="p-4 border border-gray-200 rounded-lg">
+                            <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                                 <div className="flex gap-3">
-                                    <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full" />
                                     <div className="flex-1">
-                                        <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
-                                        <div className="h-3 bg-gray-200 rounded w-32 mb-2" />
-                                        <div className="h-3 bg-gray-200 rounded w-full" />
+                                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-2" />
+                                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2" />
+                                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
                                     </div>
                                 </div>
                             </div>
@@ -100,13 +100,13 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">
-                    Reviews {totalCount > 0 && <span className="text-gray-400 font-normal">({totalCount})</span>}
+                <h2 className="text-2xl font-bold dark:text-white">
+                    Reviews {totalCount > 0 && <span className="text-gray-400 dark:text-gray-500 font-normal">({totalCount})</span>}
                 </h2>
                 {user && (
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                        className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     >
                         {userReview ? 'Edit Your Review' : 'Write a Review'}
                     </button>
@@ -114,17 +114,17 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
             </div>
 
             {totalCount === 0 ? (
-                <div className="text-center py-12 border border-gray-200 rounded-lg">
-                    <p className="text-gray-500 mb-4">No reviews yet. Be the first to share your thoughts!</p>
+                <div className="text-center py-12 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">No reviews yet. Be the first to share your thoughts!</p>
                     {user ? (
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+                            className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-md hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                         >
                             Write a Review
                         </button>
                     ) : (
-                        <p className="text-sm text-gray-400">Sign in to write a review</p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500">Sign in to write a review</p>
                     )}
                 </div>
             ) : (
@@ -156,7 +156,7 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
                     {hasMoreReviews && !showAll && (
                         <button
                             onClick={() => setShowAll(true)}
-                            className="w-full py-3 text-sm font-medium text-gray-600 hover:text-black border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
+                            className="w-full py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
                         >
                             Show {reviews.length - 5} more reviews
                         </button>

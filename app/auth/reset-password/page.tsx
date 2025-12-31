@@ -68,14 +68,14 @@ function ResetPasswordForm() {
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-                <div className="bg-white rounded-lg w-full max-w-md p-8 text-center">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-8 text-center">
                     <div className="mb-4 text-4xl">✓</div>
-                    <h2 className="text-3xl font-bold mb-4">Password reset successful!</h2>
-                    <p className="text-gray-600 mb-4">
+                    <h2 className="text-3xl font-bold mb-4 dark:text-white">Password reset successful!</h2>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">
                         Your password has been updated successfully.
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                         Redirecting you to the home page...
                     </p>
                 </div>
@@ -84,25 +84,25 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <div className="bg-white rounded-lg w-full max-w-md p-8">
-                <h2 className="text-4xl font-bold mb-2 text-center">Reset your password</h2>
-                <p className="text-base text-gray-400 mb-8 text-center">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-8">
+                <h2 className="text-4xl font-bold mb-2 text-center dark:text-white">Reset your password</h2>
+                <p className="text-base text-gray-400 dark:text-gray-500 mb-8 text-center">
                     Enter your new password below
                 </p>
 
                 {/* Error Message */}
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
-                        <span className="text-red-600 text-sm">⚠️</span>
-                        <p className="text-sm text-red-600">{error}</p>
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md flex items-start gap-2">
+                        <span className="text-red-600 dark:text-red-400 text-sm">⚠️</span>
+                        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
                     </div>
                 )}
 
                 <form onSubmit={handleResetPassword} className="flex flex-col gap-5">
                     {/* Password Field */}
                     <div>
-                        <label htmlFor="password" className="block text-base font-normal mb-2">
+                        <label htmlFor="password" className="block text-base font-normal mb-2 dark:text-white">
                             New Password
                         </label>
                         <input
@@ -111,51 +111,51 @@ function ResetPasswordForm() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-3 border dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
                         />
 
                         {/* Password Requirements */}
                         {password.length > 0 && (
-                            <div className="mt-3 p-3 bg-gray-50 rounded-md border border-gray-200">
-                                <p className="text-xs font-medium text-gray-700 mb-2">Password must contain:</p>
+                            <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+                                <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Password must contain:</p>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs ${passwordValidation.minLength ? 'text-green-600' : 'text-gray-500'}`}>
+                                        <span className={`text-xs ${passwordValidation.minLength ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                             {passwordValidation.minLength ? '✓' : '○'}
                                         </span>
-                                        <span className={`text-xs ${passwordValidation.minLength ? 'text-green-600' : 'text-gray-600'}`}>
+                                        <span className={`text-xs ${passwordValidation.minLength ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                                             At least 8 characters
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs ${passwordValidation.hasUpperCase ? 'text-green-600' : 'text-gray-500'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasUpperCase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                             {passwordValidation.hasUpperCase ? '✓' : '○'}
                                         </span>
-                                        <span className={`text-xs ${passwordValidation.hasUpperCase ? 'text-green-600' : 'text-gray-600'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasUpperCase ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                                             One uppercase letter
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs ${passwordValidation.hasLowerCase ? 'text-green-600' : 'text-gray-500'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasLowerCase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                             {passwordValidation.hasLowerCase ? '✓' : '○'}
                                         </span>
-                                        <span className={`text-xs ${passwordValidation.hasLowerCase ? 'text-green-600' : 'text-gray-600'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasLowerCase ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                                             One lowercase letter
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-500'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                             {passwordValidation.hasNumber ? '✓' : '○'}
                                         </span>
-                                        <span className={`text-xs ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-600'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                                             One number
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs ${passwordValidation.hasSpecialChar ? 'text-green-600' : 'text-gray-500'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasSpecialChar ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                             {passwordValidation.hasSpecialChar ? '✓' : '○'}
                                         </span>
-                                        <span className={`text-xs ${passwordValidation.hasSpecialChar ? 'text-green-600' : 'text-gray-600'}`}>
+                                        <span className={`text-xs ${passwordValidation.hasSpecialChar ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                                             One special character (!@#$%^&*)
                                         </span>
                                     </div>
@@ -166,7 +166,7 @@ function ResetPasswordForm() {
 
                     {/* Confirm Password Field */}
                     <div>
-                        <label htmlFor="confirm-password" className="block text-base font-normal mb-2">
+                        <label htmlFor="confirm-password" className="block text-base font-normal mb-2 dark:text-white">
                             Confirm New Password
                         </label>
                         <input
@@ -175,14 +175,14 @@ function ResetPasswordForm() {
                             required
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 ${
+                            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 bg-white dark:bg-gray-700 dark:text-white ${
                                 confirmPassword.length > 0 && !passwordsMatch
-                                    ? 'border-red-300 focus:ring-red-500'
-                                    : 'focus:ring-blue-500'
+                                    ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
+                                    : 'dark:border-gray-600 focus:ring-blue-500'
                             }`}
                         />
                         {confirmPassword.length > 0 && !passwordsMatch && (
-                            <p className="mt-1 text-xs text-red-600">Passwords do not match</p>
+                            <p className="mt-1 text-xs text-red-600 dark:text-red-400">Passwords do not match</p>
                         )}
                     </div>
 
@@ -190,7 +190,7 @@ function ResetPasswordForm() {
                     <button
                         type="submit"
                         disabled={loading || !isPasswordValid || !passwordsMatch}
-                        className="w-full py-4 bg-[#F9F9F9] text-black rounded-[6px] border-[0.5px] border-black hover:bg-gray-200 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-[#F9F9F9] dark:bg-gray-700 text-black dark:text-white rounded-[6px] border-[0.5px] border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Resetting password...' : 'Reset password'}
                     </button>
@@ -203,8 +203,8 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-                <div className="text-gray-600">Loading...</div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
             </div>
         }>
             <ResetPasswordForm />

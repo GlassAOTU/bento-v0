@@ -79,7 +79,7 @@ export default function NavigationBar() {
                             <div className="flex gap-4 items-center">
                                 <button
                                     onClick={handleSignOut}
-                                    className="text-sm font-medium hover:text-gray-600 transition-colors"
+                                    className="text-sm font-medium hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Sign Out
                                 </button>
@@ -157,14 +157,14 @@ export default function NavigationBar() {
                         {/* Navigation Links */}
                         <a
                             href="/"
-                            className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/' ? 'font-semibold' : ''}`}
+                            className={`block py-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors ${pathname === '/' ? 'font-semibold' : ''}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             recommendations
                         </a>
                         <a
                             href="/discover"
-                            className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/discover' ? 'font-semibold' : ''}`}
+                            className={`block py-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors ${pathname === '/discover' ? 'font-semibold' : ''}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             discover
@@ -172,7 +172,7 @@ export default function NavigationBar() {
                         {user && (
                             <a
                                 href="/watchlists?tab=watchlist"
-                                className={`block py-2 hover:text-gray-600 transition-colors ${pathname === '/watchlists' ? 'font-semibold' : ''}`}
+                                className={`block py-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors ${pathname === '/watchlists' ? 'font-semibold' : ''}`}
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 my anime
@@ -195,7 +195,7 @@ export default function NavigationBar() {
                                                 handleSignOut();
                                                 setIsMobileMenuOpen(false);
                                             }}
-                                            className="text-sm font-medium hover:text-gray-600 transition-colors"
+                                            className="text-sm font-medium hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                                         >
                                             Sign Out
                                         </button>
@@ -231,7 +231,7 @@ export default function NavigationBar() {
                                             setIsAuthModalOpen(true);
                                             setIsMobileMenuOpen(false);
                                         }}
-                                        className="block w-full text-center py-2 px-4 rounded-md border border-mySecondary hover:bg-gray-50 transition-colors"
+                                        className="block w-full text-center py-2 px-4 rounded-md border border-mySecondary dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                     >
                                         Login
                                     </button>

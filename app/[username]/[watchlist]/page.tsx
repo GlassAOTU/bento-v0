@@ -88,10 +88,10 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
 
     if (loading) {
         return (
-            <div className="bg-white min-h-screen">
+            <div className="bg-white dark:bg-gray-900 min-h-screen">
                 <NavigationBar />
                 <div className="max-w-5xl mx-auto px-10 py-16">
-                    <div className="text-center text-gray-600">Loading watchlist...</div>
+                    <div className="text-center text-gray-600 dark:text-gray-400">Loading watchlist...</div>
                 </div>
                 <Footer />
             </div>
@@ -100,13 +100,13 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
 
     if (error || !watchlist || !profile) {
         return (
-            <div className="bg-white min-h-screen">
+            <div className="bg-white dark:bg-gray-900 min-h-screen">
                 <NavigationBar />
                 <div className="max-w-5xl mx-auto px-10 py-16">
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold mb-4">Watchlist Not Found</h1>
-                        <p className="text-gray-600 mb-6">{error || 'This watchlist does not exist or is private'}</p>
-                        <Link href={`/${resolvedParams.username}`} className="text-mySecondary hover:underline">
+                        <h1 className="text-3xl font-bold mb-4 dark:text-white">Watchlist Not Found</h1>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'This watchlist does not exist or is private'}</p>
+                        <Link href={`/${resolvedParams.username}`} className="text-mySecondary dark:text-white hover:underline">
                             Go to profile
                         </Link>
                     </div>
@@ -119,7 +119,7 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
     const isOwner = currentUser?.id === watchlist.user_id
 
     return (
-        <div className="bg-white min-h-screen">
+        <div className="bg-white dark:bg-gray-900 min-h-screen">
             <NavigationBar />
 
             <div className="max-w-5xl mx-auto px-10 py-16 font-instrument-sans">
@@ -127,30 +127,30 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
                 <div className="mb-8">
                     <Link
                         href={`/${profile.username}`}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                     >
                         @{profile.username}
                     </Link>
-                    <span className="text-gray-400 mx-2">/</span>
-                    <span className="text-gray-900">{watchlist.name}</span>
+                    <span className="text-gray-400 dark:text-gray-600 mx-2">/</span>
+                    <span className="text-gray-900 dark:text-white">{watchlist.name}</span>
                 </div>
 
                 {/* Watchlist Header */}
                 <div className="mb-12">
                     <div className="flex items-start justify-between">
                         <div>
-                            <h1 className="text-4xl font-bold mb-2">{watchlist.name}</h1>
+                            <h1 className="text-4xl font-bold mb-2 dark:text-white">{watchlist.name}</h1>
                             {watchlist.description && (
-                                <p className="text-gray-600 text-lg">{watchlist.description}</p>
+                                <p className="text-gray-600 dark:text-gray-400 text-lg">{watchlist.description}</p>
                             )}
-                            <p className="text-sm text-gray-400 mt-2">
+                            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
                                 {items.length} {items.length === 1 ? 'anime' : 'anime'}
                             </p>
                         </div>
                         {isOwner && (
                             <Link
                                 href="/watchlists"
-                                className="px-6 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                className="px-6 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                             >
                                 Edit
                             </Link>
@@ -160,10 +160,10 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
 
                 {/* Watchlist Items */}
                 {items.length === 0 ? (
-                    <div className="text-center py-16 border border-gray-200 rounded-lg">
-                        <p className="text-gray-500 text-lg mb-4">This watchlist is empty</p>
+                    <div className="text-center py-16 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">This watchlist is empty</p>
                         {isOwner && (
-                            <p className="text-gray-400">Add anime from the discover page!</p>
+                            <p className="text-gray-400 dark:text-gray-500">Add anime from the discover page!</p>
                         )}
                     </div>
                 ) : (
@@ -183,7 +183,7 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
                                         className="object-cover w-full h-full"
                                     />
                                 </div>
-                                <p className="mt-3 text-center font-medium text-sm tracking-wide group-hover:text-gray-700 transition-colors">
+                                <p className="mt-3 text-center font-medium text-sm tracking-wide dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
                                     {toTitleCase(item.title)}
                                 </p>
                             </Link>

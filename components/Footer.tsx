@@ -11,11 +11,11 @@ export default function Footer() {
             <div className="justify-center flex flex-row gap-4">
 
                 <Link href="https://x.com/animebento">
-                    <Image src="/images/x.svg" width={26} height={26} alt="x logo" />
+                    <Image src="/images/x.svg" width={26} height={26} alt="x logo" className="dark:invert" />
                 </Link>
 
                 <Link href="https://www.instagram.com/bentoxanime">
-                    <Image src="/images/instagram.svg" width={24} height={24} alt="instagram logo" />
+                    <Image src="/images/instagram.svg" width={24} height={24} alt="instagram logo" className="dark:invert" />
                 </Link>
 
             </div>

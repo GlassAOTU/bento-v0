@@ -8,7 +8,7 @@ export default function AnimeSet({ description, selectedTags, searchHistory, set
                 <div key={idx}>
                     <AnimeCard item={item} onTrailerClick={onTrailerClick} />
                     {idx !== set.length - 1 && (
-                        <hr className="my-5 border-t" />
+                        <hr className="my-5 border-t dark:border-gray-700" />
                     )}
                 </div>
             ))}

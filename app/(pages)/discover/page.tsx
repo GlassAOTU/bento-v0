@@ -12,6 +12,7 @@ import Footer from '../../../components/Footer'
 import CategorySection from '../../../components/CategorySection'
 import DiscoverAnimeCard from '../../../components/DiscoverAnimeCard'
 import { trackDiscoverSearch, trackDiscoverSearchCleared, trackDiscoverFormatFilter, getAuthStatus } from '@/lib/analytics/events'
+import { useTheme } from '@/lib/theme/ThemeContext'
 
 type FormatFilter = 'all' | 'tv' | 'movie'
 
@@ -45,6 +46,7 @@ type AnimeCategories = {
 function DiscoverContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { theme } = useTheme()
     const [user, setUser] = useState<User | null>(null)
     const [animeData, setAnimeData] = useState<AnimeCategories | null>(null)
 
@@ -190,7 +192,7 @@ function DiscoverContent() {
             sessionStorage.removeItem(`discover_search_${type}_results`)
             sessionStorage.removeItem(`discover_search_${type}_query`)
         })
-        router.push('/', { scroll: false })
+        router.push('/discover', { scroll: false })
     }
 
     const handleFormatChange = (newFormat: FormatFilter) => {
@@ -223,14 +225,14 @@ function DiscoverContent() {
                     <section className="flex justify-center sm:px-10 mb-2">
                         <div className="relative max-w-[1200px]">
                             <Image
-                                src="/images/header-image-2.png"
+                                src={theme === 'dark' ? "/images/banner-darkmode-2.png" : "/images/header-image-2.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}
                                 className="hidden sm:inline w-full h-auto"
                             />
                             <Image
-                                src="/images/header-image-mobile.png"
+                                src={theme === 'dark' ? "/images/banner-darkmode-2.png" : "/images/header-image-mobile.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}
@@ -270,13 +272,13 @@ function DiscoverContent() {
                             <div className="flex items-center gap-1 text-sm">
                                 {(['all', 'tv', 'movie'] as const).map((type, index) => (
                                     <div key={type} className="flex items-center">
-                                        {index > 0 && <span className="text-gray-300 mx-2">|</span>}
+                                        {index > 0 && <span className="text-gray-300 dark:text-gray-600 mx-2">|</span>}
                                         <button
                                             onClick={() => handleFormatChange(type)}
                                             className={`transition-colors ${
                                                 formatFilter === type
-                                                    ? 'text-mySecondary font-medium'
-                                                    : 'text-gray-400 hover:text-gray-600'
+                                                    ? 'text-mySecondary dark:text-white font-medium'
+                                                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                             }`}
                                         >
                                             {FORMAT_LABELS[type]}
@@ -292,7 +294,7 @@ function DiscoverContent() {
                         /* Search Results */
                         <section className="px-10 flex flex-col gap-8">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-base font-bold uppercase tracking-tight">
+                                <h2 className="text-base font-bold uppercase tracking-tight dark:text-white">
                                     Search Results for "{searchQuery}"
                                 </h2>
                                 <button
@@ -317,10 +319,10 @@ function DiscoverContent() {
                             ) : searchError ? (
                                 /* Error State */
                                 <div className="text-center py-16">
-                                    <p className="text-red-600 mb-2">{searchError}</p>
+                                    <p className="text-red-600 dark:text-red-400 mb-2">{searchError}</p>
                                     <button
                                         onClick={handleClearSearch}
-                                        className="text-sm text-gray-600 hover:text-black underline"
+                                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline"
                                     >
                                         Back to Browse
                                     </button>
@@ -328,11 +330,11 @@ function DiscoverContent() {
                             ) : searchResults.length === 0 ? (
                                 /* Empty State */
                                 <div className="text-center py-16">
-                                    <p className="text-gray-500 text-lg mb-2">No results found for "{searchQuery}"</p>
-                                    <p className="text-gray-400 text-sm mb-4">Try a different search term</p>
+                                    <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No results found for "{searchQuery}"</p>
+                                    <p className="text-gray-400 dark:text-gray-500 text-sm mb-4">Try a different search term</p>
                                     <button
                                         onClick={handleClearSearch}
-                                        className="text-sm text-gray-600 hover:text-black underline"
+                                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline"
                                     >
                                         Back to Browse
                                     </button>
@@ -397,7 +399,7 @@ export default function Home() {
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-gray-600">Loading...</div>
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
             </div>
         }>
             <DiscoverContent />

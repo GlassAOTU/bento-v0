@@ -13,6 +13,7 @@ import EditWatchlistModal from '@/components/EditWatchlistModal'
 import { slugify } from '@/lib/utils/slugify'
 import { getRecentSearches, RecentSearch } from '@/lib/utils/localStorage'
 import { useAuth } from '@/lib/auth/AuthContext'
+import { useTheme } from '@/lib/theme/ThemeContext'
 import {
     trackMyAnimePageViewed,
     trackWatchlistTabSwitched,
@@ -86,6 +87,7 @@ function WatchlistsContent() {
     const [shareDropdownId, setShareDropdownId] = useState<string | null>(null)
     const [copiedId, setCopiedId] = useState<string | null>(null)
     const { profile } = useAuth()
+    const { theme } = useTheme()
 
     // Get active tab from URL params, default to 'watchlist'
     const activeTab = searchParams.get('tab') || 'watchlist'
@@ -256,14 +258,14 @@ function WatchlistsContent() {
                     <section className="flex justify-center sm:px-10">
                         <div className="relative max-w-[1200px]">
                             <Image
-                                src="/images/header-image.png"
+                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}
                                 className="hidden sm:inline w-full h-auto"
                             />
                             <Image
-                                src="/images/header-image-mobile.png"
+                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image-mobile.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}

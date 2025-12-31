@@ -59,11 +59,11 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
 
     return (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/80">
-            <div className="bg-white shadow-lg rounded-lg p-8 max-w-md mx-4 relative">
+            <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg p-8 max-w-md mx-4 relative">
                 {/* Close X Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                    className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     aria-label="Close"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -75,8 +75,8 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
                 <div className="flex flex-col gap-4">
                     {/* Icon */}
                     <div className="flex justify-center">
-                        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600">
+                        <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600 dark:text-red-400">
                                 <circle cx="12" cy="12" r="10"/>
                                 <line x1="12" y1="8" x2="12" y2="12"/>
                                 <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -85,16 +85,16 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-xl font-bold text-center text-black">Rate Limit Reached</h2>
+                    <h2 className="text-xl font-bold text-center text-black dark:text-white">Rate Limit Reached</h2>
 
                     {/* Message */}
-                    <p className="text-center text-gray-700">{message}</p>
+                    <p className="text-center text-gray-700 dark:text-gray-300">{message}</p>
 
                     {/* Timer */}
                     {timeUntilReset && (
-                        <div className="text-center py-3 px-4 bg-gray-100 rounded-lg">
-                            <p className="text-sm text-gray-600">Try again in</p>
-                            <p className="text-2xl font-bold text-black">{timeUntilReset}</p>
+                        <div className="text-center py-3 px-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Try again in</p>
+                            <p className="text-2xl font-bold text-black dark:text-white">{timeUntilReset}</p>
                         </div>
                     )}
 
@@ -103,22 +103,22 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
                         <div className="flex flex-col gap-3 mt-2">
                             <button
                                 onClick={() => handleAuthClick('signup')}
-                                className="w-full py-3 px-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                                className="w-full py-3 px-4 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors font-medium"
                             >
                                 Sign Up for Higher Limits
                             </button>
                             <button
                                 onClick={() => handleAuthClick('signin')}
-                                className="w-full py-3 px-4 border-2 border-black text-black rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                                className="w-full py-3 px-4 border-2 border-black dark:border-white text-black dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
                             >
                                 Log In
                             </button>
-                            <p className="text-xs text-center text-gray-500">
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">
                                 Get 10 requests per 10 minutes with an account (vs 3 for anonymous users)
                             </p>
                         </div>
                     ) : (
-                        <p className="text-sm text-center text-gray-600">
+                        <p className="text-sm text-center text-gray-600 dark:text-gray-400">
                             You've reached the authenticated user limit. Please wait for the timer to reset.
                         </p>
                     )}

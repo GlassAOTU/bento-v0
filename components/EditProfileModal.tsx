@@ -475,14 +475,14 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                     setPasswordError('')
                                 }}
                                 disabled={passwordSaving}
-                                className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                                className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-gray-300"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleChangePassword}
                                 disabled={passwordSaving || !currentPassword || !newPassword || !confirmPassword}
-                                className="px-4 py-2 text-sm font-medium bg-black text-white rounded-md hover:bg-gray-800 transition-colors disabled:opacity-50"
+                                className="px-4 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-md hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
                             >
                                 {passwordSaving ? 'Changing...' : 'Change Password'}
                             </button>
