@@ -53,7 +53,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     const [watchlists, setWatchlists] = useState<Watchlist[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
-    const [activeTab, setActiveTab] = useState<'reviews' | 'watchlists'>('reviews')
+    const [activeTab, setActiveTab] = useState<'reviews' | 'watchlists'>('watchlists')
     const [currentUser, setCurrentUser] = useState<any>(null)
     const [followLoading, setFollowLoading] = useState(false)
 

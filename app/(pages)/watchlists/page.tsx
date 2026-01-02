@@ -414,25 +414,25 @@ function WatchlistsContent() {
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 {displayItems.map((item) => (
                                                     <Link
                                                         key={item.id}
                                                         href={`/anime/${slugify(item.title)}`}
-                                                        className="flex flex-col items-center group"
+                                                        className="flex flex-col gap-2 group cursor-pointer"
                                                     >
-                                                        <div className="relative w-full max-w-[425px] aspect-square rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
+                                                        <div className="relative w-full aspect-[309/455] overflow-hidden rounded-md">
                                                             <Image
                                                                 src={item.image || '/images/banner-not-available.png'}
                                                                 alt={item.title}
-                                                                width={425}
-                                                                height={425}
-                                                                className="object-cover w-full h-full"
+                                                                fill
+                                                                className="object-cover transition-transform group-hover:scale-105"
+                                                                sizes="(max-width: 768px) 50vw, 25vw"
                                                             />
                                                         </div>
-                                                        <p className="mt-3 text-center font-medium text-sm tracking-wide group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+                                                        <h3 className="text-xs font-semibold tracking-tight line-clamp-2 group-hover:text-gray-700 dark:text-white dark:group-hover:text-gray-300 transition-colors">
                                                             {toTitleCase(item.title)}
-                                                        </p>
+                                                        </h3>
                                                     </Link>
                                                 ))}
                                             </div>
