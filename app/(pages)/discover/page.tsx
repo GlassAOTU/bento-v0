@@ -38,9 +38,17 @@ type Anime = {
 type AnimeCategories = {
     mostPopular: Anime[]
     topRated: Anime[]
+    staffPicks: Anime[]
     shonen: Anime[]
     sliceOfLife: Anime[]
     foundFamily: Anime[]
+    isekai: Anime[]
+    loveWithoutHarem: Anime[]
+    psychological: Anime[]
+    classics2000s: Anime[]
+    antiHero: Anime[]
+    wholesomeAf: Anime[]
+    hiddenGems: Anime[]
 }
 
 function DiscoverContent() {
@@ -367,6 +375,13 @@ function DiscoverContent() {
                                 <hr className="border-t border-gray-200 dark:border-gray-700" />
 
                                 <CategorySection
+                                    title="Staff Picks"
+                                    anime={animeData.staffPicks}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
                                     title="Shonen"
                                     anime={animeData.shonen}
                                 />
@@ -383,6 +398,55 @@ function DiscoverContent() {
                                 <CategorySection
                                     title="Found Family with No Incest Plotlines"
                                     anime={animeData.foundFamily}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Isekai"
+                                    anime={animeData.isekai}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Love Without the Harem"
+                                    anime={animeData.loveWithoutHarem}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Psychological"
+                                    anime={animeData.psychological}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="2000's Classics"
+                                    anime={animeData.classics2000s}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Anti-Hero"
+                                    anime={animeData.antiHero}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Wholesome AF"
+                                    anime={animeData.wholesomeAf}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Hidden Gems"
+                                    anime={animeData.hiddenGems}
                                 />
                             </section>
                         )

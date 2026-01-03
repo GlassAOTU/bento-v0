@@ -11,11 +11,13 @@ import UsernameSetupModal from './UsernameSetupModal';
 import EditProfileModal from './EditProfileModal';
 import { trackUserSignout } from '@/lib/analytics/events';
 import { useAuth } from '@/lib/auth/AuthContext';
+import { useTheme } from '@/lib/theme/ThemeContext';
 import ThemeToggle from './ThemeToggle';
 
 export default function NavigationBar() {
     const pathname = usePathname();
     const { user, profile, loading, profileLoading, hasProfile, refreshProfile } = useAuth();
+    const { theme } = useTheme();
     const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
@@ -49,10 +51,13 @@ export default function NavigationBar() {
                 <div className="w-full px-10 m-4 items-center bg-white dark:bg-gray-900 flex flex-row max-w-5xl justify-between">
                     {/* Logo */}
                     <a href="/" className="flex-shrink-0">
-                        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M52 26C52 40.3594 40.3594 52 26 52C11.6406 52 0 40.3594 0 26C0 11.6406 11.6406 0 26 0C40.3594 0 52 11.6406 52 26Z" fill="#292929"/>
-                            <path d="M30.2068 49.5888C27.0997 49.5888 24.5105 48.8552 22.4391 47.388C20.3677 45.8776 19.0084 43.7846 18.361 41.1091L19.0084 40.9796V49.0062L13.1 48.5792L13.3 3.30745L19.332 2.4V23.567L18.62 23.3728C19.3536 20.8699 20.7777 18.9064 22.8922 17.4823C25.0499 16.0582 27.6391 15.3462 30.6599 15.3462C33.6375 15.3462 36.2052 16.0582 38.3629 17.4823C40.5637 18.9064 42.2467 20.8915 43.4119 23.4375C44.6202 25.9836 45.2244 28.9612 45.2244 32.3704C45.2244 35.8227 44.5986 38.8435 43.3472 41.4327C42.0957 44.022 40.348 46.0286 38.104 47.4527C35.86 48.8768 33.2276 49.5888 30.2068 49.5888ZM28.7827 44.022C31.7172 44.022 34.0475 42.9863 35.7737 40.9149C37.4998 38.8435 38.3629 35.9953 38.3629 32.3704C38.3629 28.7886 37.4998 26.0052 35.7737 24.0201C34.0475 21.9919 31.6956 20.9778 28.718 20.9778C25.7835 20.9778 23.4316 22.0135 21.6623 24.0848C19.9362 26.1131 19.0731 28.9397 19.0731 32.5646C19.0731 36.1032 19.9362 38.9082 21.6623 40.9796C23.4316 43.0078 25.8051 44.022 28.7827 44.022Z" fill="white"/>
-                        </svg>
+                        <Image
+                            src={theme === 'dark' ? '/images/White Cat.png' : '/images/Black Cat.png'}
+                            alt="Bento Logo"
+                            width={52}
+                            height={52}
+                            className="w-[52px] h-[52px] object-contain"
+                        />
                     </a>
 
                     {/* Desktop Navigation Links */}

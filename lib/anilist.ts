@@ -310,6 +310,135 @@ function areTitlesSimilar(title1: string, title2: string): boolean {
 }
 
 /**
+ * Fetch anime details by AniList ID (most reliable method)
+ */
+export async function fetchAnimeById(anilistId: number) {
+    const query = `
+    query ($id: Int) {
+      Media(id: $id, type: ANIME) {
+        id
+        title {
+          romaji
+          english
+        }
+        bannerImage
+        coverImage {
+          large
+          extraLarge
+        }
+        description(asHtml: false)
+        episodes
+        status
+        format
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
+        season
+        seasonYear
+        studios {
+          nodes {
+            name
+          }
+        }
+        genres
+        duration
+        averageScore
+        trailer {
+          id
+          site
+        }
+        externalLinks {
+          url
+          site
+        }
+        streamingEpisodes {
+          title
+          thumbnail
+          url
+          site
+        }
+        airingSchedule {
+          nodes {
+            airingAt
+            timeUntilAiring
+            episode
+          }
+        }
+        isAdult
+      }
+    }`
+
+    const variables = { id: anilistId }
+    const response = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query, variables }),
+        next: { revalidate: 86400 }
+    })
+
+    if (!response.ok) {
+        throw new Error("AniList API returned an error: " + response.status);
+    }
+
+    const data = await response.json()
+
+    if (!data?.data?.Media) {
+        throw new Error("Anime not found in AniList response");
+    }
+
+    const media = data.data.Media
+
+    if (media.isAdult || media.genres?.includes('Hentai')) {
+        throw new Error("This content is not available");
+    }
+
+    return {
+        id: media.id,
+        title: media.title.english || media.title.romaji,
+        romajiTitle: media.title.romaji,
+        bannerImage: media.bannerImage || media.coverImage.extraLarge,
+        coverImage: media.coverImage.large,
+        description: (media.description || "No description available")
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<[^>]+>/g, "")
+            .replace(/\(Source:.*?\)/gi, "")
+            .replace(/\s*\n\s*/g, "\n")
+            .trim(),
+        episodes: media.episodes,
+        status: media.status,
+        aired: formatAirDate(media.startDate, media.endDate),
+        premiered: media.season && media.seasonYear ? `${media.season} ${media.seasonYear}` : null,
+        studios: media.studios.nodes.map((s: any) => s.name).join(", "),
+        genres: media.genres,
+        duration: media.duration ? `${media.duration} min per ep` : null,
+        rating: media.averageScore,
+        trailer: media.trailer ? {
+            id: media.trailer.id,
+            site: media.trailer.site
+        } : null,
+        externalLinks: media.externalLinks?.[0] || null,
+        streamingLinks: (media.externalLinks || [])
+            .filter((link: any) => STREAMING_SITES.some(site =>
+                link.site.toLowerCase().includes(site.toLowerCase())
+            ))
+            .slice(0, 3)
+            .map((link: any) => ({ url: link.url, site: link.site })),
+        streamingEpisodes: media.streamingEpisodes || [],
+        airingSchedule: media.airingSchedule?.nodes || [],
+        format: media.format
+    }
+}
+
+/**
  * Fetch comprehensive anime details for the detail page
  * Filters out adult content (hentai, pornographic)
  */

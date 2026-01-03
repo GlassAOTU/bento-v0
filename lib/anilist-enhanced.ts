@@ -1,4 +1,5 @@
 import { findTMDBAnimeByTitle, getTMDBImageUrl, TMDB_POSTER_SIZES, searchTMDBAnime } from './tmdb'
+import { getTMDBByAnilistId, getTMDBByTitle } from './anime-mappings'
 
 /**
  * Extract the base name of an anime by removing season indicators
@@ -95,15 +96,38 @@ function isSeasonListing(title: string): boolean {
 
 /**
  * Try to get TMDB image for an anime
+ * Checks manual mappings first, then falls back to search with stricter filtering
  */
-async function getTMDBImage(romajiTitle: string, englishTitle: string | null = null): Promise<string | null> {
+async function getTMDBImage(romajiTitle: string, englishTitle: string | null = null, anilistId?: number): Promise<string | null> {
     try {
-        // Try both titles if available
+        // Check manual mappings first (most reliable)
+        if (anilistId) {
+            const mappingById = getTMDBByAnilistId(anilistId);
+            if (mappingById) {
+                const results = await searchTMDBAnime(romajiTitle, 1, mappingById.type);
+                if (results && results.length > 0 && results[0].poster_path) {
+                    return getTMDBImageUrl(results[0].poster_path, TMDB_POSTER_SIZES.W500) || null;
+                }
+            }
+        }
+
+        // Check by title mapping
         const titlesToTry = [romajiTitle];
         if (englishTitle && englishTitle !== romajiTitle) {
             titlesToTry.push(englishTitle);
         }
 
+        for (const title of titlesToTry) {
+            const mappingByTitle = getTMDBByTitle(title);
+            if (mappingByTitle) {
+                const results = await searchTMDBAnime(title, 1, mappingByTitle.type);
+                if (results && results.length > 0 && results[0].poster_path) {
+                    return getTMDBImageUrl(results[0].poster_path, TMDB_POSTER_SIZES.W500) || null;
+                }
+            }
+        }
+
+        // Fall back to search (now uses stricter Japanese + Animation filter)
         for (const title of titlesToTry) {
             try {
                 const searchTitle = extractBaseName(title);
@@ -270,8 +294,8 @@ export async function searchAnimeEnhanced(
             else if (yearsSinceRelease <= 5) relevanceScore += 15
         }
 
-        // Try to get TMDB image
-        const tmdbImage = await getTMDBImage(romajiTitle, englishTitle)
+        // Try to get TMDB image (now with stricter filtering)
+        const tmdbImage = await getTMDBImage(romajiTitle, englishTitle, anime.id)
 
         processedResults.push({
             id: anime.id,

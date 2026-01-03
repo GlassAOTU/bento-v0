@@ -254,49 +254,29 @@ function WatchlistsContent() {
             <div className="min-h-screen text-mySecondary dark:text-gray-200 pb-16 font-instrument-sans">
                 <div className="max-w-5xl flex flex-col mx-auto gap-2">
 
-                    {/* Banner */}
-                    <section className="flex justify-center sm:px-10">
-                        <div className="relative max-w-[1200px]">
-                            <Image
-                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image.png"}
-                                alt="Banner"
-                                width={600}
-                                height={300}
-                                className="hidden sm:inline w-full h-auto"
-                            />
-                            <Image
-                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image-mobile.png"}
-                                alt="Banner"
-                                width={600}
-                                height={300}
-                                className="sm:hidden w-full h-auto"
-                            />
-                        </div>
-                    </section>
-
                     {/* Page Content */}
                     <div className="px-10">
                         {/* Profile Header */}
                         <ProfileHeader />
 
                         {/* Tab Navigation */}
-                        <div className="flex justify-center gap-0 mb-12">
+                        <div className="flex mb-12">
                             <button
                                 onClick={() => switchTab('watchlist')}
-                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 dark:border-gray-600 border-l-0 ${
+                                className={`flex-1 pb-4 font-semibold transition-colors border-b-2 ${
                                     activeTab === 'watchlist'
-                                        ? 'bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white'
-                                        : 'bg-white dark:bg-gray-900 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                                        ? 'border-black dark:border-white text-black dark:text-white'
+                                        : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                 }`}
                             >
                                 my anime
                             </button>
                             <button
                                 onClick={() => switchTab('recent-searches')}
-                                className={`flex-1 py-4 px-6 font-semibold transition-colors border border-gray-300 dark:border-gray-600 border-l-0 border-r-0 ${
+                                className={`flex-1 pb-4 font-semibold transition-colors border-b-2 ${
                                     activeTab === 'recent-searches'
-                                        ? 'bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white'
-                                        : 'bg-white dark:bg-gray-900 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                                        ? 'border-black dark:border-white text-black dark:text-white'
+                                        : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                 }`}
                             >
                                 recent searches
