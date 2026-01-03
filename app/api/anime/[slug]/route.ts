@@ -4,6 +4,7 @@ import { fetchPopularAnime, searchAnime, fetchFullAnimeDetails, fetchSimilarAnim
 import { getTMDBAnimeDetails, findTMDBAnimeByTitle, getTMDBImageUrl, TMDB_POSTER_SIZES, TMDB_BACKDROP_SIZES, searchTMDBAnime } from '@/lib/tmdb'
 import { getAnimeData, shouldRefresh, saveAnimeData } from '@/lib/supabase/anime-data'
 import { getTMDBByTitle, getTMDBByAnilistId, getAnilistBySearchTerm } from '@/lib/anime-mappings'
+import { getTMDBIdFromARM } from '@/lib/arm-api'
 
 export async function GET(
     request: Request,
@@ -133,18 +134,32 @@ export async function GET(
             try {
                 const foundTmdbId = await findTMDBAnimeByTitle(anilistDetails.title, anilistId)
                 if (foundTmdbId) {
-                    tmdbId = foundTmdbId
-                    console.log(`Found TMDB match via search: ${tmdbId}`)
-
-                    // Get full TMDB details including episodes/seasons
                     tmdbData = await getTMDBAnimeDetails(foundTmdbId, anilistId)
                     if (tmdbData?.details) {
+                        tmdbId = foundTmdbId
                         tmdbImages.coverImage = tmdbData.details.poster_url || tmdbData.details.poster_url_original
                         tmdbImages.bannerImage = tmdbData.details.backdrop_url_original || tmdbData.details.backdrop_url
                     }
                 }
             } catch (err) {
-                console.log(`Could not find TMDB match for "${anilistDetails.title}": ${err}`)
+                // Title search failed, will try ARM fallback
+            }
+
+            // Fallback to ARM (Anime Relations Mapping) API if title search failed
+            if (!tmdbId) {
+                try {
+                    const armTmdbId = await getTMDBIdFromARM(anilistId)
+                    if (armTmdbId) {
+                        tmdbData = await getTMDBAnimeDetails(armTmdbId, anilistId)
+                        if (tmdbData?.details) {
+                            tmdbId = armTmdbId
+                            tmdbImages.coverImage = tmdbData.details.poster_url || tmdbData.details.poster_url_original
+                            tmdbImages.bannerImage = tmdbData.details.backdrop_url_original || tmdbData.details.backdrop_url
+                        }
+                    }
+                } catch (err) {
+                    // ARM lookup failed
+                }
             }
         }
 

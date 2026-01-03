@@ -120,7 +120,7 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
                     className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     aria-label="Scroll left"
                 >
-                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-black dark:text-white">
+                    <div className="w-10 h-10 rounded-full bg-white dark:bg-darkInput border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-black dark:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M15 18l-6-6 6-6"/>
                         </svg>
@@ -133,7 +133,7 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
                     className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     aria-label="Scroll right"
                 >
-                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-black dark:text-white">
+                    <div className="w-10 h-10 rounded-full bg-white dark:bg-darkInput border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-black dark:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M9 18l6-6-6-6"/>
                         </svg>

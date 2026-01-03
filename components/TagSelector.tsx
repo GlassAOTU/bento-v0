@@ -81,7 +81,7 @@ export default function TagSelector({ selectedTags, onTagsChange }: TagSelectorP
                             value={customTag}
                             onChange={handleInputChange}
                             onKeyDown={handleInputKeyDown}
-                            className="text-sm px-2 py-1.5 rounded-md border border-mySecondary/50 dark:border-gray-600 w-48 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
+                            className="text-sm px-2 py-1.5 rounded-md border border-mySecondary/50 dark:border-gray-600 w-48 bg-white dark:bg-darkInput dark:text-white dark:placeholder-gray-400 focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
                         />
                     )}
                 </div>

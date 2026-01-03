@@ -248,7 +248,7 @@ function WatchlistsContent() {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-900">
+        <div className="bg-white dark:bg-darkBg">
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary dark:text-gray-200 pb-16 font-instrument-sans">
@@ -328,7 +328,7 @@ function WatchlistsContent() {
                                                                     className="fixed inset-0 z-10"
                                                                     onClick={() => setShareDropdownId(null)}
                                                                 />
-                                                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20">
+                                                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-darkInput border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20">
                                                                     <button
                                                                         onClick={() => {
                                                                             const url = `${window.location.origin}/${profile.username}/${watchlist.slug}`
@@ -484,7 +484,7 @@ function WatchlistsContent() {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                    <div className="relative bg-white dark:bg-darkInput p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
                             className="absolute -top-2 -right-2 bg-white dark:bg-gray-700 rounded-full p-1 border border-mySecondary/50 dark:border-gray-600 hover:border-mySecondary"

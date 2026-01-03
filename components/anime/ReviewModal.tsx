@@ -112,7 +112,7 @@ export default function ReviewModal({
                 if (e.target === e.currentTarget) onClose()
             }}
         >
-            <div className="relative bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4">
+            <div className="relative bg-white dark:bg-darkBg p-6 rounded-lg w-full max-w-lg mx-4">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -175,7 +175,7 @@ export default function ReviewModal({
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}
                         placeholder="Share your thoughts about this anime..."
-                        className="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                        className="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10 bg-white dark:bg-darkInput dark:text-white dark:placeholder-gray-500"
                         maxLength={2000}
                     />
                     <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">

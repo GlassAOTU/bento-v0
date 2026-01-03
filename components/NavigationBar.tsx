@@ -48,7 +48,7 @@ export default function NavigationBar() {
     return (
         <>
             <div className="flex justify-center">
-                <div className="w-full px-10 m-4 items-center bg-white dark:bg-gray-900 flex flex-row max-w-5xl justify-between">
+                <div className="w-full px-10 m-4 items-center bg-white dark:bg-darkBg flex flex-row max-w-5xl justify-between">
                     {/* Logo */}
                     <a href="/" className="flex-shrink-0">
                         <Image
@@ -157,7 +157,7 @@ export default function NavigationBar() {
 
             {/* Mobile Menu Dropdown */}
             {isMobileMenuOpen && (
-                <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg">
+                <div className="md:hidden bg-white dark:bg-darkBg border-t border-gray-200 dark:border-gray-700 shadow-lg">
                     <div className="max-w-5xl mx-auto px-10 py-6 space-y-4">
                         {/* Navigation Links */}
                         <a

@@ -227,7 +227,7 @@ function RecommendationContent() {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-900">
+        <div className="bg-white dark:bg-darkBg">
 
             <NavigationBar />
 
@@ -262,7 +262,7 @@ function RecommendationContent() {
                         <p className="mb-4 text-xl">We'll handle the rest.</p>
                         <input
                             placeholder="Write your description..."
-                            className="w-full rounded-md border border-mySecondary/50 dark:border-gray-600 px-4 py-6 bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
+                            className="w-full rounded-md border border-mySecondary/50 dark:border-gray-600 px-4 py-6 bg-white dark:bg-darkInput dark:text-white focus:outline-none focus:border-mySecondary hover:border-mySecondary transition-colors"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
@@ -270,7 +270,7 @@ function RecommendationContent() {
 
                     <div className="px-10 flex items-center gap-0">
                         <div className="w-6 border-t border-mySecondary/50"></div>
-                        <span className="px-2 py-1 text-sm text-mySecondary dark:text-gray-300 bg-[#F9F9F9] dark:bg-gray-800 border border-black/20 dark:border-gray-600 rounded">OR</span>
+                        <span className="px-2 py-1 text-sm text-mySecondary dark:text-gray-300 bg-[#F9F9F9] dark:bg-darkInput border border-black/20 dark:border-gray-600 rounded">OR</span>
                         <div className="flex-1 border-t border-mySecondary/50"></div>
                     </div>
 
@@ -408,7 +408,7 @@ function RecommendationContent() {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                    <div className="relative bg-white dark:bg-darkInput p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
                             className="absolute -top-2 -right-2 bg-white dark:bg-gray-700 rounded-full p-1 border border-mySecondary/50 dark:border-gray-600 hover:border-mySecondary"

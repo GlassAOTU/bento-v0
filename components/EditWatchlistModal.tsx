@@ -231,9 +231,9 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                 }
             }}
         >
-            <div className="bg-white dark:bg-gray-900 rounded-lg max-w-[800px] w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-darkBg rounded-lg max-w-[800px] w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10">
+                <div className="sticky top-0 bg-white dark:bg-darkBg border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10">
                     <h2 className="text-2xl font-bold dark:text-white">Edit Watchlist</h2>
                     <div className="flex items-center gap-3">
                         <button
@@ -312,7 +312,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     onChange={(e) => setName(e.target.value)}
                                     disabled={willDeleteEntireWatchlist}
                                     placeholder="e.g., Must Watch, Action Anime, etc."
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-gray-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkInput text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-gray-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                                     maxLength={100}
                                     required
                                 />
@@ -328,7 +328,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     onChange={(e) => setDescription(e.target.value)}
                                     disabled={willDeleteEntireWatchlist}
                                     placeholder="What's this watchlist for?"
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-gray-500 focus:border-transparent resize-none disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkInput text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-gray-500 focus:border-transparent resize-none disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                                     rows={3}
                                     maxLength={500}
                                 />
@@ -352,7 +352,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                         <div className={`w-11 h-6 rounded-full peer peer-focus:ring-2 peer-focus:ring-black dark:peer-focus:ring-gray-500 transition-colors ${
                                             isPublic ? 'bg-black dark:bg-white' : 'bg-gray-300 dark:bg-gray-600'
                                         } ${willDeleteEntireWatchlist ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                                            <div className={`absolute top-0.5 left-0.5 bg-white dark:bg-gray-900 w-5 h-5 rounded-full transition-transform ${
+                                            <div className={`absolute top-0.5 left-0.5 bg-white dark:bg-darkBg w-5 h-5 rounded-full transition-transform ${
                                                 isPublic ? 'translate-x-5' : 'translate-x-0'
                                             }`}></div>
                                         </div>
@@ -445,7 +445,7 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                                     className={`flex-1 py-3 rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed ${
                                         willDeleteEntireWatchlist
                                             ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30'
-                                            : 'bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                            : 'bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white border border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
                                     }`}
                                 >
                                     {saving

@@ -38,14 +38,7 @@ export default function RootLayout({
             <head>
                 <script
                     dangerouslySetInnerHTML={{
-                        __html: `
-                            (function() {
-                                const theme = localStorage.getItem('theme');
-                                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                                    document.documentElement.classList.add('dark');
-                                }
-                            })();
-                        `,
+                        __html: `(function(){try{var d=document.documentElement,c=d.classList;c.remove('light','dark');var t=localStorage.getItem('theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)){c.add('dark')}else{c.add('light')}}catch(e){}})();`,
                     }}
                 />
             </head>

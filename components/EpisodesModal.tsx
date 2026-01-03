@@ -72,7 +72,7 @@ export default function EpisodesModal({ isOpen, onClose, tmdbId, seasons, curren
 
             {/* Modal */}
             <div className="flex min-h-full items-center justify-center p-4">
-                <div className="relative w-full max-w-6xl bg-white dark:bg-gray-900 rounded-lg shadow-xl">
+                <div className="relative w-full max-w-6xl bg-white dark:bg-darkBg rounded-lg shadow-xl">
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
                         <h2 className="text-2xl font-bold text-mySecondary dark:text-white font-instrument-sans">
@@ -99,7 +99,7 @@ export default function EpisodesModal({ isOpen, onClose, tmdbId, seasons, curren
                     </div>
 
                     {/* Season Selector */}
-                    <div className="p-6 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                    <div className="p-6 border-b dark:border-gray-700 bg-gray-50 dark:bg-darkInput">
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {regularSeasons.map((season) => (
                                 <button
@@ -153,7 +153,7 @@ function EpisodeItem({ episode }: { episode: Episode }) {
         : 'TBA'
 
     return (
-        <div className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <div className="flex gap-4 p-4 bg-gray-50 dark:bg-darkInput rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             {/* Thumbnail */}
             <div className="relative flex-shrink-0 w-40 h-24 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
                 {episode.still_url_w300 && !imageError ? (

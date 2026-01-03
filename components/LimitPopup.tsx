@@ -59,7 +59,7 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
 
     return (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/80">
-            <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg p-8 max-w-md mx-4 relative">
+            <div className="bg-white dark:bg-darkBg shadow-lg rounded-lg p-8 max-w-md mx-4 relative">
                 {/* Close X Button */}
                 <button
                     onClick={onClose}
@@ -92,7 +92,7 @@ export default function LimitPopup({ message, onClose, resetAt, isAuthenticated 
 
                     {/* Timer */}
                     {timeUntilReset && (
-                        <div className="text-center py-3 px-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                        <div className="text-center py-3 px-4 bg-gray-100 dark:bg-darkInput rounded-lg">
                             <p className="text-sm text-gray-600 dark:text-gray-400">Try again in</p>
                             <p className="text-2xl font-bold text-black dark:text-white">{timeUntilReset}</p>
                         </div>

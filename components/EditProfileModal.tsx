@@ -202,7 +202,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                 />
 
                 {/* Modal */}
-                <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
+                <div className="relative bg-white dark:bg-darkBg rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
                     {/* Header */}
                     <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                         <h2 className="text-xl font-bold dark:text-white">Edit Profile</h2>
@@ -219,7 +219,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`w-full flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
                                         activeTab === tab.id
-                                            ? 'bg-gray-100 dark:bg-gray-800 text-black dark:text-white'
+                                            ? 'bg-gray-100 dark:bg-darkInput text-black dark:text-white'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                                     }`}
                                 >
@@ -268,7 +268,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
 
                                         {/* Avatar Picker */}
                                         {showAvatarPicker && (
-                                            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                            <div className="mt-4 p-4 bg-gray-50 dark:bg-darkInput rounded-lg">
                                                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Choose your avatar</p>
                                                 <div className="grid grid-cols-5 gap-3">
                                                     {AVATAR_OPTIONS.map((avatar) => (
@@ -308,7 +308,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                             value={displayName}
                                             onChange={(e) => setDisplayName(e.target.value)}
                                             placeholder="Enter display name"
-                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-darkInput text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
                                     </div>
 
@@ -323,7 +323,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                             placeholder="Tell us about yourself"
                                             rows={4}
                                             maxLength={500}
-                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent resize-none bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent resize-none bg-white dark:bg-darkInput text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                         />
                                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{bio.length}/500</p>
                                     </div>
@@ -349,7 +349,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                                     checkUsernameAvailability(username)
                                                 }
                                             }}
-                                            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white ${
+                                            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-darkInput text-black dark:text-white ${
                                                 usernameError ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'
                                             }`}
                                         />
@@ -368,7 +368,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                                 type="email"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-darkInput text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                             />
                                             {email !== userEmail && (
                                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">A confirmation email will be sent to verify the new address</p>
@@ -420,7 +420,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                         className="absolute inset-0 bg-black/50"
                         onClick={() => setShowPasswordModal(false)}
                     />
-                    <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+                    <div className="relative bg-white dark:bg-darkBg rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
                         <h3 className="text-lg font-bold mb-4 dark:text-white">Change Password</h3>
 
                         {passwordError && (
@@ -438,7 +438,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                     type="password"
                                     value={currentPassword}
                                     onChange={(e) => setCurrentPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white"
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-darkInput text-black dark:text-white"
                                 />
                             </div>
                             <div>
@@ -449,7 +449,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                     type="password"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white"
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-darkInput text-black dark:text-white"
                                 />
                             </div>
                             <div>
@@ -460,7 +460,7 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                                     type="password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-gray-800 text-black dark:text-white"
+                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent bg-white dark:bg-darkInput text-black dark:text-white"
                                 />
                             </div>
                         </div>

@@ -68,8 +68,8 @@ function ResetPasswordForm() {
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-8 text-center">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-darkBg px-4">
+                <div className="bg-white dark:bg-darkInput rounded-lg w-full max-w-md p-8 text-center">
                     <div className="mb-4 text-4xl">✓</div>
                     <h2 className="text-3xl font-bold mb-4 dark:text-white">Password reset successful!</h2>
                     <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -84,8 +84,8 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-darkBg px-4">
+            <div className="bg-white dark:bg-darkInput rounded-lg w-full max-w-md p-8">
                 <h2 className="text-4xl font-bold mb-2 text-center dark:text-white">Reset your password</h2>
                 <p className="text-base text-gray-400 dark:text-gray-500 mb-8 text-center">
                     Enter your new password below
@@ -203,7 +203,7 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-darkBg px-4">
                 <div className="text-gray-600 dark:text-gray-400">Loading...</div>
             </div>
         }>

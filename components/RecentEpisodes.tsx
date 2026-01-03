@@ -106,7 +106,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                                 className="fixed inset-0 z-10"
                                 onClick={() => setIsDropdownOpen(false)}
                             />
-                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
+                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-darkInput border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 min-w-[140px] max-h-60 overflow-y-auto">
                                 {regularSeasons.map((season) => (
                                     <button
                                         key={season.id}

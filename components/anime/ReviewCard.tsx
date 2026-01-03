@@ -46,7 +46,7 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
     }
 
     return (
-        <div className={`p-4 rounded-lg border ${isOwn ? 'border-black/20 dark:border-white/20 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700'}`}>
+        <div className={`p-4 rounded-lg border ${isOwn ? 'border-black/20 dark:border-white/20 bg-gray-50 dark:bg-darkInput' : 'border-gray-200 dark:border-gray-700'}`}>
             <div className="flex items-start gap-3">
                 {/* Avatar */}
                 <Link href={`/${review.username}`} className="flex-shrink-0">

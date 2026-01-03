@@ -223,7 +223,7 @@ function DiscoverContent() {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-900">
+        <div className="bg-white dark:bg-darkBg">
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
@@ -257,7 +257,7 @@ function DiscoverContent() {
                                 placeholder="search"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-6 py-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:border-mySecondary transition-colors text-sm"
+                                className="w-full px-6 py-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-darkInput dark:text-white focus:outline-none focus:border-mySecondary transition-colors text-sm"
                             />
                             {searchQuery && (
                                 <button

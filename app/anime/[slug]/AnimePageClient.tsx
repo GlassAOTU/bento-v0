@@ -210,7 +210,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-gray-900 min-h-screen">
+            <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
                 <AnimePageSkeleton />
                 <Footer />
@@ -220,7 +220,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
 
     if (error || !animeDetails) {
         return (
-            <div className="bg-white dark:bg-gray-900 min-h-screen">
+            <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
                 <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Anime Not Found</h1>
@@ -237,7 +237,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-900">
+        <div className="bg-white dark:bg-darkBg">
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
@@ -280,7 +280,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     })
                                     setIsWatchlistModalOpen(true)
                                 }}
-                                className="px-6 py-2 mb-4 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors inline-block dark:border dark:border-white/40"
+                                className="px-6 py-2 mb-4 bg-white/90 hover:bg-white dark:bg-darkInput/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors inline-block dark:border dark:border-white/40"
                             >
                                 ADD TO WATCHLIST
                             </button>
@@ -302,7 +302,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                                         platform: link.site
                                                     })
                                                 }}
-                                                className="px-6 py-2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors dark:border dark:border-white/40"
+                                                className="px-6 py-2 bg-white/90 hover:bg-white dark:bg-darkInput/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors dark:border dark:border-white/40"
                                             >
                                                 {link.site}
                                             </a>
@@ -420,7 +420,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll left"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-darkInput border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M15 18l-6-6 6-6"/>
                                         </svg>
@@ -433,7 +433,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/similar:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll right"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-darkInput border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M9 18l6-6-6-6"/>
                                         </svg>
@@ -497,7 +497,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll left"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-darkInput border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M15 18l-6-6 6-6"/>
                                         </svg>
@@ -510,7 +510,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                     className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-white dark:from-gray-900 via-white dark:via-gray-900 to-transparent opacity-0 group-hover/popular:opacity-100 transition-opacity duration-300"
                                     aria-label="Scroll right"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
+                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-darkInput border border-gray-300 dark:border-gray-600 flex items-center justify-center shadow-lg hover:scale-110 transition-transform dark:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M9 18l6-6-6-6"/>
                                         </svg>
@@ -579,7 +579,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                         setActiveTrailer(null);
                     }
                 }}>
-                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
+                    <div className="relative bg-white dark:bg-darkInput p-6 rounded-lg w-full max-w-[90%] sm:max-w-[720px]">
                         <button
                             onClick={() => setActiveTrailer(null)}
                             className="absolute -top-2 -right-2 bg-white dark:bg-gray-700 rounded-full p-1 border border-mySecondary/50 dark:border-gray-600 hover:border-mySecondary"

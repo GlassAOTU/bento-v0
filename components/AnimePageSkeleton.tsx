@@ -14,7 +14,7 @@ export function DescriptionSkeleton() {
 
 export default function AnimePageSkeleton() {
     return (
-        <div className="bg-white dark:bg-gray-900 min-h-screen">
+        <div className="bg-white dark:bg-darkBg min-h-screen">
             {/* Hero Section Skeleton */}
             <section className="relative w-full h-[300px] md:h-[400px] bg-gray-900 animate-pulse">
                 {/* Banner placeholder */}

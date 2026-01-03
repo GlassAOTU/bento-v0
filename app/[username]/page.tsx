@@ -185,7 +185,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-gray-900 min-h-screen">
+            <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
                 <div className="max-w-5xl mx-auto px-10 py-16">
                     <div className="text-center text-gray-600 dark:text-gray-400">Loading profile...</div>
@@ -197,7 +197,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
     if (error || !profile) {
         return (
-            <div className="bg-white dark:bg-gray-900 min-h-screen">
+            <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
                 <div className="max-w-5xl mx-auto px-10 py-16">
                     <div className="text-center">
@@ -216,7 +216,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     const isOwnProfile = currentUser?.id === profile.user_id
 
     return (
-        <div className="bg-white dark:bg-gray-900 min-h-screen">
+        <div className="bg-white dark:bg-darkBg min-h-screen">
             <NavigationBar />
 
             <div className="max-w-5xl mx-auto px-10 py-16 font-instrument-sans">
@@ -382,7 +382,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                                                 />
                                             </div>
                                             <div
-                                                className="bg-white dark:bg-gray-800 rounded-b-[15px] py-4 px-4"
+                                                className="bg-white dark:bg-darkInput rounded-b-[15px] py-4 px-4"
                                                 style={{ boxShadow: '0 1.43px 1.43px rgba(0, 0, 0, 0.12)' }}
                                             >
                                                 <h3 className="font-bold text-xl text-center dark:text-white">

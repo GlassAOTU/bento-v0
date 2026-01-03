@@ -163,7 +163,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
 
     return (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="relative bg-white dark:bg-gray-900 rounded-lg w-full max-w-md p-8">
+            <div className="relative bg-white dark:bg-darkBg rounded-lg w-full max-w-md p-8">
                 <h2 className="text-4xl font-bold mb-2 text-center dark:text-white">Claim your username</h2>
                 <p className="text-base text-gray-400 dark:text-gray-500 mb-8 text-center">
                     Choose a unique username for your public profile
@@ -192,7 +192,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                                 onChange={(e) => setUsername(e.target.value.toLowerCase())}
                                 onBlur={() => setUsernameTouched(true)}
                                 placeholder="yourhandle"
-                                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 ${
+                                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 bg-white dark:bg-darkInput dark:text-white dark:placeholder-gray-500 ${
                                     usernameTouched && !isUsernameFormatValid
                                         ? 'border-red-300 dark:border-red-700 focus:ring-red-500'
                                         : usernameAvailable === false
@@ -243,7 +243,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                             value={displayName}
                             onChange={(e) => setDisplayName(e.target.value)}
                             placeholder="Your Name"
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-darkInput dark:text-white dark:placeholder-gray-500"
                         />
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             This will be shown on your profile
@@ -262,7 +262,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                             placeholder="Tell us about yourself..."
                             rows={3}
                             maxLength={500}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white dark:bg-darkInput dark:text-white dark:placeholder-gray-500"
                         />
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 text-right">
                             {bio.length}/500 characters
@@ -273,7 +273,7 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                     <button
                         type="submit"
                         disabled={!canSubmit}
-                        className="w-full py-4 bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white rounded-[6px] border-[0.5px] border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-[6px] border-[0.5px] border-black dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-base mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Creating profile...' : 'Create profile'}
                     </button>

@@ -397,7 +397,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 }
             }}
         >
-            <div className="bg-white dark:bg-gray-900 rounded-[10px] w-[520px] max-w-[calc(100vw-32px)] max-h-[90vh] overflow-y-auto border border-black/20 dark:border-gray-700" style={{ borderWidth: '0.5px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-darkBg rounded-[10px] w-[520px] max-w-[calc(100vw-32px)] max-h-[90vh] overflow-y-auto border border-black/20 dark:border-gray-700" style={{ borderWidth: '0.5px' }} onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="p-4">
                     <div className="flex items-start justify-between">
@@ -492,7 +492,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                     <p className="text-gray-500 dark:text-gray-400 mb-4">You don't have any watchlists yet.</p>
                                     <button
                                         onClick={() => setView('create')}
-                                        className="w-full py-4 bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white rounded-[10px] border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
+                                        className="w-full py-4 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-[10px] border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
                                     >
                                         Create your first watchlist
                                     </button>
@@ -561,7 +561,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                     ) : (
                                         <button
                                             onClick={() => setView('create')}
-                                            className="w-full py-4 bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white rounded-[10px] border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
+                                            className="w-full py-4 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-[10px] border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
                                         >
                                             Create new watchlist
                                         </button>
@@ -583,7 +583,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                         type="text"
                                         value={newWatchlistName}
                                         onChange={(e) => setNewWatchlistName(e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-darkInput text-black dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-transparent"
                                         maxLength={100}
                                         required
                                     />
@@ -597,7 +597,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                         id="watchlist-description"
                                         value={newWatchlistDescription}
                                         onChange={(e) => setNewWatchlistDescription(e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-transparent resize-none"
+                                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-darkInput text-black dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-transparent resize-none"
                                         rows={3}
                                         maxLength={500}
                                     />
@@ -642,7 +642,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 <button
                                     type="submit"
                                     disabled={creating || !newWatchlistName.trim()}
-                                    className="w-full py-3 bg-[#F9F9F9] dark:bg-gray-800 text-black dark:text-white rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full py-3 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {creating ? 'Creating...' : 'Create Watchlist'}
                                 </button>
