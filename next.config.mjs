@@ -23,6 +23,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 's4.anilist.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'image.tmdb.org',
+      },
     ],
   },
   experimental: {

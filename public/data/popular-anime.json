@@ -15,7 +15,7 @@
     {
       "id": 1535,
       "title": "Death Note",
-      "image": "https://image.tmdb.org/t/p/w500/tCZFfYTIwrR7n94J6G14Y4hAFU6.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/qDhbGqjZ7yFwa7FMIzuiQTQMfEQ.jpg",
       "rating": 84
     },
     {
@@ -51,7 +51,7 @@
     {
       "id": 21,
       "title": "ONE PIECE",
-      "image": "https://image.tmdb.org/t/p/w500/lXl3ZbY5TksOdt6eYgdyg6vsnFW.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/cMD9Ygz11zjJzAovURpO75Qg7rT.jpg",
       "rating": 88
     },
     {
@@ -75,13 +75,13 @@
     {
       "id": 21519,
       "title": "Your Name.",
-      "image": "https://image.tmdb.org/t/p/w500/ApPIfZotblqFAEfbdDdsByrmQOD.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg",
       "rating": 85
     },
     {
       "id": 20954,
       "title": "A Silent Voice",
-      "image": "https://image.tmdb.org/t/p/w500/1c13pBCsWWS2W4ijXqNuaDBcjJT.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/tuFaWiqX0TXoWu7DGNcmX3UW7sT.jpg",
       "rating": 88
     },
     {
@@ -131,7 +131,7 @@
     {
       "id": 114129,
       "title": "Gintama: THE VERY FINAL",
-      "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/nx7eCCvOWR9m9dw6LPOGMvFkoZO.jpg",
       "rating": 91
     },
     {
@@ -149,7 +149,7 @@
     {
       "id": 9253,
       "title": "Steins;Gate",
-      "image": "https://image.tmdb.org/t/p/w500/5zxePQEsUKLYDh2kpXGQAeInjUU.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/zAlvi9hc7WrIVn1Z687EoLH3Xbl.jpg",
       "rating": 89
     },
     {
@@ -191,13 +191,7 @@
     {
       "id": 15335,
       "title": "Gintama: The Final Chapter - Be Forever Yorozuya",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx15335-QjijwChGTBs0.png",
-      "rating": 87
-    },
-    {
-      "id": 4181,
-      "title": "Clannad: After Story",
-      "image": "https://image.tmdb.org/t/p/w500/jPBMYp4ddXkGJDSxxmaKBjzv2r3.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/1wEl5WHQO2SdWQ6S3gLBaaobf4c.jpg",
       "rating": 87
     },
     {
@@ -207,33 +201,39 @@
       "rating": 87
     },
     {
+      "id": 4181,
+      "title": "Clannad: After Story",
+      "image": "https://image.tmdb.org/t/p/w500/jPBMYp4ddXkGJDSxxmaKBjzv2r3.jpg",
+      "rating": 87
+    },
+    {
+      "id": 182896,
+      "title": "My Hero Academia FINAL SEASON",
+      "image": "https://image.tmdb.org/t/p/w500/phuYuzqWW9ru8EA3HVjE9W2Rr3M.jpg",
+      "rating": 87
+    },
+    {
       "id": 151384,
       "title": "Kaguya-sama: Love is War -The First Kiss That Never Ends-",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx151384-gv0q8wOE6D58.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/jY092qLqa7qTMelwRiNPpLUolEz.jpg",
       "rating": 87
     },
     {
       "id": 103047,
       "title": "Violet Evergarden: the Movie",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx103047-odblDHHEdehK.jpg",
-      "rating": 87
-    },
-    {
-      "id": 172420,
-      "title": "Uma Musume: Pretty Derby - Shin Jidai no Tobira",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx172420-4LjhmwpNMHti.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/4b7uAGVtgA85Yd911yOJqIsHigx.jpg",
       "rating": 87
     },
     {
       "id": 113024,
       "title": "Revue Starlight: The Movie",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx113024-OdzOh0OKFPTN.png",
+      "image": "https://image.tmdb.org/t/p/w500/fQS5v2gglHPfx4BLjPhkuBqSntm.jpg",
       "rating": 87
     },
     {
-      "id": 178788,
-      "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx178788-zm3gtpB9TpRt.jpg",
+      "id": 172420,
+      "title": "Uma Musume: Pretty Derby - Shin Jidai no Tobira",
+      "image": "https://image.tmdb.org/t/p/w500/esAgvmvwh6dincWHr057iyPAtQR.jpg",
       "rating": 87
     },
     {
@@ -241,6 +241,80 @@
       "title": "BOCCHI THE ROCK!",
       "image": "https://image.tmdb.org/t/p/w500/Af4tZ3eKjKWXG4vfiQ8R1NJomAP.jpg",
       "rating": 87
+    }
+  ],
+  "staffPicks": [
+    {
+      "id": 9253,
+      "title": "Steins;Gate",
+      "image": "https://image.tmdb.org/t/p/w500/zAlvi9hc7WrIVn1Z687EoLH3Xbl.jpg",
+      "rating": 89
+    },
+    {
+      "id": 45,
+      "title": "Rurouni Kenshin",
+      "image": "https://image.tmdb.org/t/p/w500/zT77Y6iQGmYGBqbhQi0ySD60o9i.jpg",
+      "rating": 79
+    },
+    {
+      "id": 96,
+      "title": "Mobile Fighter G Gundam",
+      "image": "https://image.tmdb.org/t/p/w500/iuA29rs5TCFED8qVcEjJdn9YJKr.jpg",
+      "rating": 74
+    },
+    {
+      "id": 121,
+      "title": "Fullmetal Alchemist",
+      "image": "https://image.tmdb.org/t/p/w500/7qVSNBKsrER8P77DfsSQfrPK04L.jpg",
+      "rating": 79
+    },
+    {
+      "id": 1138,
+      "title": "Medabots",
+      "image": "https://image.tmdb.org/t/p/w500/x4bQto8Jsphbd0VxLKcvqDQS0Mj.jpg",
+      "rating": 68
+    },
+    {
+      "id": 392,
+      "title": "Yu Yu Hakusho: Ghostfiles",
+      "image": "https://image.tmdb.org/t/p/w500/5OnjguJwkujo3R23w95EEX8eAEN.jpg",
+      "rating": 82
+    },
+    {
+      "id": 101903,
+      "title": "Run with the Wind",
+      "image": "https://image.tmdb.org/t/p/w500/rbwhOTnl9uOzRVgIEoeB9Nyef0u.jpg",
+      "rating": 83
+    },
+    {
+      "id": 154587,
+      "title": "Frieren: Beyond Journey’s End",
+      "image": "https://image.tmdb.org/t/p/w500/dqZENchTd7lp5zht7BdlqM7RBhD.jpg",
+      "rating": 91
+    },
+    {
+      "id": 245,
+      "title": "GTO: Great Teacher Onizuka",
+      "image": "https://image.tmdb.org/t/p/w500/cgcvNzLUQUjkur8zfhHwcadwzVz.jpg",
+      "rating": 84
+    },
+    {
+      "id": 21507,
+      "title": "Mob Psycho 100",
+      "image": "https://image.tmdb.org/t/p/w500/vR7hwaGQ0ySRoq1WobiNRaPs4WO.jpg",
+      "rating": 84
+    },
+    {
+      "id": 128547,
+      "title": "ODDTAXI",
+      "image": "https://image.tmdb.org/t/p/w500/8lUYuCuHsluRCTIBs3HVDbuNf0B.jpg",
+      "rating": 85
+    },
+    {
+      "id": 918,
+      "title": "Gintama",
+      "image": "https://image.tmdb.org/t/p/w500/nx7eCCvOWR9m9dw6LPOGMvFkoZO.jpg",
+      "rating": 85
     }
   ],
   "shonen": [
@@ -253,8 +327,8 @@
     {
       "id": 127230,
       "title": "Chainsaw Man",
-      "image": "https://image.tmdb.org/t/p/w500/npdB6eFzizki0WaZ1OvKcJrWe97.jpg",
-      "rating": 83
+      "image": "https://image.tmdb.org/t/p/w500/yVtx7Xn9UxNJqvG2BkvhCcmed9S.jpg",
+      "rating": 84
     },
     {
       "id": 97940,
@@ -265,13 +339,13 @@
     {
       "id": 20447,
       "title": "Noragami",
-      "image": "https://image.tmdb.org/t/p/w500/5hb8qfoPKQMlLfuhZcbcXwCRVEd.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/7pL2wGmy92v31ceYvCVIg4ilwLr.jpg",
       "rating": 77
     },
     {
       "id": 105333,
       "title": "Dr. STONE",
-      "image": "https://image.tmdb.org/t/p/w500/rocRrglJfYkglKilmFaStvo5EvS.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/ve1Sv3sVArmE0nlFjzadcNv1G8r.jpg",
       "rating": 81
     },
     {
@@ -302,13 +376,7 @@
       "id": 269,
       "title": "Bleach",
       "image": "https://image.tmdb.org/t/p/w500/2EewmxXe72ogD0EaWM8gqa0ccIw.jpg",
-      "rating": 78
-    },
-    {
-      "id": 9919,
-      "title": "Blue Exorcist",
-      "image": "https://image.tmdb.org/t/p/w500/kpNoqNmElzGUEcEoZyfFwvYXMsR.jpg",
-      "rating": 72
+      "rating": 79
     },
     {
       "id": 14719,
@@ -317,9 +385,15 @@
       "rating": 77
     },
     {
+      "id": 9919,
+      "title": "Blue Exorcist",
+      "image": "https://image.tmdb.org/t/p/w500/kpNoqNmElzGUEcEoZyfFwvYXMsR.jpg",
+      "rating": 72
+    },
+    {
       "id": 105310,
       "title": "Fire Force",
-      "image": "https://image.tmdb.org/t/p/w500/Alx1QJZeiweoM0ZVSnJ7PnuqPQx.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/q2lTO2j4Nzn3zLab0xMHeBya5sw.jpg",
       "rating": 76
     },
     {
@@ -337,7 +411,7 @@
     {
       "id": 120120,
       "title": "Tokyo Revengers",
-      "image": "https://image.tmdb.org/t/p/w500/8XuffcIa5gjK8vgDvNJOMRqg7TS.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/arB3L9pZZBSzUPSC8BEv8c3X0bF.jpg",
       "rating": 76
     },
     {
@@ -359,10 +433,10 @@
       "rating": 78
     },
     {
-      "id": 154587,
-      "title": "Frieren: Beyond Journey’s End",
-      "image": "https://image.tmdb.org/t/p/w500/dqZENchTd7lp5zht7BdlqM7RBhD.jpg",
-      "rating": 91
+      "id": 3588,
+      "title": "Soul Eater",
+      "image": "https://image.tmdb.org/t/p/w500/8ROoGBnHBscVIIomFl7DjlGidYk.jpg",
+      "rating": 77
     }
   ],
   "sliceOfLife": [
@@ -379,21 +453,21 @@
       "rating": 83
     },
     {
-      "id": 4224,
-      "title": "Toradora!",
-      "image": "https://image.tmdb.org/t/p/w500/jgLSYTAgjQgwBqLEw1bgr8vNxeK.jpg",
-      "rating": 77
-    },
-    {
       "id": 21827,
       "title": "Violet Evergarden",
       "image": "https://image.tmdb.org/t/p/w500/61EwFPqc0r1uJo6la49J55F8bQ8.jpg",
       "rating": 85
     },
     {
+      "id": 4224,
+      "title": "Toradora!",
+      "image": "https://image.tmdb.org/t/p/w500/gUE1zdXPkEBdEUtmJ2rkcGON41s.jpg",
+      "rating": 77
+    },
+    {
       "id": 124080,
       "title": "Horimiya",
-      "image": "https://image.tmdb.org/t/p/w500/yxk74s3QHx4K3rKpiPisLLqPJ5J.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/iSOKGl5KIeOCAtigUDCfFZe2cOi.jpg",
       "rating": 81
     },
     {
@@ -429,7 +503,7 @@
     {
       "id": 99750,
       "title": "I Want to Eat Your Pancreas",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx99750-pNyly9d3MEgV.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/qDWA7fB4cZ4sBP6YgwlxvraDHi7.jpg",
       "rating": 84
     },
     {
@@ -441,7 +515,7 @@
     {
       "id": 106286,
       "title": "Weathering With You",
-      "image": "https://image.tmdb.org/t/p/w500/9Y5RZypOahsGKYN9Sukr1wobSB8.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/qgrk7r1fV4IjuoeiGS5HOhXNdLJ.jpg",
       "rating": 81
     },
     {
@@ -453,7 +527,7 @@
     {
       "id": 21776,
       "title": "Miss Kobayashi's Dragon Maid",
-      "image": "https://image.tmdb.org/t/p/w500/tNznuhcf7WKzEmPQEsIgGMrB3Az.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/aDJC9SBNqUFoGQ6uuxs0EfBsqct.jpg",
       "rating": 77
     },
     {
@@ -466,7 +540,7 @@
       "id": 133965,
       "title": "Komi Can’t Communicate",
       "image": "https://image.tmdb.org/t/p/w500/xGciZiSIEmkqgcv4ouWmkhmXmPH.jpg",
-      "rating": 77
+      "rating": 76
     },
     {
       "id": 105334,
@@ -489,36 +563,6 @@
   ],
   "foundFamily": [
     {
-      "id": 20923,
-      "title": "Food Wars!",
-      "image": "https://image.tmdb.org/t/p/w500/eAQHqcJXP0FBzXvQkIV5g5ZueZb.jpg",
-      "rating": 78
-    },
-    {
-      "id": 9989,
-      "title": "Anohana: The Flower We Saw That Day",
-      "image": "https://image.tmdb.org/t/p/w500/2tgOAvOttp7rak3r2U5vIAaeyDt.jpg",
-      "rating": 80
-    },
-    {
-      "id": 106286,
-      "title": "Weathering With You",
-      "image": "https://image.tmdb.org/t/p/w500/9Y5RZypOahsGKYN9Sukr1wobSB8.jpg",
-      "rating": 81
-    },
-    {
-      "id": 21776,
-      "title": "Miss Kobayashi's Dragon Maid",
-      "image": "https://image.tmdb.org/t/p/w500/tNznuhcf7WKzEmPQEsIgGMrB3Az.jpg",
-      "rating": 77
-    },
-    {
-      "id": 105334,
-      "title": "Fruits Basket (2019)",
-      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
-      "rating": 82
-    },
-    {
       "id": 13759,
       "title": "The Pet Girl of Sakurasou",
       "image": "https://image.tmdb.org/t/p/w500/euzCsaY9Jb49gSqUWXSDonBF3su.jpg",
@@ -533,7 +577,7 @@
     {
       "id": 98436,
       "title": "The Ancient Magus' Bride",
-      "image": "https://image.tmdb.org/t/p/w500/8jnA4eaJLj3GByaYIw2JroVln40.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/xXGAFMGiG55oS8uzuVz7V5JxFb2.jpg",
       "rating": 78
     },
     {
@@ -543,15 +587,9 @@
       "rating": 83
     },
     {
-      "id": 124194,
-      "title": "Fruits Basket The Final Season",
-      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
-      "rating": 89
-    },
-    {
       "id": 107717,
       "title": "Miss Kobayashi's Dragon Maid S",
-      "image": "https://image.tmdb.org/t/p/w500/tNznuhcf7WKzEmPQEsIgGMrB3Az.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/aDJC9SBNqUFoGQ6uuxs0EfBsqct.jpg",
       "rating": 81
     },
     {
@@ -575,13 +613,13 @@
     {
       "id": 99457,
       "title": "Maquia: When the Promised Flower Blooms",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx99457-OD0xtM8NlHNQ.png",
+      "image": "https://image.tmdb.org/t/p/w500/hL3NqRE2ccR4Y2sYSJTrmalRjrz.jpg",
       "rating": 82
     },
     {
       "id": 109190,
       "title": "Violet Evergarden: Eternity and the Auto Memory Doll",
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx109190-e8mv1qdmpjLW.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/zjaSw6Ok0MhXjrruPrA27VHyUYC.jpg",
       "rating": 83
     },
     {
@@ -593,7 +631,7 @@
     {
       "id": 162694,
       "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You",
-      "image": "https://image.tmdb.org/t/p/w500/ms7uowQ6gBjfaB2zzwugfr30IKZ.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/kBiPU7I7TEJdDXu8tHgVrgL5zAU.jpg",
       "rating": 76
     },
     {
@@ -605,8 +643,898 @@
     {
       "id": 20541,
       "title": "Mekakucity Actors",
-      "image": "https://image.tmdb.org/t/p/w500/4fYd1cBnv2CEYW3bdQvcWCOwXhK.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/qgHTJ0jZpuD67ZDy7LNu6bfCFXs.jpg",
       "rating": 66
+    },
+    {
+      "id": 101351,
+      "title": "Happy Sugar Life",
+      "image": "https://image.tmdb.org/t/p/w500/51nw1Oor0iiXCwp2ieYuY3WQ9vt.jpg",
+      "rating": 65
+    },
+    {
+      "id": 120,
+      "title": "Fruits Basket",
+      "image": "https://image.tmdb.org/t/p/w500/9TGNcvMm91QXmnnCCYYqnYK0bK7.jpg",
+      "rating": 74
+    },
+    {
+      "id": 12531,
+      "title": "Kids on the Slope",
+      "image": "https://image.tmdb.org/t/p/w500/e2shFe5YRvzvUrjHpZgAxLNpIT7.jpg",
+      "rating": 80
+    },
+    {
+      "id": 15225,
+      "title": "Hentai Prince & the Stony Cat",
+      "image": "https://image.tmdb.org/t/p/w500/d2hw6HjWLosbNqs1chZhtcSt6MO.jpg",
+      "rating": 68
+    },
+    {
+      "id": 387,
+      "title": "Haibane Renmei",
+      "image": "https://image.tmdb.org/t/p/w500/uSrIXnPIUkapk0JwMldDZTusl5O.jpg",
+      "rating": 79
+    },
+    {
+      "id": 6114,
+      "title": "Rainbow",
+      "image": "https://image.tmdb.org/t/p/w500/1habNx0wDHcrZ2nCRs32V2bqdYw.jpg",
+      "rating": 81
+    }
+  ],
+  "isekai": [
+    {
+      "id": 21355,
+      "title": "Re:ZERO -Starting Life in Another World-",
+      "image": "https://image.tmdb.org/t/p/w500/aRwmcX36r1ZpR5Xq5mmFcpUDQ8J.jpg",
+      "rating": 81
+    },
+    {
+      "id": 19815,
+      "title": "No Game, No Life",
+      "image": "https://image.tmdb.org/t/p/w500/7l8nKzWZrhlGAWUubbw4UJaRlLH.jpg",
+      "rating": 77
+    },
+    {
+      "id": 199,
+      "title": "Spirited Away",
+      "image": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
+      "rating": 86
+    },
+    {
+      "id": 99263,
+      "title": "The Rising of the Shield Hero",
+      "image": "https://image.tmdb.org/t/p/w500/yjq2n0agGJfmZQ9NpbYIhuBofcq.jpg",
+      "rating": 76
+    },
+    {
+      "id": 6547,
+      "title": "Angel Beats!",
+      "image": "https://image.tmdb.org/t/p/w500/wz1PuXrg5ERQvyXKex3cGDie2hj.jpg",
+      "rating": 77
+    },
+    {
+      "id": 108465,
+      "title": "Mushoku Tensei: Jobless Reincarnation",
+      "image": "https://image.tmdb.org/t/p/w500/gLKOYIMyKlUHW0SVdskhgf9C0yy.jpg",
+      "rating": 82
+    },
+    {
+      "id": 20832,
+      "title": "Overlord",
+      "image": "https://image.tmdb.org/t/p/w500/K8ZUjxaj9F0t3AwJDz8ypzBynM.jpg",
+      "rating": 76
+    },
+    {
+      "id": 6702,
+      "title": "Fairy Tail",
+      "image": "https://image.tmdb.org/t/p/w500/h50lj7xO65qafNYZCrfQ7ztkMBD.jpg",
+      "rating": 72
+    },
+    {
+      "id": 124845,
+      "title": "WONDER EGG PRIORITY",
+      "image": "https://image.tmdb.org/t/p/w500/7Ief4J2hkBuaKxUzy9fMqUoh9BY.jpg",
+      "rating": 73
+    },
+    {
+      "id": 100182,
+      "title": "Sword Art Online: Alicization",
+      "image": "https://image.tmdb.org/t/p/w500/9m8bFIXPg26taNrFSXGwEORVACD.jpg",
+      "rating": 75
+    },
+    {
+      "id": 130298,
+      "title": "The Eminence in Shadow",
+      "image": "https://image.tmdb.org/t/p/w500/7JKYmtLydAwo9ZsEmAknZiO4U8g.jpg",
+      "rating": 81
+    },
+    {
+      "id": 21613,
+      "title": "Saga of Tanya the Evil",
+      "image": "https://image.tmdb.org/t/p/w500/5nwiHomKZBBF9DLrolfZapi3fDm.jpg",
+      "rating": 77
+    },
+    {
+      "id": 102976,
+      "title": "KONOSUBA -God's blessing on this wonderful world!- Legend of Crimson",
+      "image": "https://image.tmdb.org/t/p/w500/fv5BgcfkpWh3V6Pb1qVlXESBOdl.jpg",
+      "rating": 82
+    },
+    {
+      "id": 17265,
+      "title": "Log Horizon",
+      "image": "https://image.tmdb.org/t/p/w500/xLGdRuWCn2AlByL5Y9OLB3ZwItg.jpg",
+      "rating": 76
+    },
+    {
+      "id": 21875,
+      "title": "No Game, No Life Zero",
+      "image": "https://image.tmdb.org/t/p/w500/sfNZ6G7l3cFI57LVfxnNGse7ihA.jpg",
+      "rating": 79
+    },
+    {
+      "id": 108759,
+      "title": "Sword Art Online: Alicization - War of Underworld",
+      "image": "https://image.tmdb.org/t/p/w500/9m8bFIXPg26taNrFSXGwEORVACD.jpg",
+      "rating": 75
+    },
+    {
+      "id": 100668,
+      "title": "Arifureta: From Commonplace to World's Strongest",
+      "image": "https://image.tmdb.org/t/p/w500/3Te6pYJNdh4YyWY1G7ANxNHpedi.jpg",
+      "rating": 65
+    },
+    {
+      "id": 101004,
+      "title": "How NOT to Summon a Demon Lord",
+      "image": "https://image.tmdb.org/t/p/w500/oVozVLWMTej4CRBpfu0ehxofBHS.jpg",
+      "rating": 66
+    },
+    {
+      "id": 105156,
+      "title": "Cautious Hero: The Hero Is Overpowered but Overly Cautious",
+      "image": "https://image.tmdb.org/t/p/w500/bbg1FMU7c3W06KUKrgIhIECFliZ.jpg",
+      "rating": 73
+    },
+    {
+      "id": 20994,
+      "title": "Gate",
+      "image": "https://image.tmdb.org/t/p/w500/bCuJkIUg1n9etSYrrQKlQuSrigE.jpg",
+      "rating": 74
+    }
+  ],
+  "loveWithoutHarem": [
+    {
+      "id": 101291,
+      "title": "Rascal Does Not Dream of Bunny Girl Senpai",
+      "image": "https://image.tmdb.org/t/p/w500/fbqDG7GjodvaNecgv1q8kfSNPl5.jpg",
+      "rating": 80
+    },
+    {
+      "id": 99423,
+      "title": "DARLING in the FRANXX",
+      "image": "https://image.tmdb.org/t/p/w500/m6R8gI3brohD6izeVCXFmuGeV2m.jpg",
+      "rating": 68
+    },
+    {
+      "id": 20997,
+      "title": "Charlotte",
+      "image": "https://image.tmdb.org/t/p/w500/udiCs1RBGfda1z52cBxu8j9JNmP.jpg",
+      "rating": 75
+    },
+    {
+      "id": 20920,
+      "title": "Is It Wrong to Try to Pick Up Girls in a Dungeon?",
+      "image": "https://image.tmdb.org/t/p/w500/mLRmZ83ab7EPDY0mdUVuDCk3USU.jpg",
+      "rating": 73
+    },
+    {
+      "id": 2001,
+      "title": "Gurren Lagann",
+      "image": "https://image.tmdb.org/t/p/w500/xL6HsYsk5N9PKwk6jFwMNQq3K3M.jpg",
+      "rating": 85
+    },
+    {
+      "id": 431,
+      "title": "Howl‘s Moving Castle",
+      "image": "https://image.tmdb.org/t/p/w500/13kOl2v0nD2OLbVSHnHk8GUFEhO.jpg",
+      "rating": 85
+    },
+    {
+      "id": 5081,
+      "title": "Bakemonogatari",
+      "image": "https://image.tmdb.org/t/p/w500/zCEjjb1NH3LLsWeZx47wOeqkezf.jpg",
+      "rating": 82
+    },
+    {
+      "id": 171018,
+      "title": "DAN DA DAN",
+      "image": "https://image.tmdb.org/t/p/w500/6qfZAOEUFIrbUH3JvePclx1nXzz.jpg",
+      "rating": 84
+    },
+    {
+      "id": 113813,
+      "title": "Rent-a-Girlfriend",
+      "image": "https://image.tmdb.org/t/p/w500/6ZpDPUNtVw6UdJoStvVlRZ62yAi.jpg",
+      "rating": 65
+    },
+    {
+      "id": 11617,
+      "title": "High School DxD",
+      "image": "https://image.tmdb.org/t/p/w500/5a9vaaLDAZTYjgfWIw7ZYhL1m1A.jpg",
+      "rating": 69
+    },
+    {
+      "id": 7054,
+      "title": "Maid-Sama!",
+      "image": "https://image.tmdb.org/t/p/w500/igkn0M1bgMeATz59LShvVxZNdVd.jpg",
+      "rating": 77
+    },
+    {
+      "id": 8074,
+      "title": "High School of the Dead",
+      "image": "https://image.tmdb.org/t/p/w500/oPiNGGZyBzst3hKGFU1mteT0zhe.jpg",
+      "rating": 66
+    },
+    {
+      "id": 226,
+      "title": "Elfen Lied",
+      "image": "https://image.tmdb.org/t/p/w500/mYakikF9MYpiRRQKnXQD6ubRHwr.jpg",
+      "rating": 68
+    },
+    {
+      "id": 20698,
+      "title": "My Teen Romantic Comedy SNAFU TOO!",
+      "image": "https://image.tmdb.org/t/p/w500/sb5MNoeZGHX21qvtwhmizUsJJqq.jpg",
+      "rating": 81
+    },
+    {
+      "id": 18897,
+      "title": "Nisekoi",
+      "image": "https://image.tmdb.org/t/p/w500/vYfnw5eRLrne4ZLDaRdHgvGyys7.jpg",
+      "rating": 73
+    },
+    {
+      "id": 120697,
+      "title": "DON'T TOY WITH ME, MISS NAGATORO",
+      "image": "https://image.tmdb.org/t/p/w500/ogXmggjfiDHBOBwA3JyuEzCr814.jpg",
+      "rating": 69
+    },
+    {
+      "id": 107660,
+      "title": "BEASTARS",
+      "image": "https://image.tmdb.org/t/p/w500/sh9iNWkleOjEHRHj8WPHhmMi8HL.jpg",
+      "rating": 77
+    },
+    {
+      "id": 14227,
+      "title": "My Little Monster",
+      "image": "https://image.tmdb.org/t/p/w500/qKCY7dUsEDdWvdftQJQoWkV3lFT.jpg",
+      "rating": 72
+    },
+    {
+      "id": 17895,
+      "title": "Golden Time",
+      "image": "https://image.tmdb.org/t/p/w500/heCpefPuxekDMofvR6juY2cCew6.jpg",
+      "rating": 75
+    },
+    {
+      "id": 20458,
+      "title": "The Irregular at Magic High School",
+      "image": "https://image.tmdb.org/t/p/w500/4mJpMjdghHo4LfvmP1q1mubkEvl.jpg",
+      "rating": 70
+    }
+  ],
+  "psychological": [
+    {
+      "id": 20623,
+      "title": "Parasyte -the maxim-",
+      "image": "https://image.tmdb.org/t/p/w500/cXBfjZSdJelu2r0wKD7qCxS71kb.jpg",
+      "rating": 81
+    },
+    {
+      "id": 30,
+      "title": "Neon Genesis Evangelion",
+      "image": "https://image.tmdb.org/t/p/w500/y2ah9t0navXyIvoHg1uIbIHO3tt.jpg",
+      "rating": 83
+    },
+    {
+      "id": 20931,
+      "title": "Death Parade",
+      "image": "https://image.tmdb.org/t/p/w500/q95PaZEpjfNzmz3c0TFFAG6lc7S.jpg",
+      "rating": 80
+    },
+    {
+      "id": 98659,
+      "title": "Classroom of the Elite",
+      "image": "https://image.tmdb.org/t/p/w500/yuHanbUUIv2UWRxxQFt9n8jtmOJ.jpg",
+      "rating": 76
+    },
+    {
+      "id": 20850,
+      "title": "Tokyo Ghoul √A",
+      "image": "https://image.tmdb.org/t/p/w500/1m4RlC9BTCbyY549TOdVQ5NRPcR.jpg",
+      "rating": 66
+    },
+    {
+      "id": 11111,
+      "title": "Another",
+      "image": "https://image.tmdb.org/t/p/w500/h3YyESKtOy7Rrv7zymyF9kfpz7T.jpg",
+      "rating": 70
+    },
+    {
+      "id": 13601,
+      "title": "PSYCHO-PASS",
+      "image": "https://image.tmdb.org/t/p/w500/uWnP6qTcc4imPJ9ZHaXlPQlcYnB.jpg",
+      "rating": 81
+    },
+    {
+      "id": 9756,
+      "title": "Puella Magi Madoka Magica",
+      "image": "https://image.tmdb.org/t/p/w500/5o32Jnu6MWJr7lfiGapVq0BSYiK.jpg",
+      "rating": 83
+    },
+    {
+      "id": 100388,
+      "title": "BANANA FISH",
+      "image": "https://image.tmdb.org/t/p/w500/d2TW5Rtd0uCasHlQygsDfWCROl2.jpg",
+      "rating": 83
+    },
+    {
+      "id": 114535,
+      "title": "To Your Eternity",
+      "image": "https://image.tmdb.org/t/p/w500/lA2jRBubr2OLOlbkJXuBXYqv4A9.jpg",
+      "rating": 81
+    },
+    {
+      "id": 100240,
+      "title": "Tokyo Ghoul:re",
+      "image": "https://image.tmdb.org/t/p/w500/1m4RlC9BTCbyY549TOdVQ5NRPcR.jpg",
+      "rating": 61
+    },
+    {
+      "id": 150672,
+      "title": "Oshi No Ko",
+      "image": "https://image.tmdb.org/t/p/w500/okbW9NdKRNKgIUTVA8YZAUGwIUx.jpg",
+      "rating": 84
+    },
+    {
+      "id": 20661,
+      "title": "Terror in Resonance",
+      "image": "https://image.tmdb.org/t/p/w500/y8zPuRD9jRkSCBhmZOJFV1X87nA.jpg",
+      "rating": 78
+    },
+    {
+      "id": 141391,
+      "title": "Call of the Night",
+      "image": "https://image.tmdb.org/t/p/w500/rDhwDG2ii8c3nCcfUNp6mogGQ93.jpg",
+      "rating": 79
+    },
+    {
+      "id": 104157,
+      "title": "Rascal Does Not Dream of a Dreaming Girl",
+      "image": "https://image.tmdb.org/t/p/w500/jg73umEpBHT7l4DBmV5bR78H1JI.jpg",
+      "rating": 84
+    },
+    {
+      "id": 16782,
+      "title": "The Garden of Words",
+      "image": "https://image.tmdb.org/t/p/w500/mXUCVq3HMtS4Y9IQ8vmEOPyN0vH.jpg",
+      "rating": 75
+    },
+    {
+      "id": 32,
+      "title": "Neon Genesis Evangelion: The End of Evangelion",
+      "image": "https://image.tmdb.org/t/p/w500/j6G24dqI4WgUtChhWjfnI4lnmiK.jpg",
+      "rating": 85
+    },
+    {
+      "id": 339,
+      "title": "Serial Experiments Lain",
+      "image": "https://image.tmdb.org/t/p/w500/93M6d0pAqVQySKrp43LfBYDTvZ.jpg",
+      "rating": 80
+    },
+    {
+      "id": 10793,
+      "title": "Guilty Crown",
+      "image": "https://image.tmdb.org/t/p/w500/sMUzeL5G8NkNpNhgPZPpauS7CYD.jpg",
+      "rating": 69
+    },
+    {
+      "id": 437,
+      "title": "Perfect Blue",
+      "image": "https://image.tmdb.org/t/p/w500/6WTiOCfDPP8XV4jqfloiVWf7KHq.jpg",
+      "rating": 85
+    }
+  ],
+  "classics2000s": [
+    {
+      "id": 1575,
+      "title": "Code Geass: Lelouch of the Rebellion",
+      "image": "https://image.tmdb.org/t/p/w500/x316WCogkeIwNY4JR8zTCHbI2nQ.jpg",
+      "rating": 85
+    },
+    {
+      "id": 5680,
+      "title": "K-ON!",
+      "image": "https://image.tmdb.org/t/p/w500/70hf2538UAf7mzzNgvqTlWq6PDf.jpg",
+      "rating": 78
+    },
+    {
+      "id": 205,
+      "title": "Samurai Champloo",
+      "image": "https://image.tmdb.org/t/p/w500/lYpHeSm7BcUxAbBx1ucuEH7oGAe.jpg",
+      "rating": 84
+    },
+    {
+      "id": 4898,
+      "title": "Black Butler",
+      "image": "https://image.tmdb.org/t/p/w500/iXGs130TRoUplHf0o86zp9MqAYc.jpg",
+      "rating": 72
+    },
+    {
+      "id": 1689,
+      "title": "5 Centimeters per Second",
+      "image": "https://image.tmdb.org/t/p/w500/dFipUR6W0y3PPkuVS8gjFd929m2.jpg",
+      "rating": 71
+    },
+    {
+      "id": 889,
+      "title": "Black Lagoon",
+      "image": "https://image.tmdb.org/t/p/w500/sQlHhWScg6qmakL1ywtcjjVKKqV.jpg",
+      "rating": 78
+    },
+    {
+      "id": 6045,
+      "title": "Kimi ni Todoke: From Me to You",
+      "image": "https://image.tmdb.org/t/p/w500/lLUAZzJc6vfyE2TeY56AGGb3E5K.jpg",
+      "rating": 79
+    },
+    {
+      "id": 849,
+      "title": "The Melancholy of Haruhi Suzumiya",
+      "image": "https://image.tmdb.org/t/p/w500/bimn3hOUjibgQD6RZn8rv1jiEL6.jpg",
+      "rating": 76
+    },
+    {
+      "id": 877,
+      "title": "NANA",
+      "image": "https://image.tmdb.org/t/p/w500/mUZ5FMw2Xcj6VAakhIQ2KMgmp3w.jpg",
+      "rating": 85
+    },
+    {
+      "id": 1210,
+      "title": "Welcome to the N-H-K",
+      "image": "https://image.tmdb.org/t/p/w500/hIsRcWso57zxD2MWBSqze5G4NDS.jpg",
+      "rating": 82
+    },
+    {
+      "id": 2251,
+      "title": "Baccano!",
+      "image": "https://image.tmdb.org/t/p/w500/nMGIGtHzcX8tmjEUpGM7g2vXtAz.jpg",
+      "rating": 81
+    },
+    {
+      "id": 457,
+      "title": "MUSHI-SHI",
+      "image": "https://image.tmdb.org/t/p/w500/1EdA21TRBXJU5aBP4EHkOMF2tNx.jpg",
+      "rating": 85
+    },
+    {
+      "id": 4654,
+      "title": "A Certain Magical Index",
+      "image": "https://image.tmdb.org/t/p/w500/v3Ka0J3iMte50oiH4cmXPISM3rm.jpg",
+      "rating": 70
+    },
+    {
+      "id": 2890,
+      "title": "Ponyo",
+      "image": "https://image.tmdb.org/t/p/w500/yp8vEZflGynlEylxEesbYasc06i.jpg",
+      "rating": 79
+    },
+    {
+      "id": 2966,
+      "title": "Spice and Wolf",
+      "image": "https://image.tmdb.org/t/p/w500/fxzL2EWdiv19eZAoC8s7zuGCJG1.jpg",
+      "rating": 80
+    },
+    {
+      "id": 934,
+      "title": "When They Cry",
+      "image": "https://image.tmdb.org/t/p/w500/z6GrUoKte5lzPxR7HWyiSLVieUC.jpg",
+      "rating": 75
+    },
+    {
+      "id": 2236,
+      "title": "The Girl Who Leapt Through Time",
+      "image": "https://image.tmdb.org/t/p/w500/xHnlWM8BmqY419YUccYy2KC5Jqo.jpg",
+      "rating": 78
+    },
+    {
+      "id": 2025,
+      "title": "Darker than Black",
+      "image": "https://image.tmdb.org/t/p/w500/jt38E29eSAAlabamcs5pwgyY8ee.jpg",
+      "rating": 77
+    },
+    {
+      "id": 249,
+      "title": "InuYasha",
+      "image": "https://image.tmdb.org/t/p/w500/jgvW9n0EwKtq9nbztWhyTvvoqjS.jpg",
+      "rating": 76
+    },
+    {
+      "id": 6213,
+      "title": "A Certain Scientific Railgun",
+      "image": "https://image.tmdb.org/t/p/w500/dZt1dqw0K4JGhwcqTh8yExHYK9w.jpg",
+      "rating": 74
+    }
+  ],
+  "antiHero": [
+    {
+      "id": 1,
+      "title": "Cowboy Bebop",
+      "image": "https://image.tmdb.org/t/p/w500/xDiXDfZwC6XYC6fxHI1jl3A3Ill.jpg",
+      "rating": 86
+    },
+    {
+      "id": 21311,
+      "title": "Bungo Stray Dogs",
+      "image": "https://image.tmdb.org/t/p/w500/6AQmGhkYwAqW2OevjXbsh7tZnNO.jpg",
+      "rating": 77
+    },
+    {
+      "id": 18679,
+      "title": "Kill la Kill",
+      "image": "https://image.tmdb.org/t/p/w500/4F1WtP3dFIwLPOfa3u29VEVnNkf.jpg",
+      "rating": 79
+    },
+    {
+      "id": 151807,
+      "title": "Solo Leveling",
+      "image": "https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr0xtJuEWJt6dJ1.jpg",
+      "rating": 81
+    },
+    {
+      "id": 101347,
+      "title": "Dororo",
+      "image": "https://image.tmdb.org/t/p/w500/2qSzgSE80OFrfgg5UFYbATdCQ6t.jpg",
+      "rating": 81
+    },
+    {
+      "id": 21170,
+      "title": "Assassination Classroom Second Season",
+      "image": "https://image.tmdb.org/t/p/w500/qf0l0nQ2t06Es3cSXflqx6l6vsJ.jpg",
+      "rating": 83
+    },
+    {
+      "id": 10087,
+      "title": "Fate/Zero",
+      "image": "https://image.tmdb.org/t/p/w500/chUbHBiMX7buj8TzOEIjHHPCJfF.jpg",
+      "rating": 81
+    },
+    {
+      "id": 21128,
+      "title": "Noragami Aragoto",
+      "image": "https://image.tmdb.org/t/p/w500/7pL2wGmy92v31ceYvCVIg4ilwLr.jpg",
+      "rating": 80
+    },
+    {
+      "id": 128893,
+      "title": "Hell’s Paradise",
+      "image": "https://image.tmdb.org/t/p/w500/1V9I7SvZbYoMbSvdtnlkkq9SB1k.jpg",
+      "rating": 80
+    },
+    {
+      "id": 137822,
+      "title": "BLUE LOCK",
+      "image": "https://image.tmdb.org/t/p/w500/sTDTy73OYmKY51EK94Mc6AxogzR.jpg",
+      "rating": 80
+    },
+    {
+      "id": 6746,
+      "title": "Durarara!!",
+      "image": "https://image.tmdb.org/t/p/w500/i2YqpHaPEMW2JHhFFnyOxgGBMNP.jpg",
+      "rating": 79
+    },
+    {
+      "id": 6880,
+      "title": "Deadman Wonderland",
+      "image": "https://image.tmdb.org/t/p/w500/xHgs3UJx5nKi7deizomDrumPxrw.jpg",
+      "rating": 67
+    },
+    {
+      "id": 47,
+      "title": "Akira",
+      "image": "https://image.tmdb.org/t/p/w500/oQk3aXYEa4TMd9rAYgzDpAYTU8P.jpg",
+      "rating": 79
+    },
+    {
+      "id": 99629,
+      "title": "Angels of Death",
+      "image": "https://image.tmdb.org/t/p/w500/74OJEbRx1swuh5EuT7VNWxyWTZd.jpg",
+      "rating": 67
+    },
+    {
+      "id": 108489,
+      "title": "My Teen Romantic Comedy SNAFU Climax!",
+      "image": "https://image.tmdb.org/t/p/w500/sb5MNoeZGHX21qvtwhmizUsJJqq.jpg",
+      "rating": 82
+    },
+    {
+      "id": 21175,
+      "title": "Dragon Ball Super",
+      "image": "https://image.tmdb.org/t/p/w500/qEUrbXJ2qt4Rg84Btlx4STOhgte.jpg",
+      "rating": 72
+    },
+    {
+      "id": 131646,
+      "title": "The Case Study of Vanitas",
+      "image": "https://image.tmdb.org/t/p/w500/hk9joSlfsrVTmcoYzQ7rFg028Fq.jpg",
+      "rating": 78
+    },
+    {
+      "id": 21711,
+      "title": "91 Days",
+      "image": "https://image.tmdb.org/t/p/w500/cPn42jFjw0ia1o5oL3SsTsEKgFP.jpg",
+      "rating": 76
+    },
+    {
+      "id": 21700,
+      "title": "Akashic Records of Bastard Magic Instructor",
+      "image": "https://image.tmdb.org/t/p/w500/hTsIeYiZF1DJN1alsgVgk8iA5ci.jpg",
+      "rating": 68
+    },
+    {
+      "id": 129898,
+      "title": "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat",
+      "image": "https://image.tmdb.org/t/p/w500/iusQCT2pje1Mc8A8LKnW1uZ5BOO.jpg",
+      "rating": 72
+    }
+  ],
+  "wholesomeAf": [
+    {
+      "id": 523,
+      "title": "My Neighbor Totoro",
+      "image": "https://image.tmdb.org/t/p/w500/rtGDOeG9LzoerkDGZF9dnVeLppL.jpg",
+      "rating": 80
+    },
+    {
+      "id": 116267,
+      "title": "TONIKAWA: Over The Moon For You",
+      "image": "https://image.tmdb.org/t/p/w500/jJKTrIfZKoFV66HGMzSa4tkObK0.jpg",
+      "rating": 77
+    },
+    {
+      "id": 10408,
+      "title": "Into the Forest of Fireflies' Light",
+      "image": "https://image.tmdb.org/t/p/w500/mDqzHV8UXWWNpZkoAbKmKX1ZxEE.jpg",
+      "rating": 79
+    },
+    {
+      "id": 512,
+      "title": "Kiki's Delivery Service",
+      "image": "https://image.tmdb.org/t/p/w500/Aufa4YdZIv4AXpR9rznwVA5SEfd.jpg",
+      "rating": 81
+    },
+    {
+      "id": 98444,
+      "title": "Laid-Back Camp",
+      "image": "https://image.tmdb.org/t/p/w500/1c5xBDBQQwa1bvX5fibAeymReGg.jpg",
+      "rating": 81
+    },
+    {
+      "id": 181444,
+      "title": "The Fragrant Flower Blooms With Dignity",
+      "image": "https://image.tmdb.org/t/p/w500/g1sYAQt0OeCxzyfagSEqxUlsLnt.jpg",
+      "rating": 86
+    },
+    {
+      "id": 163132,
+      "title": "Horimiya: The Missing Pieces",
+      "image": "https://image.tmdb.org/t/p/w500/aEJVHbXaC94y6thJ3nA6lBBnHjs.jpg",
+      "rating": 81
+    },
+    {
+      "id": 143338,
+      "title": "The Angel Next Door Spoils Me Rotten",
+      "image": "https://image.tmdb.org/t/p/w500/twCEEzmZZkgQIPXzw0JF350GO0P.jpg",
+      "rating": 77
+    },
+    {
+      "id": 112608,
+      "title": "I've Been Killing Slimes for 300 Years and Maxed Out My Level",
+      "image": "https://image.tmdb.org/t/p/w500/iyTiJqrAs2YItyTYGI18PdqX65c.jpg",
+      "rating": 68
+    },
+    {
+      "id": 99420,
+      "title": "Girls' Last Tour",
+      "image": "https://image.tmdb.org/t/p/w500/hEtkOaiI759zfO6YT4PiNmrbtv4.jpg",
+      "rating": 81
+    },
+    {
+      "id": 21495,
+      "title": "Tanaka-kun is Always Listless",
+      "image": "https://image.tmdb.org/t/p/w500/q3TdnhtfXh6yfrHuZO0hEmkjjnr.jpg",
+      "rating": 76
+    },
+    {
+      "id": 141911,
+      "title": "Skip and Loafer",
+      "image": "https://image.tmdb.org/t/p/w500/xHVy0gnLNpkNAdtd3DHsUVYYEDN.jpg",
+      "rating": 81
+    },
+    {
+      "id": 166794,
+      "title": "A Sign of Affection",
+      "image": "https://image.tmdb.org/t/p/w500/ntgph4kCtxzDsVQIK2gJfrG3PyM.jpg",
+      "rating": 82
+    },
+    {
+      "id": 17549,
+      "title": "Non Non Biyori",
+      "image": "https://image.tmdb.org/t/p/w500/uEFfrd2xBV2XEGkbNtMrHgLXFM1.jpg",
+      "rating": 78
+    },
+    {
+      "id": 105914,
+      "title": "The Helpful Fox Senko-san",
+      "image": "https://image.tmdb.org/t/p/w500/pygu154QHVzb0Ro3PKTdFBKcdiY.jpg",
+      "rating": 71
+    },
+    {
+      "id": 7711,
+      "title": "The Secret World of Arrietty",
+      "image": "https://image.tmdb.org/t/p/w500/3lSRaSjDp2nkXMQkzzjpRi3035O.jpg",
+      "rating": 77
+    },
+    {
+      "id": 97592,
+      "title": "Interviews with Monster Girls",
+      "image": "https://image.tmdb.org/t/p/w500/tm5UMGq9HA958N4ophH38YyqfWv.jpg",
+      "rating": 73
+    },
+    {
+      "id": 156067,
+      "title": "Campfire Cooking in Another World with my Absurd Skill",
+      "image": "https://image.tmdb.org/t/p/w500/cXc3yiQ5RrimzfucovjO83RTrnq.jpg",
+      "rating": 76
+    },
+    {
+      "id": 98503,
+      "title": "School Babysitters",
+      "image": "https://image.tmdb.org/t/p/w500/gEyLfALQ52fguNTwhJFSYEcQLRP.jpg",
+      "rating": 78
+    },
+    {
+      "id": 143653,
+      "title": "Insomniacs After School",
+      "image": "https://image.tmdb.org/t/p/w500/qChtK3uuCc5L5CpSeBpVV4MFRHD.jpg",
+      "rating": 79
+    }
+  ],
+  "hiddenGems": [
+    {
+      "id": 128207,
+      "title": "THE FIRST SLAM DUNK",
+      "image": "https://image.tmdb.org/t/p/w500/7i3EBXY87HdHagCoFbmjHQ8DlkG.jpg",
+      "rating": 87
+    },
+    {
+      "id": 195240,
+      "title": "Umamusume: Cinderella Gray 2nd Cour",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx195240-hKcmllV6YHQT.jpg",
+      "rating": 86
+    },
+    {
+      "id": 3297,
+      "title": "ARIA The ORIGINATION",
+      "image": "https://image.tmdb.org/t/p/w500/1XgXgWmsX1Un8eBHPjcBYpoae6M.jpg",
+      "rating": 86
+    },
+    {
+      "id": 180516,
+      "title": "Umamusume: Cinderella Gray",
+      "image": "https://image.tmdb.org/t/p/w500/ncq5uKIcifVITPIYT2G1KpUPMoW.jpg",
+      "rating": 85
+    },
+    {
+      "id": 4565,
+      "title": "Gurren Lagann The Movie: The Lights in the Sky are Stars",
+      "image": "https://image.tmdb.org/t/p/w500/nNjFlv4mJlkGLzfnLoU68YSy9KH.jpg",
+      "rating": 85
+    },
+    {
+      "id": 21008,
+      "title": "MUSHI-SHI Special: Bell Droplets",
+      "image": "https://image.tmdb.org/t/p/w500/4Kso7vjj88y73rPFRaXB4seZxxv.jpg",
+      "rating": 84
+    },
+    {
+      "id": 177687,
+      "title": "100 METERS",
+      "image": "https://image.tmdb.org/t/p/w500/w2pzrRTevXrW3vgIK4CCYaXvtIc.jpg",
+      "rating": 84
+    },
+    {
+      "id": 801,
+      "title": "Ghost in the Shell: Stand Alone Complex 2nd GIG",
+      "image": "https://image.tmdb.org/t/p/w500/6UH2vJryPpQp38noqvchu3uEeqX.jpg",
+      "rating": 84
+    },
+    {
+      "id": 175199,
+      "title": "given The Movie: To the Sea",
+      "image": "https://image.tmdb.org/t/p/w500/2VLnT5JtJ77ErG6GD3c1J628VLp.jpg",
+      "rating": 84
+    },
+    {
+      "id": 138425,
+      "title": "Teasing Master Takagi-san: The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/di0QJLTVfroK7W1D5V8i9QkFkMk.jpg",
+      "rating": 83
+    },
+    {
+      "id": 192809,
+      "title": "JUJUTSU KAISEN: Hidden Inventory / Premature Death – The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/kZkyr1sRzarENrxjtltPvmHRrTk.jpg",
+      "rating": 83
+    },
+    {
+      "id": 7472,
+      "title": "Gintama - The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/E3RT3f8oOuPS2pMhgH47TKBPgu.jpg",
+      "rating": 83
+    },
+    {
+      "id": 140499,
+      "title": "Blue Giant",
+      "image": "https://image.tmdb.org/t/p/w500/auQ5ExCcuuudw0tQwG03obX5Zrh.jpg",
+      "rating": 83
+    },
+    {
+      "id": 12431,
+      "title": "Space Brothers",
+      "image": "https://image.tmdb.org/t/p/w500/3o6W53edDLWtYOE2fCLK3154mIV.jpg",
+      "rating": 83
+    },
+    {
+      "id": 104460,
+      "title": "Laid-Back Camp The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/azp9BHalGiCJ72mgcoM6rQFn6qL.jpg",
+      "rating": 83
+    },
+    {
+      "id": 109403,
+      "title": "Non Non Biyori Nonstop",
+      "image": "https://image.tmdb.org/t/p/w500/uEFfrd2xBV2XEGkbNtMrHgLXFM1.jpg",
+      "rating": 83
+    },
+    {
+      "id": 165171,
+      "title": "Medalist",
+      "image": "https://image.tmdb.org/t/p/w500/hK5eKFaj99mZwpmILnvKehWe9t1.jpg",
+      "rating": 83
+    },
+    {
+      "id": 101344,
+      "title": "Made in Abyss: Wandering Twilight",
+      "image": "https://image.tmdb.org/t/p/w500/ivEZMkRng0VvDuQUoU8nhtqcfwe.jpg",
+      "rating": 83
+    },
+    {
+      "id": 136192,
+      "title": "Fruits Basket -prelude-",
+      "image": "https://image.tmdb.org/t/p/w500/gt7radvJj8UI8C8mvmtWX5uiqQB.jpg",
+      "rating": 83
+    },
+    {
+      "id": 21085,
+      "title": "Ace of the Diamond Second Season",
+      "image": "https://image.tmdb.org/t/p/w500/2kqZX7OKVHkLm2XmI2AXxAd0MrA.jpg",
+      "rating": 82
     }
   ]
 }

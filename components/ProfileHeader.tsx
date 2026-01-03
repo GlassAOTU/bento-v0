@@ -9,9 +9,9 @@ export default function ProfileHeader() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center py-8">
-                <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse mb-4" />
-                <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+            <div className="flex flex-col items-center py-12">
+                <div className="w-36 h-36 bg-gray-200 dark:bg-gray-700 animate-pulse mb-4" />
+                <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
             </div>
         )
     }
@@ -36,30 +36,25 @@ export default function ProfileHeader() {
         .slice(0, 2)
 
     const ProfileContent = (
-        <div className="flex flex-col items-center py-8">
-            {/* Avatar */}
-            <div className="w-20 h-20 rounded-full overflow-hidden mb-4 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+        <div className="flex flex-col items-center py-12">
+            {/* Avatar - Square */}
+            <div className="w-36 h-36 overflow-hidden mb-4 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                 {avatarUrl ? (
                     <Image
                         src={avatarUrl}
                         alt="Profile"
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-contain"
+                        width={144}
+                        height={144}
+                        className="w-full h-full object-cover"
                     />
                 ) : (
-                    <span className="text-white text-2xl font-bold">{initials}</span>
+                    <span className="text-gray-400 dark:text-gray-500 text-4xl font-bold">{initials}</span>
                 )}
             </div>
 
-            {/* Display Name or Email */}
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-                {profile?.display_name || user.email}
-            </p>
-
-            {/* Username */}
+            {/* Username only */}
             {profile?.username && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">@{profile.username}</p>
+                <p className="text-xl font-medium text-gray-900 dark:text-white">@{profile.username}</p>
             )}
         </div>
     )

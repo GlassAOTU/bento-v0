@@ -61,9 +61,9 @@ export function getTMDBImageUrl(
 
 /**
  * Search TMDB for anime by title
- * Filters for Japanese animation content
+ * Filters for Japanese animation content only (requires BOTH Japanese AND animation)
  */
-export async function searchTMDBAnime(query: string, limit: number = 5) {
+export async function searchTMDBAnime(query: string, limit: number = 5, type: 'tv' | 'movie' | 'both' = 'both') {
     if (!TMDB_API_KEY) {
         throw new Error('TMDB_API_KEY is not configured');
     }
@@ -77,48 +77,86 @@ export async function searchTMDBAnime(query: string, limit: number = 5) {
     });
 
     try {
-        // First, search in TV shows
-        const tvResponse = await fetch(`${TMDB_BASE_URL}/search/tv?${params}`);
+        const results: any[] = [];
 
-        if (!tvResponse.ok) {
-            throw new Error(`TMDB API error: ${tvResponse.status}`);
+        // Search TV shows if type is 'tv' or 'both'
+        if (type === 'tv' || type === 'both') {
+            const tvResponse = await fetch(`${TMDB_BASE_URL}/search/tv?${params}`);
+            if (tvResponse.ok) {
+                const tvData = await tvResponse.json();
+                const tvResults = tvData.results
+                    .filter((show: any) => isJapaneseAnimation(show))
+                    .map((show: any) => ({
+                        tmdb_id: show.id,
+                        title: show.name,
+                        original_title: show.original_name,
+                        overview: show.overview,
+                        poster_path: show.poster_path,
+                        backdrop_path: show.backdrop_path,
+                        first_air_date: show.first_air_date,
+                        release_date: show.first_air_date,
+                        vote_average: show.vote_average,
+                        vote_count: show.vote_count,
+                        popularity: show.popularity,
+                        origin_country: show.origin_country,
+                        genre_ids: show.genre_ids,
+                        media_type: 'tv'
+                    }));
+                results.push(...tvResults);
+            }
         }
 
-        const tvData = await tvResponse.json();
+        // Search movies if type is 'movie' or 'both'
+        if (type === 'movie' || type === 'both') {
+            const movieResponse = await fetch(`${TMDB_BASE_URL}/search/movie?${params}`);
+            if (movieResponse.ok) {
+                const movieData = await movieResponse.json();
+                const movieResults = movieData.results
+                    .filter((movie: any) => isJapaneseAnimation(movie))
+                    .map((movie: any) => ({
+                        tmdb_id: movie.id,
+                        title: movie.title,
+                        original_title: movie.original_title,
+                        overview: movie.overview,
+                        poster_path: movie.poster_path,
+                        backdrop_path: movie.backdrop_path,
+                        first_air_date: movie.release_date,
+                        release_date: movie.release_date,
+                        vote_average: movie.vote_average,
+                        vote_count: movie.vote_count,
+                        popularity: movie.popularity,
+                        origin_country: movie.origin_country || [],
+                        genre_ids: movie.genre_ids,
+                        media_type: 'movie'
+                    }));
+                results.push(...movieResults);
+            }
+        }
 
-        // Filter for Japanese/anime content
-        const animeResults = tvData.results
-            .filter((show: any) => {
-                // Check if it's Japanese content
-                const isJapanese = show.origin_country?.includes('JP') ||
-                                   show.original_language === 'ja';
-
-                // Check if it's animation
-                const isAnimation = show.genre_ids?.includes(16); // 16 = Animation
-
-                return isJapanese || isAnimation;
-            })
-            .slice(0, limit)
-            .map((show: any) => ({
-                tmdb_id: show.id,
-                title: show.name,
-                original_title: show.original_name,
-                overview: show.overview,
-                poster_path: show.poster_path,
-                backdrop_path: show.backdrop_path,
-                first_air_date: show.first_air_date,
-                vote_average: show.vote_average,
-                vote_count: show.vote_count,
-                popularity: show.popularity,
-                origin_country: show.origin_country,
-                genre_ids: show.genre_ids
-            }));
-
-        return animeResults;
+        // Sort by popularity and return top results
+        return results
+            .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+            .slice(0, limit);
     } catch (error) {
         console.error('Error searching TMDB:', error);
         throw error;
     }
+}
+
+/**
+ * Check if content is Japanese animation (anime)
+ * Requires BOTH Japanese origin AND animation genre
+ */
+function isJapaneseAnimation(content: any): boolean {
+    // Check if it's Japanese content
+    const isJapanese = content.origin_country?.includes('JP') ||
+                       content.original_language === 'ja';
+
+    // Check if it's animation (genre ID 16)
+    const isAnimation = content.genre_ids?.includes(16);
+
+    // Must be BOTH Japanese AND animation to be considered anime
+    return isJapanese && isAnimation;
 }
 
 /**
@@ -421,9 +459,29 @@ export async function getTMDBSeasons(tmdbId: number) {
 
 /**
  * Find the best TMDB match for an anime by title
+ * Checks manual mappings first, then falls back to search
  * Returns the TMDB ID of the best match, or null if no good match found
  */
-export async function findTMDBAnimeByTitle(animeTitle: string): Promise<number | null> {
+export async function findTMDBAnimeByTitle(animeTitle: string, anilistId?: number): Promise<number | null> {
+    // Import manual mappings
+    const { getTMDBByAnilistId, getTMDBByTitle } = await import('./anime-mappings');
+
+    // Check manual mappings first (most reliable)
+    if (anilistId) {
+        const mappingById = getTMDBByAnilistId(anilistId);
+        if (mappingById) {
+            console.log(`Using manual mapping for AniList ID ${anilistId}: TMDB ${mappingById.tmdbId}`);
+            return mappingById.tmdbId;
+        }
+    }
+
+    const mappingByTitle = getTMDBByTitle(animeTitle);
+    if (mappingByTitle) {
+        console.log(`Using manual mapping for "${animeTitle}": TMDB ${mappingByTitle.tmdbId}`);
+        return mappingByTitle.tmdbId;
+    }
+
+    // Fall back to search
     try {
         const results = await searchTMDBAnime(animeTitle, 5);
 
@@ -441,24 +499,165 @@ export async function findTMDBAnimeByTitle(animeTitle: string): Promise<number |
 }
 
 /**
- * Get comprehensive anime data from TMDB including episodes
- * This is the main function for anime detail pages
+ * Get TMDB movie details
  */
-export async function getTMDBAnimeDetails(titleOrId: string | number) {
-    let tmdbId: number;
-
-    // If string, search for the anime first
-    if (typeof titleOrId === 'string') {
-        const foundId = await findTMDBAnimeByTitle(titleOrId);
-        if (!foundId) {
-            throw new Error(`Anime not found on TMDB: ${titleOrId}`);
-        }
-        tmdbId = foundId;
-    } else {
-        tmdbId = titleOrId;
+export async function getTMDBMovieDetails(tmdbId: number) {
+    if (!TMDB_API_KEY) {
+        throw new Error('TMDB_API_KEY is not configured');
     }
 
-    // Fetch all data in parallel
+    const params = new URLSearchParams({
+        api_key: TMDB_API_KEY,
+        language: 'en-US',
+        append_to_response: 'credits,external_ids,videos,images,recommendations,similar'
+    });
+
+    try {
+        const response = await fetch(`${TMDB_BASE_URL}/movie/${tmdbId}?${params}`);
+
+        if (!response.ok) {
+            throw new Error(`TMDB API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        return {
+            tmdb_id: data.id,
+            title: data.title,
+            original_title: data.original_title,
+            tagline: data.tagline,
+            overview: data.overview,
+            release_date: data.release_date,
+            runtime: data.runtime,
+            status: data.status,
+            vote_average: data.vote_average,
+            vote_count: data.vote_count,
+            popularity: data.popularity,
+            poster_path: data.poster_path,
+            backdrop_path: data.backdrop_path,
+            poster_url: getTMDBImageUrl(data.poster_path, TMDB_POSTER_SIZES.W500),
+            poster_url_original: getTMDBImageUrl(data.poster_path, TMDB_POSTER_SIZES.ORIGINAL),
+            backdrop_url: getTMDBImageUrl(data.backdrop_path, TMDB_BACKDROP_SIZES.W1280),
+            backdrop_url_original: getTMDBImageUrl(data.backdrop_path, TMDB_BACKDROP_SIZES.ORIGINAL),
+            genres: data.genres,
+            production_companies: data.production_companies,
+            origin_country: data.origin_country,
+            original_language: data.original_language,
+            external_ids: data.external_ids,
+            credits: {
+                cast: data.credits?.cast?.slice(0, 10),
+                crew: data.credits?.crew?.slice(0, 10)
+            },
+            videos: data.videos?.results?.map((v: any) => ({
+                id: v.id,
+                key: v.key,
+                name: v.name,
+                type: v.type,
+                site: v.site,
+                official: v.official,
+                published_at: v.published_at
+            })),
+            images: {
+                backdrops: data.images?.backdrops?.slice(0, 5),
+                posters: data.images?.posters?.slice(0, 5),
+                logos: data.images?.logos?.slice(0, 5)
+            },
+            recommendations: data.recommendations?.results?.slice(0, 4).map((movie: any) => ({
+                tmdb_id: movie.id,
+                title: movie.title,
+                poster_path: movie.poster_path,
+                vote_average: movie.vote_average
+            })),
+            similar: data.similar?.results?.slice(0, 4).map((movie: any) => ({
+                tmdb_id: movie.id,
+                title: movie.title,
+                poster_path: movie.poster_path,
+                vote_average: movie.vote_average
+            })),
+            media_type: 'movie'
+        };
+    } catch (error) {
+        console.error('Error fetching TMDB movie details:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get comprehensive anime data from TMDB including episodes
+ * This is the main function for anime detail pages
+ * Supports both TV shows and movies
+ */
+export async function getTMDBAnimeDetails(titleOrId: string | number, anilistId?: number) {
+    // Import manual mappings
+    const { getTMDBByAnilistId, getTMDBByTitle } = await import('./anime-mappings');
+
+    let tmdbId: number | undefined;
+    let mediaType: 'tv' | 'movie' = 'tv';
+
+    // Check manual mappings first
+    if (anilistId) {
+        const mappingById = getTMDBByAnilistId(anilistId);
+        if (mappingById) {
+            tmdbId = mappingById.tmdbId;
+            mediaType = mappingById.type;
+            console.log(`Using manual mapping for AniList ID ${anilistId}: TMDB ${tmdbId} (${mediaType})`);
+        }
+    }
+
+    // If no mapping by ID, check by title
+    if (tmdbId === undefined && typeof titleOrId === 'string') {
+        const mappingByTitle = getTMDBByTitle(titleOrId);
+        if (mappingByTitle) {
+            tmdbId = mappingByTitle.tmdbId;
+            mediaType = mappingByTitle.type;
+            console.log(`Using manual mapping for "${titleOrId}": TMDB ${tmdbId} (${mediaType})`);
+        }
+    }
+
+    // If still no ID, search for it
+    if (tmdbId === undefined) {
+        if (typeof titleOrId === 'string') {
+            const foundId = await findTMDBAnimeByTitle(titleOrId, anilistId);
+            if (!foundId) {
+                throw new Error(`Anime not found on TMDB: ${titleOrId}`);
+            }
+            tmdbId = foundId;
+
+            // Try to determine media type from search results
+            const searchResults = await searchTMDBAnime(titleOrId, 1);
+            if (searchResults && searchResults.length > 0) {
+                mediaType = searchResults[0].media_type || 'tv';
+            }
+        } else {
+            tmdbId = titleOrId;
+        }
+    }
+
+    // Handle movies differently from TV shows
+    if (mediaType === 'movie') {
+        const details = await getTMDBMovieDetails(tmdbId);
+
+        return {
+            tmdb_id: tmdbId,
+            details: {
+                ...details,
+                // Normalize fields for compatibility with TV show format
+                first_air_date: details.release_date,
+                last_air_date: details.release_date,
+                number_of_episodes: 1,
+                number_of_seasons: 1,
+                episode_run_time: details.runtime ? [details.runtime] : [],
+                networks: details.production_companies,
+                in_production: false
+            },
+            images: details.images,
+            seasons: { number_of_seasons: 0, number_of_episodes: 1, seasons: [] },
+            latestSeasonEpisodes: null,
+            media_type: 'movie'
+        };
+    }
+
+    // Handle TV shows (original behavior)
     const [details, images, seasons] = await Promise.all([
         getTMDBShowDetails(tmdbId),
         getTMDBImages(tmdbId),
@@ -476,9 +675,10 @@ export async function getTMDBAnimeDetails(titleOrId: string | number) {
 
     return {
         tmdb_id: tmdbId,
-        details,
+        details: { ...details, media_type: 'tv' },
         images,
         seasons,
-        latestSeasonEpisodes
+        latestSeasonEpisodes,
+        media_type: 'tv'
     };
 }
