@@ -2,7 +2,14 @@ import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service-client'
 import { getTMDBAnimeDetails } from '@/lib/tmdb'
 
-async function getHighQualityImage(title: string, fallbackImage: string, supabase: any): Promise<string> {
+type EnhancedData = {
+    image: string
+    englishTitle: string | null
+}
+
+async function getEnhancedAnimeData(title: string, fallbackImage: string, supabase: any): Promise<EnhancedData> {
+    let englishTitle: string | null = null
+
     try {
         const { data: cachedAnime } = await supabase
             .from('anime_data')
@@ -11,22 +18,30 @@ async function getHighQualityImage(title: string, fallbackImage: string, supabas
             .limit(1)
             .single()
 
-        if (cachedAnime?.details?.bannerImage) {
-            return cachedAnime.details.bannerImage
+        if (cachedAnime?.details) {
+            englishTitle = cachedAnime.details.title?.english || null
+            if (cachedAnime.details.bannerImage) {
+                return { image: cachedAnime.details.bannerImage, englishTitle }
+            }
         }
 
         const tmdbData = await getTMDBAnimeDetails(title)
-        if (tmdbData?.details?.backdrop_url_original) {
-            return tmdbData.details.backdrop_url_original
-        }
-        if (tmdbData?.details?.backdrop_url) {
-            return tmdbData.details.backdrop_url
+        if (tmdbData?.details) {
+            if (!englishTitle && tmdbData.details.name) {
+                englishTitle = tmdbData.details.name
+            }
+            if (tmdbData.details.backdrop_url_original) {
+                return { image: tmdbData.details.backdrop_url_original, englishTitle }
+            }
+            if (tmdbData.details.backdrop_url) {
+                return { image: tmdbData.details.backdrop_url, englishTitle }
+            }
         }
     } catch (err) {
-        console.log(`Could not fetch high-res image for "${title}", using fallback`)
+        console.log(`Could not fetch enhanced data for "${title}", using fallback`)
     }
 
-    return fallbackImage
+    return { image: fallbackImage, englishTitle }
 }
 
 export async function GET() {
@@ -89,10 +104,14 @@ export async function GET() {
             .slice(0, 4)
 
         const enhanced = await Promise.all(
-            sorted.map(async (anime) => ({
-                ...anime,
-                image: await getHighQualityImage(anime.title, anime.image, supabase)
-            }))
+            sorted.map(async (anime) => {
+                const data = await getEnhancedAnimeData(anime.title, anime.image, supabase)
+                return {
+                    ...anime,
+                    title: data.englishTitle || anime.title,
+                    image: data.image
+                }
+            })
         )
 
         return NextResponse.json({ popular: enhanced })
