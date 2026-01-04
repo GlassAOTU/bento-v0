@@ -130,9 +130,9 @@ export default function PopularOnBentoCarousel() {
                             <p className="text-white/80 text-sm md:text-base line-clamp-2 max-w-2xl">
                                 {currentAnime.description}
                             </p>
-                            <p className="text-white/60 text-xs mt-2">
+                            {/* <p className="text-white/60 text-xs mt-2">
                                 Added to {currentAnime.watchlistCount} watchlist{currentAnime.watchlistCount !== 1 ? 's' : ''}
-                            </p>
+                            </p> */}
                         </div>
                     </div>
                 </Link>
