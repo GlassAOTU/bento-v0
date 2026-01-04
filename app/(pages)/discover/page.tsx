@@ -11,8 +11,8 @@ import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
 import CategorySection from '../../../components/CategorySection'
 import DiscoverAnimeCard from '../../../components/DiscoverAnimeCard'
+import PopularOnBentoCarousel from '../../../components/PopularOnBentoCarousel'
 import { trackDiscoverSearch, trackDiscoverSearchCleared, trackDiscoverFormatFilter, getAuthStatus } from '@/lib/analytics/events'
-import { useTheme } from '@/lib/theme/ThemeContext'
 
 type FormatFilter = 'all' | 'tv' | 'movie'
 
@@ -54,7 +54,6 @@ type AnimeCategories = {
 function DiscoverContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const { theme } = useTheme()
     const [user, setUser] = useState<User | null>(null)
     const [animeData, setAnimeData] = useState<AnimeCategories | null>(null)
 
@@ -229,24 +228,28 @@ function DiscoverContent() {
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
                 <div className="max-w-5xl flex flex-col mx-auto gap-8">
 
-                    {/* Banner */}
-                    <section className="flex justify-center sm:px-10 mb-2">
-                        <div className="relative max-w-[1200px]">
-                            <Image
-                                src={theme === 'dark' ? "/images/banner-darkmode-2.png" : "/images/header-image-2.png"}
-                                alt="Banner"
-                                width={600}
-                                height={300}
-                                className="hidden sm:inline w-full h-auto"
-                            />
-                            <Image
-                                src={theme === 'dark' ? "/images/banner-darkmode-2.png" : "/images/header-image-mobile.png"}
-                                alt="Banner"
-                                width={600}
-                                height={300}
-                                className="sm:hidden w-full h-auto"
-                            />
-                        </div>
+                    {/* Header */}
+                    <section className="px-10 pt-4">
+                        <h1 className="text-5xl md:text-7xl font-semibold text-center dark:text-white leading-tight">
+                            <span className="block">Discover your next</span>
+                            <span className="inline-flex items-center justify-center gap-1 md:gap-2">
+                                <Image
+                                    src="/images/mascot-header-left.png"
+                                    alt=""
+                                    width={70}
+                                    height={70}
+                                    className="object-contain w-12 h-12 md:w-[70px] md:h-[70px]"
+                                />
+                                <span>favorite anime</span>
+                                <Image
+                                    src="/images/mascot-header.png"
+                                    alt=""
+                                    width={70}
+                                    height={70}
+                                    className="object-contain w-12 h-12 md:w-[70px] md:h-[70px]"
+                                />
+                            </span>
+                        </h1>
                     </section>
 
                     {/* Search Bar */}
@@ -360,6 +363,23 @@ function DiscoverContent() {
                         /* Categories */
                         animeData && (
                             <section className="px-10 flex flex-col gap-3 md:gap-6">
+                                {/* Most Popular on Bento Carousel */}
+                                <PopularOnBentoCarousel />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                {/* Categories Heading with Mascot */}
+                                <div className="flex items-center justify-center gap-2 md:gap-3">
+                                    <Image
+                                        src="/images/mascot-categories.png"
+                                        alt=""
+                                        width={60}
+                                        height={60}
+                                        className="object-contain w-10 h-10 md:w-[60px] md:h-[60px]"
+                                    />
+                                    <h2 className="text-3xl md:text-5xl font-semibold tracking-tight dark:text-white">Categories</h2>
+                                </div>
+
                                 <CategorySection
                                     title="Most Popular"
                                     anime={animeData.mostPopular}
