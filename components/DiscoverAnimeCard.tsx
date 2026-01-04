@@ -48,15 +48,15 @@ export default function DiscoverAnimeCard({ anime, category = 'unknown', positio
     return (
         <Link
             href={`/anime/${slugify(anime.title)}`}
-            className="flex flex-col gap-2 group cursor-pointer"
+            className="flex flex-col gap-2 group cursor-pointer transition-transform duration-300 hover:-translate-y-2"
             onClick={handleClick}
         >
-            <div className="relative w-full aspect-[309/455] overflow-hidden rounded-md">
+            <div className="relative w-full aspect-[309/455] overflow-hidden rounded-md shadow-sm group-hover:shadow-lg transition-shadow duration-300">
                 <Image
                     src={anime.image}
                     alt={anime.title}
                     fill
-                    className="object-cover transition-transform group-hover:scale-105"
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     sizes="(max-width: 768px) 50vw, 25vw"
                 />
             </div>
