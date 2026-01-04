@@ -19,7 +19,7 @@ async function getEnhancedAnimeData(title: string, fallbackImage: string, supaba
             .single()
 
         if (cachedAnime?.details) {
-            englishTitle = cachedAnime.details.title?.english || null
+            englishTitle = cachedAnime.details.title || null
             if (cachedAnime.details.bannerImage) {
                 return { image: cachedAnime.details.bannerImage, englishTitle }
             }
