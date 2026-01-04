@@ -31,13 +31,10 @@ async function getEnhancedAnimeData(title: string, fallbackImage: string, supaba
         }
 
         if (cachedAnime?.details) {
-            console.log(`[Popular Anime] Found cached data for "${title}":`, JSON.stringify(cachedAnime.details, null, 2))
             englishTitle = cachedAnime.details.title || null
             if (cachedAnime.details.bannerImage) {
                 return { image: cachedAnime.details.bannerImage, englishTitle }
             }
-        } else {
-            console.log(`[Popular Anime] No cached data found for "${title}"`)
         }
 
         const tmdbData = await getTMDBAnimeDetails(title)
