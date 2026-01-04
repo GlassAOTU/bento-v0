@@ -11,24 +11,39 @@ async function getEnhancedAnimeData(title: string, fallbackImage: string, supaba
     let englishTitle: string | null = null
 
     try {
-        const { data: cachedAnime } = await supabase
+        // Search by English title first
+        let { data: cachedAnime } = await supabase
             .from('anime_data')
             .select('details')
             .ilike('details->>title', title)
             .limit(1)
             .single()
 
+        // If not found, try searching by romaji title
+        if (!cachedAnime) {
+            const { data: romajiMatch } = await supabase
+                .from('anime_data')
+                .select('details')
+                .ilike('details->>romajiTitle', title)
+                .limit(1)
+                .single()
+            cachedAnime = romajiMatch
+        }
+
         if (cachedAnime?.details) {
+            console.log(`[Popular Anime] Found cached data for "${title}":`, JSON.stringify(cachedAnime.details, null, 2))
             englishTitle = cachedAnime.details.title || null
             if (cachedAnime.details.bannerImage) {
                 return { image: cachedAnime.details.bannerImage, englishTitle }
             }
+        } else {
+            console.log(`[Popular Anime] No cached data found for "${title}"`)
         }
 
         const tmdbData = await getTMDBAnimeDetails(title)
         if (tmdbData?.details) {
-            if (!englishTitle && tmdbData.details.name) {
-                englishTitle = tmdbData.details.name
+            if (!englishTitle && tmdbData.details.title) {
+                englishTitle = tmdbData.details.title
             }
             if (tmdbData.details.backdrop_url_original) {
                 return { image: tmdbData.details.backdrop_url_original, englishTitle }
