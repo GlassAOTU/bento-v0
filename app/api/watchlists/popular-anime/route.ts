@@ -113,7 +113,7 @@ export async function GET() {
                 watchlistCount: data.count
             }))
             .sort((a, b) => b.watchlistCount - a.watchlistCount)
-            .slice(0, 4)
+            .slice(0, 8) // Fetch extra to account for duplicates after title normalization
 
         const enhanced = await Promise.all(
             sorted.map(async (anime) => {
@@ -126,7 +126,16 @@ export async function GET() {
             })
         )
 
-        return NextResponse.json({ popular: enhanced })
+        // Deduplicate by final title (romaji + english can map to same title)
+        const seen = new Set<string>()
+        const deduplicated = enhanced.filter(anime => {
+            const key = anime.title.toLowerCase()
+            if (seen.has(key)) return false
+            seen.add(key)
+            return true
+        })
+
+        return NextResponse.json({ popular: deduplicated.slice(0, 4) })
     } catch (error) {
         console.error('Error in popular anime API:', error)
         return NextResponse.json({ error: 'Failed to fetch popular anime' }, { status: 500 })
