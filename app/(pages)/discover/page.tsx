@@ -226,7 +226,7 @@ function DiscoverContent() {
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary pb-16 font-instrument-sans">
-                <div className="max-w-5xl flex flex-col mx-auto gap-8">
+                <div className="max-w-7xl flex flex-col mx-auto gap-8">
 
                     {/* Header */}
                     <section className="px-10 pt-4">

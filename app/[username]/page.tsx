@@ -187,7 +187,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         return (
             <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
-                <div className="max-w-5xl mx-auto px-10 py-16">
+                <div className="max-w-7xl mx-auto px-10 py-16">
                     <div className="text-center text-gray-600 dark:text-gray-400">Loading profile...</div>
                 </div>
                 <Footer />
@@ -199,7 +199,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         return (
             <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
-                <div className="max-w-5xl mx-auto px-10 py-16">
+                <div className="max-w-7xl mx-auto px-10 py-16">
                     <div className="text-center">
                         <h1 className="text-3xl font-bold mb-4 dark:text-white">Profile Not Found</h1>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'This profile does not exist'}</p>
@@ -219,7 +219,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         <div className="bg-white dark:bg-darkBg min-h-screen">
             <NavigationBar />
 
-            <div className="max-w-5xl mx-auto px-10 py-16 font-instrument-sans">
+            <div className="max-w-7xl mx-auto px-10 py-16 font-instrument-sans">
                 {/* Profile Header */}
                 <div className="flex flex-col items-center mb-12">
                     {/* Avatar */}

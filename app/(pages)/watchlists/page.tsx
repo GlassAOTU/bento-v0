@@ -252,7 +252,7 @@ function WatchlistsContent() {
             <NavigationBar />
 
             <div className="min-h-screen text-mySecondary dark:text-gray-200 pb-16 font-instrument-sans">
-                <div className="max-w-5xl flex flex-col mx-auto gap-2">
+                <div className="max-w-7xl flex flex-col mx-auto gap-2">
 
                     {/* Page Content */}
                     <div className="px-10">

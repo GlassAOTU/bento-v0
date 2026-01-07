@@ -90,7 +90,7 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
         return (
             <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
-                <div className="max-w-5xl mx-auto px-10 py-16">
+                <div className="max-w-7xl mx-auto px-10 py-16">
                     <div className="text-center text-gray-600 dark:text-gray-400">Loading watchlist...</div>
                 </div>
                 <Footer />
@@ -102,7 +102,7 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
         return (
             <div className="bg-white dark:bg-darkBg min-h-screen">
                 <NavigationBar />
-                <div className="max-w-5xl mx-auto px-10 py-16">
+                <div className="max-w-7xl mx-auto px-10 py-16">
                     <div className="text-center">
                         <h1 className="text-3xl font-bold mb-4 dark:text-white">Watchlist Not Found</h1>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'This watchlist does not exist or is private'}</p>
@@ -122,7 +122,7 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
         <div className="bg-white dark:bg-darkBg min-h-screen">
             <NavigationBar />
 
-            <div className="max-w-5xl mx-auto px-10 py-16 font-instrument-sans">
+            <div className="max-w-7xl mx-auto px-10 py-16 font-instrument-sans">
                 {/* Breadcrumb */}
                 <div className="mb-8">
                     <Link
@@ -174,13 +174,12 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
                                 href={`/anime/${slugify(item.title)}`}
                                 className="flex flex-col items-center group"
                             >
-                                <div className="relative w-full aspect-square rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
+                                <div className="relative w-full aspect-[309/455] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-shadow">
                                     <Image
                                         src={item.image || '/images/banner-not-available.png'}
                                         alt={item.title}
-                                        width={425}
-                                        height={425}
-                                        className="object-cover w-full h-full"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </div>
                                 <p className="mt-3 text-center font-medium text-sm tracking-wide dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
