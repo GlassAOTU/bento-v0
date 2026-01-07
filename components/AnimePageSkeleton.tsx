@@ -25,7 +25,7 @@ export default function AnimePageSkeleton() {
 
                 {/* Hero content */}
                 <div className="relative z-10 h-full flex items-end">
-                    <div className="max-w-5xl mx-auto w-full px-10 pb-12">
+                    <div className="max-w-7xl mx-auto w-full px-10 pb-12">
                         {/* Add to watchlist button */}
                         <div className="h-10 w-48 bg-gray-300 dark:bg-gray-600 rounded-md mb-4"></div>
                         {/* Title */}
@@ -36,7 +36,7 @@ export default function AnimePageSkeleton() {
                 </div>
             </section>
 
-            <div className="max-w-5xl mx-auto px-10 py-12">
+            <div className="max-w-7xl mx-auto px-10 py-12">
                 {/* Description Section Skeleton */}
                 <section className="mb-16">
                     <DescriptionSkeleton />

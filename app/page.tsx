@@ -234,7 +234,7 @@ function RecommendationContent() {
             <div className="min-h-screen text-mySecondary dark:text-gray-200 pb-16 font-instrument-sans">
 
                 {/* Page content */}
-                <div className="max-w-5xl flex flex-col mx-auto gap-8">
+                <div className="max-w-7xl flex flex-col mx-auto gap-8">
 
                     {/* Banner */}
                     <section className="flex justify-center sm:px-10 md:mb-10">
