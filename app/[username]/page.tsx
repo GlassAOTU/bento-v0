@@ -223,7 +223,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 {/* Profile Header */}
                 <div className="flex flex-col items-center mb-12">
                     {/* Avatar */}
-                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                    <div className="w-24 h-24 rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
                         {profile.avatar_url ? (
                             <Image
                                 src={profile.avatar_url}

@@ -37,8 +37,8 @@ export default function ProfileHeader() {
 
     const ProfileContent = (
         <div className="flex flex-col items-center py-12">
-            {/* Avatar - Square */}
-            <div className="w-36 h-36 overflow-hidden mb-4 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+            {/* Avatar */}
+            <div className="w-36 h-36 rounded-lg overflow-hidden mb-4 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                 {avatarUrl ? (
                     <Image
                         src={avatarUrl}

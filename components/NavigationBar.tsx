@@ -92,7 +92,7 @@ export default function NavigationBar() {
                                     onClick={() => setIsEditProfileModalOpen(true)}
                                     className="block"
                                 >
-                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
+                                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
                                         {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                                             <Image
                                                 src={profile?.avatar_url || user.user_metadata?.avatar_url}
@@ -210,7 +210,7 @@ export default function NavigationBar() {
                                                 setIsMobileMenuOpen(false)
                                             }}
                                         >
-                                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
+                                            <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-purple-400 to-pink-600 hover:opacity-80 transition-opacity">
                                                 {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                                                     <Image
                                                         src={profile?.avatar_url || user.user_metadata?.avatar_url}
