@@ -2,7 +2,14 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import AnimePageClient from './AnimePageClient'
 import { unslugify } from '@/lib/utils/slugify'
-import { getAnimeDataBySlug } from '@/lib/anime-server'
+import { getAnimeDataBySlug, getOrFetchAnimeBySlug } from '@/lib/anime-server'
+import { DEFAULT_OG_IMAGE } from '@/lib/constants'
+
+function getOgImageUrl(bannerImage?: string | null, coverImage?: string | null): string {
+    if (bannerImage && bannerImage.trim() !== '') return bannerImage
+    if (coverImage && coverImage.trim() !== '') return coverImage
+    return DEFAULT_OG_IMAGE
+}
 
 interface PageProps {
     params: Promise<{ slug: string }>
@@ -12,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const { slug } = await params
 
     try {
-        const data = await getAnimeDataBySlug(slug)
+        const data = await getOrFetchAnimeBySlug(slug)
 
         if (!data) {
             return {
@@ -52,7 +59,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                     : details.description?.slice(0, 150) || `Discover ${details.title}`,
                 images: [
                     {
-                        url: details.bannerImage || details.coverImage,
+                        url: getOgImageUrl(details.bannerImage, details.coverImage),
                         width: 1200,
                         height: 630,
                         alt: details.title,
@@ -67,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                 description: hasStreaming
                     ? `Stream ${details.title} on ${streamingPlatforms}`
                     : details.description?.slice(0, 150) || '',
-                images: [details.bannerImage || details.coverImage],
+                images: [getOgImageUrl(details.bannerImage, details.coverImage)],
             },
             alternates: {
                 canonical: `https://bentoanime.com/anime/${slug}`,
@@ -105,7 +112,7 @@ function generateJsonLd(details: any, slug: string) {
         name: details.title,
         alternateName: details.romajiTitle,
         description: details.description,
-        image: details.bannerImage || details.coverImage,
+        image: getOgImageUrl(details.bannerImage, details.coverImage),
         url: `https://bentoanime.com/anime/${slug}`,
         numberOfEpisodes: details.episodes,
         numberOfSeasons: details.seasons || 1,

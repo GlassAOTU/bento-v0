@@ -145,7 +145,7 @@ export async function searchTMDBAnime(query: string, limit: number = 5, type: 't
 
 /**
  * Check if content is Japanese animation (anime)
- * Requires BOTH Japanese origin AND animation genre
+ * Accepts content that is Japanese OR animation (more permissive to handle incomplete TMDB metadata)
  */
 function isJapaneseAnimation(content: any): boolean {
     // Check if it's Japanese content
@@ -155,8 +155,8 @@ function isJapaneseAnimation(content: any): boolean {
     // Check if it's animation (genre ID 16)
     const isAnimation = content.genre_ids?.includes(16);
 
-    // Must be BOTH Japanese AND animation to be considered anime
-    return isJapanese && isAnimation;
+    // Accept Japanese OR animation (TMDB search results often have incomplete metadata)
+    return isJapanese || isAnimation;
 }
 
 /**

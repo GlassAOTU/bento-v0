@@ -13,6 +13,7 @@ import AnimeSection from '@/components/anime/AnimeSection'
 import ExpandableDescription from '@/components/anime/ExpandableDescription'
 import ReviewsSection from '@/components/anime/ReviewsSection'
 import AnimePageSkeleton from '@/components/AnimePageSkeleton'
+import { StreamingButton } from '@/components/StreamingButton'
 import { slugify } from '@/lib/utils/slugify'
 import {
     trackAnimeDetailViewed,
@@ -291,21 +292,17 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                                 {animeDetails.streamingLinks && animeDetails.streamingLinks.length > 0 && (
                                     <div className="flex gap-2 flex-wrap mt-2 md:mt-0">
                                         {animeDetails.streamingLinks.map((link, index) => (
-                                            <a
+                                            <StreamingButton
                                                 key={index}
-                                                href={link.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                onClick={() => {
+                                                platform={link.site}
+                                                url={link.url}
+                                                onTrack={() => {
                                                     trackAnimeExternalLinkClicked({
                                                         anime_title: animeDetails.title,
                                                         platform: link.site
                                                     })
                                                 }}
-                                                className="px-6 py-2 bg-white/90 hover:bg-white dark:bg-darkInput/90 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-md transition-colors dark:border dark:border-white/40"
-                                            >
-                                                {link.site}
-                                            </a>
+                                            />
                                         ))}
                                     </div>
                                 )}
