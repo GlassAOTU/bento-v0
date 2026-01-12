@@ -397,7 +397,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 }
             }}
         >
-            <div className="bg-white dark:bg-darkBg rounded-[10px] w-[520px] max-w-[calc(100vw-32px)] max-h-[90vh] overflow-y-auto border border-black/20 dark:border-gray-700" style={{ borderWidth: '0.5px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-darkBg rounded-[10px] w-[624px] max-w-[calc(100vw-32px)] max-h-[90vh] overflow-y-auto border border-black/20 dark:border-gray-700" style={{ borderWidth: '0.5px' }} onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="p-4">
                     <div className="flex items-start justify-between">
