@@ -251,7 +251,7 @@ function RecommendationContent() {
                                 alt="Banner"
                                 width={400}
                                 height={264}
-                                className="sm:hidden w-[70%] h-auto"
+                                className="sm:hidden w-full h-auto"
                             />
                         </div>
                     </section>
