@@ -1,12 +1,13 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import { createClient } from '@/lib/supabase/browser-client'
 import { slugify } from '@/lib/utils/slugify'
+import { trackPublicWatchlistViewed, getAuthStatus } from '@/lib/analytics/events'
 
 interface WatchlistItem {
     id: string
@@ -39,6 +40,7 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [currentUser, setCurrentUser] = useState<any>(null)
+    const hasTrackedView = useRef(false)
 
     const toTitleCase = (str: string) => {
         return str.toLowerCase().split(' ').map(word => {
@@ -78,6 +80,21 @@ export default function WatchlistPage({ params }: { params: Promise<{ username: 
             setWatchlist(data.watchlist)
             setItems(data.items || [])
             setProfile(data.profile)
+
+            // Track watchlist view (only once)
+            if (!hasTrackedView.current && data.watchlist && data.profile) {
+                hasTrackedView.current = true
+                const supabase = createClient()
+                const { data: { user } } = await supabase.auth.getUser()
+                trackPublicWatchlistViewed({
+                    watchlist_name: data.watchlist.name,
+                    watchlist_id: data.watchlist.id,
+                    owner_username: data.profile.username,
+                    viewer_auth_status: getAuthStatus(user),
+                    item_count: (data.items || []).length
+                })
+            }
+
             setLoading(false)
         } catch (err) {
             console.error('Error fetching watchlist:', err)

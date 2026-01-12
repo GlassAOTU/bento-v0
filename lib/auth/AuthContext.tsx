@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser-client'
-import { identifyUser } from '@/lib/analytics/events'
+import { identifyUser, trackUserSignup, trackUserSignin } from '@/lib/analytics/events'
 
 interface Profile {
     id: string
@@ -97,6 +97,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             email: session.user.email,
                             created_at: session.user.created_at
                         })
+
+                        // Track signup/signin events
+                        const provider = session.user.app_metadata?.provider
+                        const authMethod = provider === 'google' ? 'google' : provider === 'email' ? 'email' : 'other'
+
+                        if (event === 'SIGNED_IN') {
+                            // Check if this is a new user (created_at is very recent)
+                            const createdAt = new Date(session.user.created_at)
+                            const now = new Date()
+                            const isNewUser = (now.getTime() - createdAt.getTime()) < 60000 // Within 1 minute
+
+                            if (isNewUser) {
+                                trackUserSignup({
+                                    auth_method: authMethod,
+                                    is_first_session: true
+                                })
+                            } else {
+                                trackUserSignin({
+                                    auth_method: authMethod
+                                })
+                            }
+                        }
 
                         // Fetch profile
                         fetchProfile()

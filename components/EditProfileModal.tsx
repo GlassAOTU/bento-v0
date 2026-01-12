@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/browser-client'
+import { trackProfileUpdated } from '@/lib/analytics/events'
 
 const AVATAR_OPTIONS = [
     '/images/profiles/edward2.png',
@@ -112,6 +113,13 @@ export default function EditProfileModal({ isOpen, onClose, onSuccess, profile, 
                     throw new Error(emailError.message)
                 }
             }
+
+            trackProfileUpdated({
+                username_changed: username !== profile.username,
+                display_name_changed: displayName !== (profile.display_name || ''),
+                bio_changed: bio !== (profile.bio || ''),
+                avatar_changed: avatarUrl !== profile.avatar_url
+            })
 
             onSuccess?.()
             onClose()

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/AuthContext'
 import ReviewCard from './ReviewCard'
 import ReviewModal from './ReviewModal'
+import { trackReviewModalOpened, getAuthStatus } from '@/lib/analytics/events'
 
 interface Review {
     id: string
@@ -105,7 +106,15 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
                 </h2>
                 {user && (
                     <button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                            trackReviewModalOpened({
+                                anime_title: animeTitle,
+                                anime_id: animeId,
+                                has_existing_review: !!userReview,
+                                auth_status: getAuthStatus(user)
+                            })
+                            setIsModalOpen(true)
+                        }}
                         className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:text-white"
                     >
                         {userReview ? 'Edit Your Review' : 'Write a Review'}
@@ -118,7 +127,15 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
                     <p className="text-gray-500 dark:text-gray-400 mb-4">No reviews yet. Be the first to share your thoughts!</p>
                     {user ? (
                         <button
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={() => {
+                                trackReviewModalOpened({
+                                    anime_title: animeTitle,
+                                    anime_id: animeId,
+                                    has_existing_review: false,
+                                    auth_status: getAuthStatus(user)
+                                })
+                                setIsModalOpen(true)
+                            }}
                             className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-md hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                         >
                             Write a Review

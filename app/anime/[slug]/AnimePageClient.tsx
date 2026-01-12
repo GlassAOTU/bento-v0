@@ -20,6 +20,8 @@ import {
     trackAnimeDetailViewed,
     trackAnimeExternalLinkClicked,
     trackWatchlistAddClicked,
+    trackAnimeCarouselScroll,
+    trackAnimeVideoPlayed,
     getReferrerPage,
     getAuthStatus
 } from '@/lib/analytics/events'
@@ -89,6 +91,14 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
             left: targetScroll,
             behavior: 'smooth'
         })
+
+        if (animeDetails) {
+            trackAnimeCarouselScroll({
+                anime_title: animeDetails.title,
+                carousel_type: 'similar',
+                direction
+            })
+        }
     }
 
     const scrollPopular = (direction: 'left' | 'right') => {
@@ -104,6 +114,27 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
             left: targetScroll,
             behavior: 'smooth'
         })
+
+        if (animeDetails) {
+            trackAnimeCarouselScroll({
+                anime_title: animeDetails.title,
+                carousel_type: 'most_popular',
+                direction
+            })
+        }
+    }
+
+    const handleVideoClick = (videoKey: string, videoType: string) => {
+        setActiveTrailer(videoKey)
+        if (animeDetails) {
+            const type = videoType.toLowerCase().includes('trailer') ? 'trailer'
+                : videoType.toLowerCase().includes('pv') ? 'pv'
+                : 'other'
+            trackAnimeVideoPlayed({
+                anime_title: animeDetails.title,
+                video_type: type
+            })
+        }
     }
 
     useEffect(() => {
@@ -332,7 +363,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                     <AnimeSection divider noPaddingTop>
                         <VideosSection
                             videos={videos}
-                            onVideoClick={(videoKey) => setActiveTrailer(videoKey)}
+                            onVideoClick={(videoKey, videoType) => handleVideoClick(videoKey, videoType || 'other')}
                         />
                     </AnimeSection>
                 )}

@@ -18,7 +18,8 @@ import {
     trackMyAnimePageViewed,
     trackWatchlistTabSwitched,
     trackWatchlistExpanded,
-    trackWatchlistEdited
+    trackWatchlistEdited,
+    trackWatchlistShared
 } from '@/lib/analytics/events'
 
 interface WatchlistItem {
@@ -335,6 +336,11 @@ function WatchlistsContent() {
                                                                             navigator.clipboard.writeText(url)
                                                                             setCopiedId(watchlist.id)
                                                                             setTimeout(() => setCopiedId(null), 2000)
+                                                                            trackWatchlistShared({
+                                                                                watchlist_name: watchlist.name,
+                                                                                watchlist_id: watchlist.id,
+                                                                                share_method: 'copy_link'
+                                                                            })
                                                                         }}
                                                                         className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
                                                                     >
@@ -349,6 +355,11 @@ function WatchlistsContent() {
                                                                             const text = 'Check out my anime watchlist!'
                                                                             window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank')
                                                                             setShareDropdownId(null)
+                                                                            trackWatchlistShared({
+                                                                                watchlist_name: watchlist.name,
+                                                                                watchlist_id: watchlist.id,
+                                                                                share_method: 'twitter'
+                                                                            })
                                                                         }}
                                                                         className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 border-t border-gray-100 dark:border-gray-700"
                                                                     >

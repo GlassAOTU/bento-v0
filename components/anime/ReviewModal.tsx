@@ -2,6 +2,11 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import {
+    trackReviewCreated,
+    trackReviewUpdated,
+    trackReviewDeleted
+} from '@/lib/analytics/events'
 
 interface ReviewModalProps {
     isOpen: boolean
@@ -68,6 +73,24 @@ export default function ReviewModal({
                 return
             }
 
+            if (isEditing) {
+                trackReviewUpdated({
+                    anime_title: anime.title,
+                    anime_id: anime.id,
+                    rating,
+                    rating_changed: rating !== existingReview?.rating,
+                    text_changed: reviewText !== existingReview?.review_text
+                })
+            } else {
+                trackReviewCreated({
+                    anime_title: anime.title,
+                    anime_id: anime.id,
+                    rating,
+                    has_text: reviewText.length > 0,
+                    text_length: reviewText.length
+                })
+            }
+
             onSuccess()
             onClose()
         } catch {
@@ -93,6 +116,11 @@ export default function ReviewModal({
                 setError(data.error || 'Failed to delete review')
                 return
             }
+
+            trackReviewDeleted({
+                anime_title: anime.title,
+                anime_id: anime.id
+            })
 
             onSuccess()
             onClose()
