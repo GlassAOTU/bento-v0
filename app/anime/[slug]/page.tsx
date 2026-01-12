@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import AnimePageClient from './AnimePageClient'
 import { slugify } from '@/lib/utils/slugify'
-import { getAnimeDataBySlug, getOrFetchAnimeBySlug, getAllCachedAnime } from '@/lib/anime-server'
+import { getOrFetchAnimeBySlug, getAllCachedAnime } from '@/lib/anime-server'
 import { DEFAULT_OG_IMAGE } from '@/lib/constants'
 
 function getOgImageUrl(bannerImage?: string | null, coverImage?: string | null): string {
@@ -196,7 +196,7 @@ export default async function AnimePage({ params }: PageProps) {
     let jsonLdSchemas: any[] = []
 
     try {
-        const data = await getAnimeDataBySlug(slug)
+        const data = await getOrFetchAnimeBySlug(slug)
         if (data?.details) {
             jsonLdSchemas = generateJsonLd(data.details, slug)
         }
