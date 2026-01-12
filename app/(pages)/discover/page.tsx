@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import DiscoverClient from './DiscoverClient'
+import { DEFAULT_OG_IMAGE } from '@/lib/constants'
 
 export const metadata: Metadata = {
     title: 'Discover Anime - Browse by Genre & Category | Bento Anime',
@@ -9,10 +10,12 @@ export const metadata: Metadata = {
         title: 'Discover Anime - Browse by Genre | Bento Anime',
         description: 'Explore anime by genre and find your next favorite series.',
         type: 'website',
+        images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: 'Bento Anime' }],
     },
     twitter: {
         card: 'summary_large_image',
         site: '@animebento',
+        images: [DEFAULT_OG_IMAGE],
     },
 }
 
