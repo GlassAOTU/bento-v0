@@ -1,4 +1,3 @@
-import { createClient } from './server-client'
 import { createServiceClient } from './service-client'
 
 export interface AnimeData {
@@ -20,7 +19,7 @@ export interface AnimeData {
  */
 export async function getAnimeData(animeId: number): Promise<AnimeData | null> {
     try {
-        const supabase = await createClient()
+        const supabase = createServiceClient()
 
         const { data, error } = await supabase
             .from('anime_data')
