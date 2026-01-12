@@ -81,7 +81,7 @@ export default function NavigationBar() {
                             />
                             {/* Mobile Logo */}
                             <Image
-                                src={theme === 'dark' ? '/images/mobile logo (dark mode).png' : '/images/logo - mobile.png'}
+                                src={theme === 'dark' ? '/images/Mobile Logo (Dark Mode).png' : '/images/Logo - Mobile.png'}
                                 alt="Bento Logo"
                                 width={40}
                                 height={40}
