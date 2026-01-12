@@ -4,5 +4,13 @@
       "path": "/api/cron/cleanup-rate-limits",
       "schedule": "0 */6 * * *"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "bentoanime.com" }],
+      "destination": "https://www.bentoanime.com/:path*",
+      "permanent": true
+    }
   ]
 }
