@@ -35,24 +35,31 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
         }
     }
 
-    const title = `${watchlist.name} - ${profile.display_name || profile.username}'s Watchlist`
-    const description = watchlist.description || `Check out ${profile.display_name || profile.username}'s anime watchlist`
+    const displayName = profile.display_name || profile.username
+    const title = `${watchlist.name} - ${displayName}'s Watchlist | Bento Anime`
+    const description = watchlist.description || `Check out ${displayName}'s curated anime watchlist on Bento Anime`
     const ogImage = watchlist.cover_image_url || '/images/defaultwatchlistdisplay.png'
+    const canonicalUrl = `https://bentoanime.com/${profile.username}/${watchlistSlug}`
 
     return {
         title,
         description,
+        keywords: ['anime watchlist', 'anime list', `${displayName} watchlist`, 'curated anime', watchlist.name],
         openGraph: {
-            title,
+            title: `${watchlist.name} by ${displayName}`,
             description,
-            images: [ogImage],
+            images: [{ url: ogImage, width: 634, height: 280, alt: watchlist.name }],
             type: 'website',
         },
         twitter: {
             card: 'summary_large_image',
-            title,
+            site: '@animebento',
+            title: `${watchlist.name} by ${displayName}`,
             description,
             images: [ogImage],
+        },
+        alternates: {
+            canonical: canonicalUrl,
         },
     }
 }
