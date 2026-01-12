@@ -350,6 +350,7 @@ export async function fetchAnimeById(anilistId: number) {
         genres
         duration
         averageScore
+        popularity
         trailer {
           id
           site
@@ -421,6 +422,7 @@ export async function fetchAnimeById(anilistId: number) {
         genres: media.genres,
         duration: media.duration ? `${media.duration} min per ep` : null,
         rating: media.averageScore,
+        popularity: media.popularity,
         trailer: media.trailer ? {
             id: media.trailer.id,
             site: media.trailer.site
@@ -479,6 +481,7 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
         genres
         duration
         averageScore
+        popularity
         trailer {
           id
           site
@@ -551,6 +554,7 @@ export async function fetchFullAnimeDetails(searchTerm: string) {
         genres: media.genres,
         duration: media.duration ? `${media.duration} min per ep` : null,
         rating: media.averageScore,
+        popularity: media.popularity,
         trailer: media.trailer ? {
             id: media.trailer.id,
             site: media.trailer.site
