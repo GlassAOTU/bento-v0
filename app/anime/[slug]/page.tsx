@@ -125,6 +125,7 @@ function generateJsonLd(details: any, slug: string) {
             ratingValue: (details.rating / 10).toFixed(1),
             bestRating: '10',
             worstRating: '1',
+            ratingCount: details.popularity || 1000,
         } : undefined,
         trailer: trailer ? {
             '@type': 'VideoObject',

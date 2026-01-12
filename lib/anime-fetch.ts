@@ -186,6 +186,7 @@ export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedA
         genres: anilistDetails.genres || [],
         duration: anilistDetails.duration || null,
         rating: anilistDetails.rating,
+        popularity: anilistDetails.popularity,
         trailer: anilistDetails.trailer || (tmdbData?.details?.videos?.[0] ? {
             id: tmdbData.details.videos[0].key,
             site: tmdbData.details.videos[0].site
