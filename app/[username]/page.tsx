@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server-client'
 import ProfileClient from './ProfileClient'
+import { DEFAULT_OG_IMAGE } from '@/lib/constants'
 
 interface PageProps {
     params: Promise<{ username: string }>
@@ -30,6 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const displayName = profile.display_name || profile.username
     const description = profile.bio || `Check out ${displayName}'s anime watchlists and reviews on Bento Anime.`
 
+    const ogImage = profile.avatar_url || DEFAULT_OG_IMAGE
+
     return {
         title: `${displayName}'s Anime Profile | Bento Anime`,
         description,
@@ -37,13 +40,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: `${displayName} on Bento Anime`,
             description,
             type: 'profile',
-            images: profile.avatar_url ? [{ url: profile.avatar_url }] : undefined,
+            images: [{ url: ogImage }],
         },
         twitter: {
             card: 'summary',
             site: '@animebento',
             title: `${displayName} on Bento Anime`,
             description,
+            images: [ogImage],
         },
         alternates: {
             canonical: `https://bentoanime.com/${profile.username}`,
