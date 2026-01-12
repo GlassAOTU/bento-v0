@@ -141,7 +141,7 @@ export default function CategorySection({ title, anime }: CategorySectionProps) 
                         {infiniteAnime.map((item, index) => (
                             <div
                                 key={`${item.id}-${index}`}
-                                className="flex-none w-[75%] md:w-[calc(25%-0.75rem)] snap-start"
+                                className="flex-none w-[45%] md:w-[calc(25%-0.75rem)] snap-start"
                             >
                                 <DiscoverAnimeCard
                                     anime={item}

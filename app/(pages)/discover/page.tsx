@@ -229,24 +229,24 @@ function DiscoverContent() {
                 <div className="max-w-7xl flex flex-col mx-auto gap-8">
 
                     {/* Header */}
-                    <section className="px-10 pt-4">
-                        <h1 className="text-5xl md:text-7xl font-semibold text-center dark:text-white leading-tight">
-                            <span className="block">Discover your next</span>
+                    <section className="px-6 sm:px-10 pt-4">
+                        <h1 className="text-[1.75rem] sm:text-4xl md:text-7xl font-semibold text-center dark:text-white leading-tight">
+                            <span className="block whitespace-nowrap">Discover your next</span>
                             <span className="inline-flex items-center justify-center gap-1 md:gap-2">
                                 <Image
                                     src="/images/mascot-header-left.png"
                                     alt=""
                                     width={70}
                                     height={70}
-                                    className="object-contain w-12 h-12 md:w-[70px] md:h-[70px]"
+                                    className="object-contain w-7 h-7 sm:w-12 sm:h-12 md:w-[70px] md:h-[70px]"
                                 />
-                                <span>favorite anime</span>
+                                <span className="whitespace-nowrap">favorite anime</span>
                                 <Image
                                     src="/images/mascot-header.png"
                                     alt=""
                                     width={70}
                                     height={70}
-                                    className="object-contain w-12 h-12 md:w-[70px] md:h-[70px]"
+                                    className="object-contain w-7 h-7 sm:w-12 sm:h-12 md:w-[70px] md:h-[70px]"
                                 />
                             </span>
                         </h1>

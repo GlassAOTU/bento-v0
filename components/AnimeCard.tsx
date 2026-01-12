@@ -52,7 +52,7 @@ export default function AnimeCard({ item, onTrailerClick }: {
     return (
         <div className="flex gap-6 mb-5 rounded-lg flex-col hover:scale-[102%] transition-all">
             {/* <div className="w-40 h-52 max-w-[950px] max-h-[208px] rounded-md overflow-hidden shadow-md bg-red-600"> */}
-            <Link href={`/anime/${slugify(item.title)}`} className="rounded-md overflow-hidden flex items-center justify-center cursor-pointer">
+            <Link href={`/anime/${slugify(item.title)}`} className="rounded-md overflow-hidden flex items-center justify-center cursor-pointer w-[80%] mx-auto">
                 <Image
                     src={item.image || 'images/banner-not-available.png'} alt={item.title}
                     width={1900}

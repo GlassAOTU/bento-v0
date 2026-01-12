@@ -238,20 +238,20 @@ function RecommendationContent() {
 
                     {/* Banner */}
                     <section className="flex justify-center sm:px-10 md:mb-10">
-                        <div className="relative max-w-[1200px]">
+                        <div className="relative max-w-[1200px] w-full flex justify-center">
                             <Image
-                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image.png"}
+                                src={theme === 'dark' ? "/images/Dekstop Banner - Dark Mode.png" : "/images/header-image.png"}
                                 alt="Banner"
                                 width={600}
                                 height={300}
                                 className="hidden sm:inline w-full h-auto"
                             />
                             <Image
-                                src={theme === 'dark' ? "/images/banner-darkmode-1.png" : "/images/header-image-mobile.png"}
+                                src={theme === 'dark' ? "/images/MobileBanner 1 (darkmode).png" : "/images/MobileBanner 1.png"}
                                 alt="Banner"
-                                width={600}
-                                height={300}
-                                className="sm:hidden w-full h-auto"
+                                width={400}
+                                height={264}
+                                className="sm:hidden w-[70%] h-auto"
                             />
                         </div>
                     </section>
