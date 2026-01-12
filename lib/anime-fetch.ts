@@ -1,7 +1,15 @@
-import { searchAnime, fetchAnimeById } from './anilist'
+import { searchAnime, fetchAnimeById, fetchSimilarAnime, fetchPopularAnime } from './anilist'
 import { getAnilistBySearchTerm, getTMDBByAnilistId } from './anime-mappings'
-import { getTMDBAnimeDetails, findTMDBAnimeByTitle } from './tmdb'
+import { getTMDBAnimeDetails, findTMDBAnimeByTitle, searchTMDBAnime, getTMDBImageUrl, TMDB_POSTER_SIZES } from './tmdb'
 import { getTMDBIdFromARM } from './arm-api'
+import { saveAnimeData } from './supabase/anime-data'
+
+export interface UnifiedAnimeData {
+    details: any
+    similar_anime: any[]
+    popular_anime: any[]
+    ai_description: string | null
+}
 
 export async function resolveAnilistId(searchTerm: string): Promise<number | null> {
     const directId = getAnilistBySearchTerm(searchTerm)
@@ -66,5 +74,159 @@ export async function enhanceWithTMDBImages(anilistId: number, title: string): P
     return {
         coverImage: tmdbData.details?.poster_url || tmdbData.details?.poster_url_original || null,
         bannerImage: tmdbData.details?.backdrop_url_original || tmdbData.details?.backdrop_url || null
+    }
+}
+
+/**
+ * Unified fetch that gets all anime data in one go:
+ * - AniList details (source of truth)
+ * - TMDB images, seasons, episodes
+ * - Similar anime from AniList
+ * - Popular anime from AniList
+ * Then saves to cache with unified_fetch = true
+ */
+export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedAnimeData> {
+    console.log(`[Unified] Fetching data for AniList ID ${anilistId}`)
+
+    // Fetch AniList data (base)
+    const anilistDetails = await fetchAnimeById(anilistId)
+
+    // Fetch full TMDB data (images + seasons + episodes)
+    let tmdbData: any = null
+    let tmdbId: number | null = null
+
+    // Try manual mapping first
+    const manualMapping = getTMDBByAnilistId(anilistId)
+    if (manualMapping) {
+        tmdbId = manualMapping.tmdbId
+        console.log(`[Unified] Using manual mapping: TMDB ${tmdbId}`)
+        try {
+            tmdbData = await getTMDBAnimeDetails(tmdbId, anilistId)
+        } catch (err) {
+            console.error(`[Unified] Manual mapping fetch failed:`, err)
+        }
+    }
+
+    // Try title search
+    if (!tmdbData) {
+        try {
+            const foundId = await findTMDBAnimeByTitle(anilistDetails.title, anilistId)
+            if (foundId) {
+                tmdbId = foundId
+                tmdbData = await getTMDBAnimeDetails(foundId, anilistId)
+            }
+        } catch (err) {
+            console.error(`[Unified] Title search failed:`, err)
+        }
+    }
+
+    // Try ARM API fallback
+    if (!tmdbData) {
+        try {
+            const armTmdbId = await getTMDBIdFromARM(anilistId)
+            if (armTmdbId) {
+                tmdbId = armTmdbId
+                tmdbData = await getTMDBAnimeDetails(armTmdbId, anilistId)
+            }
+        } catch (err) {
+            console.error(`[Unified] ARM API failed:`, err)
+        }
+    }
+
+    // Build merged details
+    const mergedDetails = {
+        id: anilistId,
+        tmdbId: tmdbId,
+        title: anilistDetails.title,
+        romajiTitle: anilistDetails.romajiTitle || anilistDetails.title,
+        bannerImage: tmdbData?.details?.backdrop_url_original || tmdbData?.details?.backdrop_url || anilistDetails.bannerImage || null,
+        coverImage: tmdbData?.details?.poster_url || tmdbData?.details?.poster_url_original || anilistDetails.coverImage || null,
+        description: anilistDetails.description || '',
+        episodes: anilistDetails.episodes,
+        status: anilistDetails.status,
+        aired: anilistDetails.aired || '',
+        premiered: anilistDetails.premiered || '',
+        studios: anilistDetails.studios || 'Unknown',
+        genres: anilistDetails.genres || [],
+        duration: anilistDetails.duration || null,
+        rating: anilistDetails.rating,
+        trailer: anilistDetails.trailer || (tmdbData?.details?.videos?.[0] ? {
+            id: tmdbData.details.videos[0].key,
+            site: tmdbData.details.videos[0].site
+        } : null),
+        externalLinks: anilistDetails.externalLinks,
+        streamingLinks: anilistDetails.streamingLinks || [],
+        format: anilistDetails.format,
+        seasons: tmdbData?.seasons?.seasons || [],
+        latestSeasonEpisodes: tmdbData?.latestSeasonEpisodes || null,
+        videos: tmdbData?.details?.videos || []
+    }
+
+    // Fetch similar anime from AniList (guaranteed to be anime)
+    let similar: any[] = []
+    try {
+        const anilistSimilar = await fetchSimilarAnime(anilistId, 12)
+        similar = await Promise.all(anilistSimilar.map(async (anime: any) => {
+            let image = anime.image
+            try {
+                const tmdbResults = await searchTMDBAnime(anime.title, 1)
+                if (tmdbResults?.[0]?.poster_path) {
+                    image = getTMDBImageUrl(tmdbResults[0].poster_path, TMDB_POSTER_SIZES.W500) || image
+                }
+            } catch {
+                // Keep AniList image as fallback
+            }
+            return {
+                id: anime.id,
+                title: anime.title,
+                image,
+                rating: anime.rating
+            }
+        }))
+    } catch (error) {
+        console.error('[Unified] Error fetching similar anime:', error)
+    }
+
+    // Fetch popular anime from AniList
+    let popular: any[] = []
+    try {
+        const anilistPopular = await fetchPopularAnime(4)
+        popular = await Promise.all(anilistPopular.map(async (anime: any) => {
+            let image = anime.image
+            try {
+                const tmdbResults = await searchTMDBAnime(anime.title, 1)
+                if (tmdbResults?.[0]?.poster_path) {
+                    image = getTMDBImageUrl(tmdbResults[0].poster_path, TMDB_POSTER_SIZES.W500) || image
+                }
+            } catch {
+                // Keep AniList image as fallback
+            }
+            return { ...anime, image }
+        }))
+    } catch (error) {
+        console.error('[Unified] Error fetching popular anime:', error)
+    }
+
+    // Save to cache with unified_fetch = true
+    try {
+        await saveAnimeData(
+            anilistId,
+            mergedDetails,
+            similar,
+            popular,
+            null, // AI description generated separately
+            anilistDetails.description || '',
+            true // unified_fetch = true
+        )
+        console.log(`[Unified] Saved data for "${mergedDetails.title}" (AniList ID: ${anilistId})`)
+    } catch (error) {
+        console.error(`[Unified] Error saving data:`, error)
+    }
+
+    return {
+        details: mergedDetails,
+        similar_anime: similar,
+        popular_anime: popular,
+        ai_description: null
     }
 }

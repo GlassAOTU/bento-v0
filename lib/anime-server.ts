@@ -1,8 +1,7 @@
 import { createServiceClient } from './supabase/service-client'
 import { unslugify } from './utils/slugify'
-import { resolveAnilistId, enhanceWithTMDBImages } from './anime-fetch'
-import { fetchAnimeById } from './anilist'
-import { saveAnimeData } from './supabase/anime-data'
+import { resolveAnilistId, fetchUnifiedAnimeData } from './anime-fetch'
+import { getAnimeData, shouldRefresh } from './supabase/anime-data'
 
 interface AnimeDetails {
     id: number
@@ -59,52 +58,51 @@ export async function getAnimeDataBySlug(slug: string): Promise<AnimeData | null
 }
 
 export async function getOrFetchAnimeBySlug(slug: string): Promise<AnimeData | null> {
-    // Try cache first
-    const cached = await getAnimeDataBySlug(slug)
+    const searchTerm = unslugify(slug)
 
-    // Check if cache has TMDB-enhanced images (tmdb.org URLs indicate TMDB data)
-    const hasTMDBImages = cached?.details?.bannerImage?.includes('tmdb.org') ||
-                          cached?.details?.coverImage?.includes('tmdb.org')
-
-    if (cached && hasTMDBImages) {
-        return cached
+    // Resolve AniList ID
+    const anilistId = await resolveAnilistId(searchTerm)
+    if (!anilistId) {
+        // Fall back to slug-based search
+        return getAnimeDataBySlug(slug)
     }
 
-    // Cache miss or no TMDB images - fetch fresh
-    try {
-        const searchTerm = unslugify(slug)
-        const anilistId = await resolveAnilistId(searchTerm)
-        if (!anilistId) return cached
+    // Check cache by AniList ID
+    const cached = await getAnimeData(anilistId)
+    const isStale = cached && shouldRefresh(
+        cached.last_fetched,
+        cached.status,
+        cached.unified_fetch ?? false
+    )
 
-        const details = await fetchAnimeById(anilistId)
-        if (!details) return cached
-
-        // Enhance with TMDB images
-        const tmdbImages = await enhanceWithTMDBImages(anilistId, details.title)
-        const enrichedDetails = {
-            ...details,
-            bannerImage: tmdbImages.bannerImage || details.bannerImage || null,
-            coverImage: tmdbImages.coverImage || details.coverImage || null
+    // Return cached (even if stale) for fast OG response
+    if (cached) {
+        // Trigger background refresh if stale (fire-and-forget)
+        if (isStale) {
+            fetchUnifiedAnimeData(anilistId).catch(err => {
+                console.error(`[OG Background] Refresh failed for ${anilistId}:`, err)
+            })
         }
-
-        // Update cache with fresh data for future requests
-        await saveAnimeData(
-            anilistId,
-            enrichedDetails,
-            [],
-            [],
-            null,
-            details.description || ''
-        )
-
         return {
-            details: enrichedDetails as AnimeDetails,
-            similar_anime: [],
-            popular_anime: []
+            details: cached.details as AnimeDetails,
+            similar_anime: cached.similar_anime,
+            popular_anime: cached.popular_anime,
+            ai_description: cached.ai_description
+        }
+    }
+
+    // Cache miss - must fetch (blocking for OG)
+    try {
+        const data = await fetchUnifiedAnimeData(anilistId)
+        return {
+            details: data.details as AnimeDetails,
+            similar_anime: data.similar_anime,
+            popular_anime: data.popular_anime,
+            ai_description: data.ai_description ?? undefined
         }
     } catch (error) {
-        console.error('Error fetching fresh anime data:', error)
-        return cached
+        console.error('Error fetching anime data for OG:', error)
+        return null
     }
 }
 

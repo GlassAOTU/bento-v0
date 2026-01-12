@@ -3,14 +3,15 @@ import { createServiceClient } from './service-client'
 
 export interface AnimeData {
     anime_id: number
-    details: any // Full anime details object
-    similar_anime: any[] // Array of similar anime
-    popular_anime: any[] // Array of popular anime
+    details: any
+    similar_anime: any[]
+    popular_anime: any[]
     original_description: string
     ai_description: string
-    status: string // FINISHED, RELEASING, etc
+    status: string
     last_fetched: string
     created_at: string
+    unified_fetch: boolean
 }
 
 /**
@@ -51,10 +52,10 @@ export async function saveAnimeData(
     similarAnime: any[],
     popularAnime: any[],
     aiDescription: string | null,
-    originalDescription: string
+    originalDescription: string,
+    unifiedFetch: boolean = true
 ): Promise<boolean> {
     try {
-        // Use service client for write operations (bypasses RLS)
         const supabase = createServiceClient()
 
         const { error } = await supabase
@@ -68,6 +69,7 @@ export async function saveAnimeData(
                 original_description: originalDescription,
                 status: details.status || 'UNKNOWN',
                 last_fetched: new Date().toISOString(),
+                unified_fetch: unifiedFetch,
             }, {
                 onConflict: 'anime_id'
             })
@@ -86,18 +88,21 @@ export async function saveAnimeData(
 
 /**
  * Check if cached anime data should be refreshed
- * Returns true if data is stale based on anime status
+ * Returns true if data is stale based on anime status and unified_fetch flag
  */
-export function shouldRefresh(lastFetched: string, status: string): boolean {
+export function shouldRefresh(lastFetched: string, status: string, unifiedFetch?: boolean): boolean {
+    // Always refresh if not fetched with unified logic
+    if (!unifiedFetch) return true
+
     const lastFetchedDate = new Date(lastFetched)
     const now = new Date()
     const hoursSinceLastFetch = (now.getTime() - lastFetchedDate.getTime()) / (1000 * 60 * 60)
 
-    // FINISHED anime: refresh if >= 14 days (336 hours)
-    if (status === 'FINISHED') {
-        return hoursSinceLastFetch >= 336
+    // RELEASING or NOT_YET_RELEASED: refresh if >= 24 hours
+    if (status === 'RELEASING' || status === 'NOT_YET_RELEASED') {
+        return hoursSinceLastFetch >= 24
     }
 
-    // RELEASING or other status: refresh if >= 1 day (24 hours)
-    return hoursSinceLastFetch >= 24
+    // FINISHED and others: refresh if >= 3 days (72 hours)
+    return hoursSinceLastFetch >= 72
 }
