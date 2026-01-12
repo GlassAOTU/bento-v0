@@ -108,13 +108,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     }
                 })
 
-                // Get initial session - fast, reads from local storage
-                const { data: { user }, error } = await supabase.auth.getUser()
+                // Get session first - reads from storage and auto-refreshes if needed
+                const { data: { session }, error } = await supabase.auth.getSession()
 
                 if (error) {
-                    console.error('Error getting user:', error)
+                    console.error('Error getting session:', error)
                 }
 
+                const user = session?.user ?? null
                 setUser(user)
                 setLoading(false)
 
