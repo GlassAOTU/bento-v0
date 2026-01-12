@@ -1,8 +1,44 @@
 import { searchAnime, fetchAnimeById, fetchSimilarAnime, fetchPopularAnime } from './anilist'
 import { getAnilistBySearchTerm, getTMDBByAnilistId } from './anime-mappings'
-import { getTMDBAnimeDetails, findTMDBAnimeByTitle, searchTMDBAnime, getTMDBImageUrl, TMDB_POSTER_SIZES } from './tmdb'
+import { getTMDBAnimeDetails, findTMDBAnimeByTitle, getTMDBImageUrl, TMDB_POSTER_SIZES, getTMDBShowDetails, getTMDBMovieDetails } from './tmdb'
 import { getTMDBIdFromARM } from './arm-api'
 import { saveAnimeData } from './supabase/anime-data'
+
+async function getVerifiedTMDBImage(
+    anilistId: number,
+    fallbackImage: string
+): Promise<string> {
+    // 1. Manual mapping (most reliable)
+    const mapping = getTMDBByAnilistId(anilistId)
+    if (mapping) {
+        try {
+            const details = mapping.type === 'movie'
+                ? await getTMDBMovieDetails(mapping.tmdbId)
+                : await getTMDBShowDetails(mapping.tmdbId)
+            if (details?.poster_path) {
+                return getTMDBImageUrl(details.poster_path, TMDB_POSTER_SIZES.W500) || fallbackImage
+            }
+        } catch { }
+    }
+
+    // 2. ARM API (community-verified mappings)
+    try {
+        const armTmdbId = await getTMDBIdFromARM(anilistId)
+        if (armTmdbId) {
+            const tvDetails = await getTMDBShowDetails(armTmdbId).catch(() => null)
+            if (tvDetails?.poster_path) {
+                return getTMDBImageUrl(tvDetails.poster_path, TMDB_POSTER_SIZES.W500) || fallbackImage
+            }
+            const movieDetails = await getTMDBMovieDetails(armTmdbId).catch(() => null)
+            if (movieDetails?.poster_path) {
+                return getTMDBImageUrl(movieDetails.poster_path, TMDB_POSTER_SIZES.W500) || fallbackImage
+            }
+        }
+    } catch { }
+
+    // 3. No verified mapping - keep AniList image (safe default)
+    return fallbackImage
+}
 
 export interface UnifiedAnimeData {
     details: any
@@ -167,15 +203,7 @@ export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedA
     try {
         const anilistSimilar = await fetchSimilarAnime(anilistId, 12)
         similar = await Promise.all(anilistSimilar.map(async (anime: any) => {
-            let image = anime.image
-            try {
-                const tmdbResults = await searchTMDBAnime(anime.title, 1)
-                if (tmdbResults?.[0]?.poster_path) {
-                    image = getTMDBImageUrl(tmdbResults[0].poster_path, TMDB_POSTER_SIZES.W500) || image
-                }
-            } catch {
-                // Keep AniList image as fallback
-            }
+            const image = await getVerifiedTMDBImage(anime.id, anime.image)
             return {
                 id: anime.id,
                 title: anime.title,
@@ -192,15 +220,7 @@ export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedA
     try {
         const anilistPopular = await fetchPopularAnime(4)
         popular = await Promise.all(anilistPopular.map(async (anime: any) => {
-            let image = anime.image
-            try {
-                const tmdbResults = await searchTMDBAnime(anime.title, 1)
-                if (tmdbResults?.[0]?.poster_path) {
-                    image = getTMDBImageUrl(tmdbResults[0].poster_path, TMDB_POSTER_SIZES.W500) || image
-                }
-            } catch {
-                // Keep AniList image as fallback
-            }
+            const image = await getVerifiedTMDBImage(anime.id, anime.image)
             return { ...anime, image }
         }))
     } catch (error) {
