@@ -2,13 +2,46 @@ import { findTMDBAnimeByTitle, getTMDBImageUrl, TMDB_POSTER_SIZES, searchTMDBAni
 import { getTMDBByAnilistId, getTMDBByTitle } from './anime-mappings'
 
 /**
+ * Check if a title's trailing number is part of the actual name (not a season indicator)
+ * e.g., "Kaiju No. 8", "No. 6", "Steins;Gate 0"
+ */
+function hasTrailingNumberInName(title: string): boolean {
+    // Patterns where trailing numbers are part of the actual title
+    const nameNumberPatterns = [
+        /No\.\s*\d+$/i,      // "Kaiju No. 8", "No. 6"
+        /No\s+\d+$/i,        // "Kaiju No 8"
+        /Number\s+\d+$/i,    // "Number 24"
+        /#\d+$/,             // "Title #8"
+        /\d+$/,              // Check if starts with number too (like "86")
+    ]
+
+    // If title starts with a number, the trailing number might be part of name
+    if (/^\d+/.test(title)) return true
+
+    // Check specific patterns
+    for (const pattern of nameNumberPatterns) {
+        if (pattern.test(title)) {
+            // For "No." pattern specifically, this is almost always part of the title
+            if (/No\.?\s*\d+$/i.test(title)) return true
+        }
+    }
+
+    return false
+}
+
+/**
  * Extract the base name of an anime by removing season indicators
  */
 function extractBaseName(title: string): string {
     let baseName = title;
 
-    // Remove common season patterns
-    baseName = baseName.replace(/\s+\d+$/, ''); // Remove numbers at end: "Title 2"
+    // Don't strip numbers that are part of the actual title name
+    if (hasTrailingNumberInName(title)) {
+        // Skip the generic number removal for these titles
+    } else {
+        // Remove numbers at end: "Title 2" (but not "Kaiju No. 8")
+        baseName = baseName.replace(/\s+\d+$/, '');
+    }
     baseName = baseName.replace(/\s+[IVX]+$/i, ''); // Remove roman numerals at end
     baseName = baseName.replace(/\s+Season\s+\d+/i, ''); // Remove "Season 2"
     baseName = baseName.replace(/\s+S\d+$/i, ''); // Remove "S2"
@@ -32,10 +65,9 @@ function extractBaseName(title: string): string {
  */
 function isSeasonListing(title: string): boolean {
     // List of patterns that indicate a season-specific entry
+    // Note: Simple trailing numbers (/\s+\d+$/) are handled separately below
+    // to allow titles like "Kaiju No. 8" where the number is part of the name
     const seasonPatterns = [
-        // Numbers at the end (very common)
-        /\s+\d+$/, // "Title 2", "Title 3"
-
         // Season with number
         /\s+Season\s*\d+/i, // "Season 2", "Season 3"
         /\s+S\d+$/i, // "Title S2", "Title S3"
@@ -82,7 +114,8 @@ function isSeasonListing(title: string): boolean {
     }
 
     // Additional check for numbered titles that are likely sequels
-    if (/\s+\d+$/.test(title)) {
+    // But skip if the number is part of the actual title (like "Kaiju No. 8")
+    if (/\s+\d+$/.test(title) && !hasTrailingNumberInName(title)) {
         // If it ends with a number, check if it's a known sequel pattern
         const baseName = extractBaseName(title);
         // If removing the number significantly changes the title, it's likely a sequel
