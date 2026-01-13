@@ -2,6 +2,7 @@ import { createServiceClient } from './supabase/service-client'
 import { unslugify } from './utils/slugify'
 import { resolveAnilistId, fetchUnifiedAnimeData } from './anime-fetch'
 import { getAnimeData, getAnimeBySlug, shouldRefresh } from './supabase/anime-data'
+import { getAnilistBySlug } from './anime-mappings'
 
 interface AnimeDetails {
     id: number
@@ -76,6 +77,42 @@ export async function getOrFetchAnimeBySlug(slug: string): Promise<AnimeData | n
             similar_anime: cachedBySlug.similar_anime,
             popular_anime: cachedBySlug.popular_anime,
             ai_description: cachedBySlug.ai_description
+        }
+    }
+
+    // Check slug-to-AniList mapping (for lossy slugs like "evangelion-3010")
+    const mappedAnilistId = getAnilistBySlug(slug)
+    if (mappedAnilistId) {
+        const cachedById = await getAnimeData(mappedAnilistId)
+        if (cachedById) {
+            const isStale = shouldRefresh(
+                cachedById.last_fetched,
+                cachedById.status,
+                cachedById.unified_fetch ?? false
+            )
+            if (isStale) {
+                fetchUnifiedAnimeData(mappedAnilistId).catch(err => {
+                    console.error(`[Mapped] Background refresh failed:`, err)
+                })
+            }
+            return {
+                details: cachedById.details as AnimeDetails,
+                similar_anime: cachedById.similar_anime,
+                popular_anime: cachedById.popular_anime,
+                ai_description: cachedById.ai_description
+            }
+        }
+        // Not cached but we have ID - fetch it
+        try {
+            const data = await fetchUnifiedAnimeData(mappedAnilistId)
+            return {
+                details: data.details as AnimeDetails,
+                similar_anime: data.similar_anime,
+                popular_anime: data.popular_anime,
+                ai_description: data.ai_description ?? undefined
+            }
+        } catch (error) {
+            console.error('Error fetching mapped anime:', error)
         }
     }
 

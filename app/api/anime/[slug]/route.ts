@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { unslugify } from '@/lib/utils/slugify'
 import { getAnimeData, shouldRefresh, saveAnimeData } from '@/lib/supabase/anime-data'
-import { getAnilistBySearchTerm } from '@/lib/anime-mappings'
+import { getAnilistBySearchTerm, getAnilistBySlug } from '@/lib/anime-mappings'
 import { resolveAnilistId, fetchUnifiedAnimeData } from '@/lib/anime-fetch'
 import { fetchFullAnimeDetails } from '@/lib/anilist'
 
@@ -33,12 +33,19 @@ export async function GET(
         // STEP 1: Resolve AniList ID (source of truth)
         let anilistId: number | null = null
 
-        const directAnilistId = getAnilistBySearchTerm(searchTerm)
-        if (directAnilistId) {
-            anilistId = directAnilistId
-            console.log(`[API] Using manual mapping: AniList ID ${anilistId}`)
+        // Check slug mapping first (for lossy slugs like "evangelion-3010")
+        const slugMappedId = getAnilistBySlug(slug)
+        if (slugMappedId) {
+            anilistId = slugMappedId
+            console.log(`[API] Using slug mapping: AniList ID ${anilistId}`)
         } else {
-            anilistId = await resolveAnilistId(searchTerm)
+            const directAnilistId = getAnilistBySearchTerm(searchTerm)
+            if (directAnilistId) {
+                anilistId = directAnilistId
+                console.log(`[API] Using search term mapping: AniList ID ${anilistId}`)
+            } else {
+                anilistId = await resolveAnilistId(searchTerm)
+            }
         }
 
         if (!anilistId) {
