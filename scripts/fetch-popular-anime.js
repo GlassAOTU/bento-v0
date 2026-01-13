@@ -57,14 +57,23 @@ function extractBaseName(title) {
 }
 
 /**
+ * Check if a title's trailing number is part of the actual name (not a season indicator)
+ * e.g., "Kaiju No. 8", "No. 6", "Steins;Gate 0"
+ */
+function hasTrailingNumberInName(title) {
+    if (/^\d+/.test(title)) return true;
+    if (/No\.?\s*\d+$/i.test(title)) return true;
+    return false;
+}
+
+/**
  * Check if an anime title is likely a season listing that should be filtered out
  */
 function isSeasonListing(title) {
     // List of patterns that indicate a season-specific entry
+    // Note: Simple trailing numbers are handled separately below
+    // to allow titles like "Kaiju No. 8" where the number is part of the name
     const seasonPatterns = [
-        // Numbers at the end (very common)
-        /\s+\d+$/, // "Title 2", "Title 3"
-
         // Code Geass style sequels
         /\s+R\d+$/i, // "Title R2", "Title R3"
 
@@ -114,8 +123,8 @@ function isSeasonListing(title) {
     }
 
     // Additional check for numbered titles that are likely sequels
-    // But be careful not to filter legitimate titles with numbers
-    if (/\s+\d+$/.test(title)) {
+    // But skip if the number is part of the actual title (like "Kaiju No. 8")
+    if (/\s+\d+$/.test(title) && !hasTrailingNumberInName(title)) {
         // If it ends with a number, check if it's a known sequel pattern
         const baseName = extractBaseName(title);
         // If removing the number significantly changes the title, it's likely a sequel
@@ -496,6 +505,24 @@ async function fetchAnimeByCategory(category, count = 40, page = 1) {
             variables = { perPage: count, scoreMin: 80 };
             break;
 
+        case 'movies':
+            query = `
+            query ($page: Int, $perPage: Int, $scoreMin: Int) {
+              Page(page: $page, perPage: $perPage) {
+                media(
+                  type: ANIME,
+                  sort: SCORE_DESC,
+                  isAdult: false,
+                  averageScore_greater: $scoreMin,
+                  format: MOVIE
+                ) {
+                  ${baseQuery}
+                }
+              }
+            }`;
+            variables = { perPage: count, scoreMin: 75 };
+            break;
+
         default:
             throw new Error(`Unknown category: ${category}`);
     }
@@ -696,7 +723,8 @@ async function main() {
         { key: 'classics2000s', name: "2000's Classics", slug: '2000s-classics' },
         { key: 'antiHero', name: 'Anti-Hero', slug: 'anti-hero' },
         { key: 'wholesomeAf', name: 'Wholesome AF', slug: 'wholesome-af' },
-        { key: 'hiddenGems', name: 'Hidden Gems', slug: 'hidden-gems' }
+        { key: 'hiddenGems', name: 'Hidden Gems', slug: 'hidden-gems' },
+        { key: 'movies', name: 'Movies', slug: 'movies' }
     ];
 
     const result = {};
