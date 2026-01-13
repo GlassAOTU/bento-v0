@@ -164,6 +164,31 @@ export const TITLE_TO_TMDB: Record<string, TMDBMapping> = {
 }
 
 /**
+ * Map URL slugs directly to AniList IDs
+ * For titles where slugification loses important characters
+ */
+export const SLUG_TO_ANILIST: Record<string, number> = {
+  // Evangelion: 3.0+1.0 -> evangelion-3010
+  'evangelion-3010-thrice-upon-a-time': 3786,
+
+  // Fate/stay night -> fatestay-night (loses slash)
+  'fatestay-night-heavens-feel-iii-spring-song': 21719,
+  'fatestay-night-heavens-feel-ii-lost-butterfly': 21718,
+  'fatestay-night-heavens-feel-i-presage-flower': 21717,
+  'fatestay-night-unlimited-blade-works': 19603,
+
+  // Steins;Gate -> steinsgate (loses semicolon)
+  'steinsgate-the-movie-load-region-of-dj-vu': 11577,
+  'steinsgate-0': 21127,
+
+  // 5 Centimeters Per Second
+  '5-centimeters-per-second': 1689,
+
+  // Re:ZERO -> rezero
+  'rezero-starting-life-in-another-world': 21355,
+}
+
+/**
  * Map search terms directly to AniList IDs
  * This bypasses AniList search for known problematic queries
  * that tend to return wrong results (e.g., commercials instead of main movies)
@@ -206,6 +231,13 @@ export const SEARCH_TO_ANILIST: Record<string, number> = {
 
   // The Boy and the Heron
   'the boy and the heron': 145006,
+}
+
+/**
+ * Get AniList ID by URL slug (for lossy slug conversions)
+ */
+export function getAnilistBySlug(slug: string): number | null {
+  return SLUG_TO_ANILIST[slug] || null
 }
 
 /**
