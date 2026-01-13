@@ -1,7 +1,7 @@
 import { createServiceClient } from './supabase/service-client'
 import { unslugify } from './utils/slugify'
 import { resolveAnilistId, fetchUnifiedAnimeData } from './anime-fetch'
-import { getAnimeData, shouldRefresh } from './supabase/anime-data'
+import { getAnimeData, getAnimeBySlug, shouldRefresh } from './supabase/anime-data'
 
 interface AnimeDetails {
     id: number
@@ -58,6 +58,28 @@ export async function getAnimeDataBySlug(slug: string): Promise<AnimeData | null
 }
 
 export async function getOrFetchAnimeBySlug(slug: string): Promise<AnimeData | null> {
+    // Try direct slug lookup first (most reliable)
+    const cachedBySlug = await getAnimeBySlug(slug)
+    if (cachedBySlug) {
+        const isStale = shouldRefresh(
+            cachedBySlug.last_fetched,
+            cachedBySlug.status,
+            cachedBySlug.unified_fetch ?? false
+        )
+        if (isStale) {
+            fetchUnifiedAnimeData(cachedBySlug.anime_id).catch(err => {
+                console.error(`[Slug] Background refresh failed:`, err)
+            })
+        }
+        return {
+            details: cachedBySlug.details as AnimeDetails,
+            similar_anime: cachedBySlug.similar_anime,
+            popular_anime: cachedBySlug.popular_anime,
+            ai_description: cachedBySlug.ai_description
+        }
+    }
+
+    // Fall back to search-based resolution
     const searchTerm = unslugify(slug)
 
     // Resolve AniList ID

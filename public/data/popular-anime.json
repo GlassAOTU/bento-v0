@@ -1539,6 +1539,18 @@
   ],
   "movies": [
     {
+      "id": 171627,
+      "title": "Chainsaw Man – The Movie: Reze Arc",
+      "image": "https://image.tmdb.org/t/p/w500/pHyxb2RV5wLlboAwm9ZJ9qTVEDw.jpg",
+      "rating": 90
+    },
+    {
+      "id": 21400,
+      "title": "Kizumonogatari Part 3: Reiketsu",
+      "image": "https://image.tmdb.org/t/p/w500/rfKHhHvSwyCv59Ow6wuGX67RkXR.jpg",
+      "rating": 87
+    },
+    {
       "id": 178788,
       "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
       "image": "https://image.tmdb.org/t/p/w500/fWVSwgjpT2D78VUh6X8UBd2rorW.jpg",
@@ -1581,6 +1593,12 @@
       "rating": 85
     },
     {
+      "id": 21399,
+      "title": "Kizumonogatari Part 2: Nekketsu",
+      "image": "https://image.tmdb.org/t/p/w500/fv9AALP1dofQUvKAkxnkz105MOv.jpg",
+      "rating": 85
+    },
+    {
       "id": 164,
       "title": "Princess Mononoke",
       "image": "https://image.tmdb.org/t/p/w500/cMYCDADoLKLbB83g4WnJegaZimC.jpg",
@@ -1590,6 +1608,12 @@
       "id": 11981,
       "title": "Puella Magi Madoka Magica the Movie Part III: Rebellion",
       "image": "https://image.tmdb.org/t/p/w500/68cts97TtCXcAlimoAHrHlQUNfn.jpg",
+      "rating": 84
+    },
+    {
+      "id": 171099,
+      "title": "BOCCHI THE ROCK! Recap Part 2",
+      "image": "https://image.tmdb.org/t/p/w500/92GJibXdvwF4o2s0XnLNDF6x6ro.jpg",
       "rating": 84
     },
     {
@@ -1623,40 +1647,16 @@
       "rating": 83
     },
     {
+      "id": 186861,
+      "title": "Ne Zha 2",
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx186861-3zhIhilJvbJz.jpg",
+      "rating": 83
+    },
+    {
       "id": 100178,
       "title": "Liz and the Blue Bird",
       "image": "https://image.tmdb.org/t/p/w500/7xRIkqWJy4cNpUxPo5aZ24O0Tyx.jpg",
       "rating": 83
-    },
-    {
-      "id": 161474,
-      "title": "Rascal Does Not Dream of a Knapsack Kid",
-      "image": "https://image.tmdb.org/t/p/w500/AuXbMRrtfFNVNSq5Dk0gBVXFGZy.jpg",
-      "rating": 83
-    },
-    {
-      "id": 100675,
-      "title": "Saekano the Movie: Finale",
-      "image": "https://image.tmdb.org/t/p/w500/GP7I1yKTp6giJz2fdy0LBWo4zV.jpg",
-      "rating": 83
-    },
-    {
-      "id": 113596,
-      "title": "Josee, the Tiger and the Fish",
-      "image": "https://image.tmdb.org/t/p/w500/z1D8xi9x4uEhyFruo7uEHXUMD4K.jpg",
-      "rating": 82
-    },
-    {
-      "id": 146743,
-      "title": "Sasaki and Miyano: Graduation",
-      "image": "https://image.tmdb.org/t/p/w500/xjZjNaUVF9mX7ekOL3lvBUi72eQ.jpg",
-      "rating": 82
-    },
-    {
-      "id": 100268,
-      "title": "Natsume's Book of Friends the Movie: Ephemeral Bond",
-      "image": "https://image.tmdb.org/t/p/w500/5LVV47JaRHa1OXrQv5l6XSyfW50.jpg",
-      "rating": 82
     }
   ]
 }

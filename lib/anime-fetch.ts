@@ -169,6 +169,9 @@ export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedA
         }
     }
 
+    // Check if this is a movie (skip seasons/episodes for movies)
+    const isMovie = anilistDetails.format === 'MOVIE'
+
     // Build merged details
     const mergedDetails = {
         id: anilistId,
@@ -194,8 +197,8 @@ export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedA
         externalLinks: anilistDetails.externalLinks,
         streamingLinks: anilistDetails.streamingLinks || [],
         format: anilistDetails.format,
-        seasons: tmdbData?.seasons?.seasons || [],
-        latestSeasonEpisodes: tmdbData?.latestSeasonEpisodes || null,
+        seasons: isMovie ? [] : (tmdbData?.seasons?.seasons || []),
+        latestSeasonEpisodes: isMovie ? null : (tmdbData?.latestSeasonEpisodes || null),
         videos: tmdbData?.details?.videos || []
     }
 

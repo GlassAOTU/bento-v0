@@ -1,7 +1,9 @@
 import { createServiceClient } from './service-client'
+import { slugify } from '../utils/slugify'
 
 export interface AnimeData {
     anime_id: number
+    slug: string
     details: any
     similar_anime: any[]
     popular_anime: any[]
@@ -11,6 +13,33 @@ export interface AnimeData {
     last_fetched: string
     created_at: string
     unified_fetch: boolean
+}
+
+/**
+ * Get cached anime data by slug (exact match)
+ * Returns null if not found
+ */
+export async function getAnimeBySlug(slug: string): Promise<AnimeData | null> {
+    try {
+        const supabase = createServiceClient()
+
+        const { data, error } = await supabase
+            .from('anime_data')
+            .select('*')
+            .eq('slug', slug)
+            .single()
+
+        if (error) {
+            if (error.code === 'PGRST116') {
+                return null
+            }
+            throw error
+        }
+
+        return data
+    } catch (error) {
+        return null
+    }
 }
 
 /**
@@ -57,10 +86,14 @@ export async function saveAnimeData(
     try {
         const supabase = createServiceClient()
 
+        const title = details.title || ''
+        const slug = slugify(title)
+
         const { error } = await supabase
             .from('anime_data')
             .upsert({
                 anime_id: animeId,
+                slug,
                 details,
                 similar_anime: similarAnime,
                 popular_anime: popularAnime,
