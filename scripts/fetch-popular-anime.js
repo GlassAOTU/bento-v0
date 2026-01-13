@@ -514,7 +514,8 @@ async function fetchAnimeByCategory(category, count = 40, page = 1) {
                   sort: SCORE_DESC,
                   isAdult: false,
                   averageScore_greater: $scoreMin,
-                  format: MOVIE
+                  format: MOVIE,
+                  episodes_lesser: 2
                 ) {
                   ${baseQuery}
                 }
@@ -568,8 +569,8 @@ async function fetchAnimeByCategory(category, count = 40, page = 1) {
             // Skip if empty title
             if (!title) continue;
 
-            // Check if it's a season listing
-            if (isSeasonListing(title)) {
+            // Check if it's a season listing (skip this filter for movies category)
+            if (category !== 'movies' && isSeasonListing(title)) {
                 continue;
             }
 
