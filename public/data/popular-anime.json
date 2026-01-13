@@ -15,7 +15,7 @@
     {
       "id": 1535,
       "title": "Death Note",
-      "image": "https://image.tmdb.org/t/p/w500/qDhbGqjZ7yFwa7FMIzuiQTQMfEQ.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/tCZFfYTIwrR7n94J6G14Y4hAFU6.jpg",
       "rating": 84
     },
     {
@@ -27,7 +27,7 @@
     {
       "id": 21459,
       "title": "My Hero Academia",
-      "image": "https://image.tmdb.org/t/p/w500/phuYuzqWW9ru8EA3HVjE9W2Rr3M.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/iv0cXt6uJGlTryWZNQMGyum4Pme.jpg",
       "rating": 76
     },
     {
@@ -57,20 +57,20 @@
     {
       "id": 5114,
       "title": "Fullmetal Alchemist: Brotherhood",
-      "image": "https://image.tmdb.org/t/p/w500/7qVSNBKsrER8P77DfsSQfrPK04L.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/kKOQbCKbGB75h1d3Jlx9Gy4ZTfv.jpg",
       "rating": 90
-    },
-    {
-      "id": 11757,
-      "title": "Sword Art Online",
-      "image": "https://image.tmdb.org/t/p/w500/9m8bFIXPg26taNrFSXGwEORVACD.jpg",
-      "rating": 69
     },
     {
       "id": 20,
       "title": "Naruto",
       "image": "https://image.tmdb.org/t/p/w500/xppeysfvDKVx775MFuH8Z9BlpMk.jpg",
       "rating": 80
+    },
+    {
+      "id": 11757,
+      "title": "Sword Art Online",
+      "image": "https://image.tmdb.org/t/p/w500/9m8bFIXPg26taNrFSXGwEORVACD.jpg",
+      "rating": 69
     },
     {
       "id": 21519,
@@ -131,7 +131,7 @@
     {
       "id": 114129,
       "title": "Gintama: THE VERY FINAL",
-      "image": "https://image.tmdb.org/t/p/w500/nx7eCCvOWR9m9dw6LPOGMvFkoZO.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
       "rating": 91
     },
     {
@@ -189,15 +189,15 @@
       "rating": 87
     },
     {
-      "id": 15335,
-      "title": "Gintama: The Final Chapter - Be Forever Yorozuya",
-      "image": "https://image.tmdb.org/t/p/w500/1wEl5WHQO2SdWQ6S3gLBaaobf4c.jpg",
-      "rating": 87
-    },
-    {
       "id": 101348,
       "title": "Vinland Saga",
       "image": "https://image.tmdb.org/t/p/w500/vUHlpA5c1NXkds59reY3HMb4Abs.jpg",
+      "rating": 87
+    },
+    {
+      "id": 15335,
+      "title": "Gintama: The Final Chapter - Be Forever Yorozuya",
+      "image": "https://image.tmdb.org/t/p/w500/1wEl5WHQO2SdWQ6S3gLBaaobf4c.jpg",
       "rating": 87
     },
     {
@@ -213,27 +213,27 @@
       "rating": 87
     },
     {
-      "id": 151384,
-      "title": "Kaguya-sama: Love is War -The First Kiss That Never Ends-",
-      "image": "https://image.tmdb.org/t/p/w500/jY092qLqa7qTMelwRiNPpLUolEz.jpg",
-      "rating": 87
-    },
-    {
       "id": 103047,
       "title": "Violet Evergarden: the Movie",
-      "image": "https://image.tmdb.org/t/p/w500/4b7uAGVtgA85Yd911yOJqIsHigx.jpg",
-      "rating": 87
-    },
-    {
-      "id": 113024,
-      "title": "Revue Starlight: The Movie",
-      "image": "https://image.tmdb.org/t/p/w500/fQS5v2gglHPfx4BLjPhkuBqSntm.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/A9R6bukzzRmOzxvDQsXdQpeNm8l.jpg",
       "rating": 87
     },
     {
       "id": 172420,
       "title": "Uma Musume: Pretty Derby - Shin Jidai no Tobira",
       "image": "https://image.tmdb.org/t/p/w500/esAgvmvwh6dincWHr057iyPAtQR.jpg",
+      "rating": 87
+    },
+    {
+      "id": 151384,
+      "title": "Kaguya-sama: Love is War -The First Kiss That Never Ends-",
+      "image": "https://image.tmdb.org/t/p/w500/jY092qLqa7qTMelwRiNPpLUolEz.jpg",
+      "rating": 87
+    },
+    {
+      "id": 113024,
+      "title": "Revue Starlight: The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/fQS5v2gglHPfx4BLjPhkuBqSntm.jpg",
       "rating": 87
     },
     {
@@ -265,7 +265,7 @@
     {
       "id": 121,
       "title": "Fullmetal Alchemist",
-      "image": "https://image.tmdb.org/t/p/w500/7qVSNBKsrER8P77DfsSQfrPK04L.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/kKOQbCKbGB75h1d3Jlx9Gy4ZTfv.jpg",
       "rating": 79
     },
     {
@@ -313,22 +313,22 @@
     {
       "id": 918,
       "title": "Gintama",
-      "image": "https://image.tmdb.org/t/p/w500/nx7eCCvOWR9m9dw6LPOGMvFkoZO.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/f7vK8pzZIqhyA8sYmBpWmp9Ae7.jpg",
       "rating": 85
     }
   ],
   "shonen": [
     {
+      "id": 127230,
+      "title": "Chainsaw Man",
+      "image": "https://image.tmdb.org/t/p/w500/yVtx7Xn9UxNJqvG2BkvhCcmed9S.jpg",
+      "rating": 83
+    },
+    {
       "id": 20464,
       "title": "HAIKYU!!",
       "image": "https://image.tmdb.org/t/p/w500/8WEr48swcqe89Zsy5sdrGCASlIg.jpg",
       "rating": 83
-    },
-    {
-      "id": 127230,
-      "title": "Chainsaw Man",
-      "image": "https://image.tmdb.org/t/p/w500/yVtx7Xn9UxNJqvG2BkvhCcmed9S.jpg",
-      "rating": 84
     },
     {
       "id": 97940,
@@ -361,12 +361,6 @@
       "rating": 73
     },
     {
-      "id": 21202,
-      "title": "KONOSUBA -God's blessing on this wonderful world!",
-      "image": "https://image.tmdb.org/t/p/w500/oRaOeQlwktbGSd2T31FYAcgHZlh.jpg",
-      "rating": 79
-    },
-    {
       "id": 112151,
       "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
       "image": "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg",
@@ -385,16 +379,16 @@
       "rating": 77
     },
     {
-      "id": 9919,
-      "title": "Blue Exorcist",
-      "image": "https://image.tmdb.org/t/p/w500/kpNoqNmElzGUEcEoZyfFwvYXMsR.jpg",
-      "rating": 72
-    },
-    {
       "id": 105310,
       "title": "Fire Force",
       "image": "https://image.tmdb.org/t/p/w500/q2lTO2j4Nzn3zLab0xMHeBya5sw.jpg",
       "rating": 76
+    },
+    {
+      "id": 9919,
+      "title": "Blue Exorcist",
+      "image": "https://image.tmdb.org/t/p/w500/kpNoqNmElzGUEcEoZyfFwvYXMsR.jpg",
+      "rating": 72
     },
     {
       "id": 142329,
@@ -437,6 +431,12 @@
       "title": "Soul Eater",
       "image": "https://image.tmdb.org/t/p/w500/8ROoGBnHBscVIIomFl7DjlGidYk.jpg",
       "rating": 77
+    },
+    {
+      "id": 6702,
+      "title": "Fairy Tail",
+      "image": "https://image.tmdb.org/t/p/w500/h50lj7xO65qafNYZCrfQ7ztkMBD.jpg",
+      "rating": 71
     }
   ],
   "sliceOfLife": [
@@ -650,7 +650,7 @@
       "id": 101351,
       "title": "Happy Sugar Life",
       "image": "https://image.tmdb.org/t/p/w500/51nw1Oor0iiXCwp2ieYuY3WQ9vt.jpg",
-      "rating": 65
+      "rating": 64
     },
     {
       "id": 120,
@@ -697,6 +697,12 @@
       "rating": 77
     },
     {
+      "id": 21202,
+      "title": "KONOSUBA -God's blessing on this wonderful world!",
+      "image": "https://image.tmdb.org/t/p/w500/oRaOeQlwktbGSd2T31FYAcgHZlh.jpg",
+      "rating": 79
+    },
+    {
       "id": 199,
       "title": "Spirited Away",
       "image": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
@@ -725,12 +731,6 @@
       "title": "Overlord",
       "image": "https://image.tmdb.org/t/p/w500/K8ZUjxaj9F0t3AwJDz8ypzBynM.jpg",
       "rating": 76
-    },
-    {
-      "id": 6702,
-      "title": "Fairy Tail",
-      "image": "https://image.tmdb.org/t/p/w500/h50lj7xO65qafNYZCrfQ7ztkMBD.jpg",
-      "rating": 72
     },
     {
       "id": 124845,
@@ -980,7 +980,7 @@
       "id": 100388,
       "title": "BANANA FISH",
       "image": "https://image.tmdb.org/t/p/w500/d2TW5Rtd0uCasHlQygsDfWCROl2.jpg",
-      "rating": 83
+      "rating": 82
     },
     {
       "id": 114535,
@@ -1003,7 +1003,7 @@
     {
       "id": 20661,
       "title": "Terror in Resonance",
-      "image": "https://image.tmdb.org/t/p/w500/y8zPuRD9jRkSCBhmZOJFV1X87nA.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/wc1PaImHVXIESClpEDwNI1mlYuC.jpg",
       "rating": 78
     },
     {
@@ -1412,7 +1412,7 @@
       "id": 143653,
       "title": "Insomniacs After School",
       "image": "https://image.tmdb.org/t/p/w500/qChtK3uuCc5L5CpSeBpVV4MFRHD.jpg",
-      "rating": 79
+      "rating": 80
     }
   ],
   "hiddenGems": [
@@ -1471,15 +1471,15 @@
       "rating": 84
     },
     {
-      "id": 138425,
-      "title": "Teasing Master Takagi-san: The Movie",
-      "image": "https://image.tmdb.org/t/p/w500/di0QJLTVfroK7W1D5V8i9QkFkMk.jpg",
-      "rating": 83
-    },
-    {
       "id": 192809,
       "title": "JUJUTSU KAISEN: Hidden Inventory / Premature Death – The Movie",
       "image": "https://image.tmdb.org/t/p/w500/kZkyr1sRzarENrxjtltPvmHRrTk.jpg",
+      "rating": 83
+    },
+    {
+      "id": 138425,
+      "title": "Teasing Master Takagi-san: The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/di0QJLTVfroK7W1D5V8i9QkFkMk.jpg",
       "rating": 83
     },
     {
@@ -1497,7 +1497,7 @@
     {
       "id": 12431,
       "title": "Space Brothers",
-      "image": "https://image.tmdb.org/t/p/w500/3o6W53edDLWtYOE2fCLK3154mIV.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/bie7Iaz3C1Pdd5FDwvqZNfbhCJE.jpg",
       "rating": 83
     },
     {
@@ -1507,15 +1507,15 @@
       "rating": 83
     },
     {
-      "id": 109403,
-      "title": "Non Non Biyori Nonstop",
-      "image": "https://image.tmdb.org/t/p/w500/uEFfrd2xBV2XEGkbNtMrHgLXFM1.jpg",
-      "rating": 83
-    },
-    {
       "id": 165171,
       "title": "Medalist",
       "image": "https://image.tmdb.org/t/p/w500/hK5eKFaj99mZwpmILnvKehWe9t1.jpg",
+      "rating": 83
+    },
+    {
+      "id": 109403,
+      "title": "Non Non Biyori Nonstop",
+      "image": "https://image.tmdb.org/t/p/w500/uEFfrd2xBV2XEGkbNtMrHgLXFM1.jpg",
       "rating": 83
     },
     {
@@ -1534,6 +1534,128 @@
       "id": 21085,
       "title": "Ace of the Diamond Second Season",
       "image": "https://image.tmdb.org/t/p/w500/2kqZX7OKVHkLm2XmI2AXxAd0MrA.jpg",
+      "rating": 82
+    }
+  ],
+  "movies": [
+    {
+      "id": 178788,
+      "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+      "image": "https://image.tmdb.org/t/p/w500/fWVSwgjpT2D78VUh6X8UBd2rorW.jpg",
+      "rating": 87
+    },
+    {
+      "id": 174788,
+      "title": "LOOK BACK",
+      "image": "https://image.tmdb.org/t/p/w500/4f2EcNkp1Mvp9wE5w7HKxcmACWg.jpg",
+      "rating": 86
+    },
+    {
+      "id": 153658,
+      "title": "HAIKYU!! The Dumpster Battle",
+      "image": "https://image.tmdb.org/t/p/w500/ntRU0OA4etGGiMMmH1Yw0bnaMdW.jpg",
+      "rating": 86
+    },
+    {
+      "id": 7311,
+      "title": "The Disappearance of Haruhi Suzumiya",
+      "image": "https://image.tmdb.org/t/p/w500/x52WmUnfpB2AB0YUNGWJZaRzcBx.jpg",
+      "rating": 86
+    },
+    {
+      "id": 100643,
+      "title": "Made in Abyss: Dawn of the Deep Soul",
+      "image": "https://image.tmdb.org/t/p/w500/fsPZdpocYYbvDS2YEE1Xohqo1ni.jpg",
+      "rating": 85
+    },
+    {
+      "id": 3786,
+      "title": "Evangelion: 3.0+1.0 Thrice Upon a Time",
+      "image": "https://image.tmdb.org/t/p/w500/j6G24dqI4WgUtChhWjfnI4lnmiK.jpg",
+      "rating": 85
+    },
+    {
+      "id": 21719,
+      "title": "Fate/stay night [Heaven’s Feel] III. spring song",
+      "image": "https://image.tmdb.org/t/p/w500/hIK5kEdFwOHnHTa06ntTVSfG9im.jpg",
+      "rating": 85
+    },
+    {
+      "id": 164,
+      "title": "Princess Mononoke",
+      "image": "https://image.tmdb.org/t/p/w500/cMYCDADoLKLbB83g4WnJegaZimC.jpg",
+      "rating": 85
+    },
+    {
+      "id": 11981,
+      "title": "Puella Magi Madoka Magica the Movie Part III: Rebellion",
+      "image": "https://image.tmdb.org/t/p/w500/68cts97TtCXcAlimoAHrHlQUNfn.jpg",
+      "rating": 84
+    },
+    {
+      "id": 21718,
+      "title": "Fate/stay night [Heaven's Feel] II. lost butterfly",
+      "image": "https://image.tmdb.org/t/p/w500/4tS0iyKQBDFqVpVcH21MSJwXZdq.jpg",
+      "rating": 84
+    },
+    {
+      "id": 4282,
+      "title": "the Garden of sinners Chapter 5: Paradox Paradigm",
+      "image": "https://image.tmdb.org/t/p/w500/vScnbrMbDpuwbiRafOcuxHjDKsI.jpg",
+      "rating": 84
+    },
+    {
+      "id": 9617,
+      "title": "K-ON!: The Movie",
+      "image": "https://image.tmdb.org/t/p/w500/aRe9m2K3IGhgruRc9yHUYxQIhI4.jpg",
+      "rating": 83
+    },
+    {
+      "id": 12355,
+      "title": "Wolf Children",
+      "image": "https://image.tmdb.org/t/p/w500/3Nllh6JgcrFdtOn6iFOWHudNInd.jpg",
+      "rating": 83
+    },
+    {
+      "id": 578,
+      "title": "Grave of the Fireflies",
+      "image": "https://image.tmdb.org/t/p/w500/k9tv1rXZbOhH7eiCk378x61kNQ1.jpg",
+      "rating": 83
+    },
+    {
+      "id": 100178,
+      "title": "Liz and the Blue Bird",
+      "image": "https://image.tmdb.org/t/p/w500/7xRIkqWJy4cNpUxPo5aZ24O0Tyx.jpg",
+      "rating": 83
+    },
+    {
+      "id": 161474,
+      "title": "Rascal Does Not Dream of a Knapsack Kid",
+      "image": "https://image.tmdb.org/t/p/w500/AuXbMRrtfFNVNSq5Dk0gBVXFGZy.jpg",
+      "rating": 83
+    },
+    {
+      "id": 100675,
+      "title": "Saekano the Movie: Finale",
+      "image": "https://image.tmdb.org/t/p/w500/GP7I1yKTp6giJz2fdy0LBWo4zV.jpg",
+      "rating": 83
+    },
+    {
+      "id": 113596,
+      "title": "Josee, the Tiger and the Fish",
+      "image": "https://image.tmdb.org/t/p/w500/z1D8xi9x4uEhyFruo7uEHXUMD4K.jpg",
+      "rating": 82
+    },
+    {
+      "id": 146743,
+      "title": "Sasaki and Miyano: Graduation",
+      "image": "https://image.tmdb.org/t/p/w500/xjZjNaUVF9mX7ekOL3lvBUi72eQ.jpg",
+      "rating": 82
+    },
+    {
+      "id": 100268,
+      "title": "Natsume's Book of Friends the Movie: Ephemeral Bond",
+      "image": "https://image.tmdb.org/t/p/w500/5LVV47JaRHa1OXrQv5l6XSyfW50.jpg",
       "rating": 82
     }
   ]

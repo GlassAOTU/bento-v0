@@ -49,6 +49,7 @@ type AnimeCategories = {
     antiHero: Anime[]
     wholesomeAf: Anime[]
     hiddenGems: Anime[]
+    movies: Anime[]
 }
 
 function DiscoverContent() {
@@ -404,6 +405,13 @@ function DiscoverContent() {
                                 <CategorySection
                                     title="Shonen"
                                     anime={animeData.shonen}
+                                />
+
+                                <hr className="border-t border-gray-200 dark:border-gray-700" />
+
+                                <CategorySection
+                                    title="Movies"
+                                    anime={animeData.movies}
                                 />
 
                                 <hr className="border-t border-gray-200 dark:border-gray-700" />
