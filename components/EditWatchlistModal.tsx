@@ -6,6 +6,11 @@ import { createClient } from '@/lib/supabase/browser-client'
 import { X } from 'lucide-react'
 import Image from 'next/image'
 import { slugify } from '@/lib/utils/slugify'
+import {
+    trackWatchlistDeleted,
+    trackWatchlistItemRemoved,
+    trackWatchlistMetadataSaved
+} from '@/lib/analytics/events'
 
 interface WatchlistItem {
     id: string
@@ -122,6 +127,12 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                 throw new Error(`Failed to delete watchlist: ${watchlistError.message}`)
             }
 
+            trackWatchlistDeleted({
+                watchlist_name: watchlist.name,
+                watchlist_id: watchlist.id,
+                item_count: watchlist.items.length
+            })
+
             // Success!
             setSuccess(true)
 
@@ -171,6 +182,12 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                 if (watchlistError) {
                     throw new Error(`Failed to delete watchlist: ${watchlistError.message}`)
                 }
+
+                trackWatchlistDeleted({
+                    watchlist_name: watchlist.name,
+                    watchlist_id: watchlist.id,
+                    item_count: watchlist.items.length
+                })
             } else {
                 // Update watchlist metadata including slug
                 const { error: updateError } = await supabase
@@ -197,6 +214,32 @@ export default function EditWatchlistModal({ isOpen, onClose, watchlist, onSave 
                     if (deleteError) {
                         throw new Error(`Failed to remove items: ${deleteError.message}`)
                     }
+
+                    const removedItems = watchlist.items.filter(item => itemsToRemove.has(item.id))
+                    removedItems.forEach(item => {
+                        trackWatchlistItemRemoved({
+                            watchlist_name: watchlist.name,
+                            watchlist_id: watchlist.id,
+                            anime_title: item.title,
+                            items_removed_count: itemsToRemove.size
+                        })
+                    })
+                }
+
+                // Track metadata changes
+                const nameChanged = name.trim() !== watchlist.name
+                const descriptionChanged = (description.trim() || null) !== watchlist.description
+                const visibilityChanged = isPublic !== (watchlist.is_public || false)
+
+                if (nameChanged || descriptionChanged || visibilityChanged) {
+                    trackWatchlistMetadataSaved({
+                        watchlist_name: name.trim(),
+                        watchlist_id: watchlist.id,
+                        name_changed: nameChanged,
+                        description_changed: descriptionChanged,
+                        visibility_changed: visibilityChanged,
+                        new_visibility: visibilityChanged ? (isPublic ? 'public' : 'private') : undefined
+                    })
                 }
             }
 

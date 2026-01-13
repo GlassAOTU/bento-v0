@@ -1,12 +1,18 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import NavigationBar from '@/components/NavigationBar'
 import Footer from '@/components/Footer'
 import { createClient } from '@/lib/supabase/browser-client'
 import { slugify } from '@/lib/utils/slugify'
+import {
+    trackPublicProfileViewed,
+    trackUserFollowed,
+    trackUserUnfollowed,
+    getAuthStatus
+} from '@/lib/analytics/events'
 
 interface Profile {
     id: string
@@ -59,6 +65,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
     const [activeTab, setActiveTab] = useState<'reviews' | 'watchlists'>('watchlists')
     const [currentUser, setCurrentUser] = useState<any>(null)
     const [followLoading, setFollowLoading] = useState(false)
+    const hasTrackedView = useRef(false)
 
     const toTitleCase = (str: string) => {
         return str.toLowerCase().split(' ').map(word => {
@@ -98,6 +105,18 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             setProfile(profileData.profile)
             setStats(profileData.stats)
             setIsFollowing(profileData.isFollowing)
+
+            // Track profile view (only once)
+            if (!hasTrackedView.current) {
+                hasTrackedView.current = true
+                const supabase = createClient()
+                const { data: { user } } = await supabase.auth.getUser()
+                trackPublicProfileViewed({
+                    profile_username: username,
+                    viewer_auth_status: getAuthStatus(user),
+                    is_own_profile: user?.id === profileData.profile.user_id
+                })
+            }
 
             const reviewsResponse = await fetch(`/api/reviews/user/${username}?limit=10`)
             const reviewsData = await reviewsResponse.json()
@@ -145,6 +164,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 if (response.ok) {
                     setIsFollowing(false)
                     setStats(prev => ({ ...prev, followers_count: prev.followers_count - 1 }))
+                    trackUserUnfollowed({ target_username: profile.username })
                 }
             } else {
                 const response = await fetch('/api/follows', {
@@ -156,6 +176,7 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 if (response.ok) {
                     setIsFollowing(true)
                     setStats(prev => ({ ...prev, followers_count: prev.followers_count + 1 }))
+                    trackUserFollowed({ target_username: profile.username })
                 }
             }
         } catch (err) {

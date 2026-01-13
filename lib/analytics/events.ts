@@ -175,6 +175,61 @@ export function trackAnimeSimilarClicked(properties: {
   posthog.capture('anime_similar_clicked', properties)
 }
 
+export function trackAnimeCarouselScroll(properties: {
+  anime_title: string
+  carousel_type: 'similar' | 'most_popular'
+  direction: 'left' | 'right'
+}) {
+  posthog.capture('anime_carousel_scroll', properties)
+}
+
+export function trackAnimeVideoPlayed(properties: {
+  anime_title: string
+  video_type: 'trailer' | 'pv' | 'other'
+}) {
+  posthog.capture('anime_video_played', properties)
+}
+
+// ============================================================================
+// REVIEWS
+// ============================================================================
+
+export function trackReviewModalOpened(properties: {
+  anime_title: string
+  anime_id: number
+  has_existing_review: boolean
+  auth_status: 'authenticated' | 'anonymous'
+}) {
+  posthog.capture('review_modal_opened', properties)
+}
+
+export function trackReviewCreated(properties: {
+  anime_title: string
+  anime_id: number
+  rating: number
+  has_text: boolean
+  text_length: number
+}) {
+  posthog.capture('review_created', properties)
+}
+
+export function trackReviewUpdated(properties: {
+  anime_title: string
+  anime_id: number
+  rating: number
+  rating_changed: boolean
+  text_changed: boolean
+}) {
+  posthog.capture('review_updated', properties)
+}
+
+export function trackReviewDeleted(properties: {
+  anime_title: string
+  anime_id: number
+}) {
+  posthog.capture('review_deleted', properties)
+}
+
 // ============================================================================
 // WATCHLIST JOURNEY (CONVERSION FUNNEL)
 // ============================================================================
@@ -276,6 +331,102 @@ export function trackRecentSearchClicked(properties: {
   results_count: number
 }) {
   posthog.capture('recent_search_clicked', properties)
+}
+
+export function trackWatchlistDeleted(properties: {
+  watchlist_name: string
+  watchlist_id: string
+  item_count: number
+}) {
+  posthog.capture('watchlist_deleted', properties)
+}
+
+export function trackWatchlistItemRemoved(properties: {
+  watchlist_name: string
+  watchlist_id: string
+  anime_title: string
+  items_removed_count: number
+}) {
+  posthog.capture('watchlist_item_removed', properties)
+}
+
+export function trackWatchlistMetadataSaved(properties: {
+  watchlist_name: string
+  watchlist_id: string
+  name_changed: boolean
+  description_changed: boolean
+  visibility_changed: boolean
+  new_visibility?: 'public' | 'private'
+}) {
+  posthog.capture('watchlist_metadata_saved', properties)
+}
+
+export function trackWatchlistShared(properties: {
+  watchlist_name: string
+  watchlist_id: string
+  share_method: 'copy_link' | 'twitter'
+}) {
+  posthog.capture('watchlist_shared', properties)
+}
+
+// ============================================================================
+// PUBLIC PAGES
+// ============================================================================
+
+export function trackPublicProfileViewed(properties: {
+  profile_username: string
+  viewer_auth_status: 'authenticated' | 'anonymous'
+  is_own_profile: boolean
+}) {
+  posthog.capture('public_profile_viewed', properties)
+}
+
+export function trackPublicWatchlistViewed(properties: {
+  watchlist_name: string
+  watchlist_id: string
+  owner_username: string
+  viewer_auth_status: 'authenticated' | 'anonymous'
+  item_count: number
+}) {
+  posthog.capture('public_watchlist_viewed', properties)
+}
+
+// ============================================================================
+// PROFILE
+// ============================================================================
+
+export function trackProfileCreated(properties: {
+  username: string
+  has_display_name: boolean
+  has_bio: boolean
+  has_avatar: boolean
+}) {
+  posthog.capture('profile_created', properties)
+}
+
+export function trackProfileUpdated(properties: {
+  username_changed: boolean
+  display_name_changed: boolean
+  bio_changed: boolean
+  avatar_changed: boolean
+}) {
+  posthog.capture('profile_updated', properties)
+}
+
+// ============================================================================
+// FOLLOWS
+// ============================================================================
+
+export function trackUserFollowed(properties: {
+  target_username: string
+}) {
+  posthog.capture('user_followed', properties)
+}
+
+export function trackUserUnfollowed(properties: {
+  target_username: string
+}) {
+  posthog.capture('user_unfollowed', properties)
 }
 
 // ============================================================================

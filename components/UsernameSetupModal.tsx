@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/browser-client'
+import { trackProfileCreated } from '@/lib/analytics/events'
 
 const RESERVED_USERNAMES = [
     'discover', 'watchlists', 'anime', 'api', 'auth', 'profile',
@@ -142,6 +143,13 @@ export default function UsernameSetupModal({ isOpen, onClose, onSuccess }: Usern
                 setLoading(false)
                 return
             }
+
+            trackProfileCreated({
+                username: username.toLowerCase(),
+                has_display_name: !!displayName,
+                has_bio: !!bio,
+                has_avatar: !!avatarUrl
+            })
 
             // Success!
             onSuccess()

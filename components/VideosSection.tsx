@@ -15,7 +15,7 @@ interface Video {
 
 interface VideosSectionProps {
     videos: Video[]
-    onVideoClick: (videoKey: string) => void
+    onVideoClick: (videoKey: string, videoType?: string) => void
 }
 
 export default function VideosSection({ videos, onVideoClick }: VideosSectionProps) {
@@ -59,7 +59,7 @@ export default function VideosSection({ videos, onVideoClick }: VideosSectionPro
                     <VideoCard
                         key={video.id}
                         video={video}
-                        onClick={() => onVideoClick(video.key)}
+                        onClick={() => onVideoClick(video.key, video.type)}
                     />
                 ))}
             </div>
