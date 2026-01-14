@@ -665,12 +665,30 @@ export async function getTMDBAnimeDetails(titleOrId: string | number, anilistId?
     ]);
 
     // Get the latest season's episodes (skip season 0 which is usually specials)
+    // Also skip seasons with no episodes and prefer seasons with aired episodes
     let latestSeasonEpisodes = null;
     const regularSeasons = seasons.seasons.filter((s: any) => s.season_number > 0);
+    const seasonsWithEpisodes = regularSeasons.filter((s: any) => s.episode_count > 0);
 
-    if (regularSeasons.length > 0) {
-        const latestSeason = regularSeasons[regularSeasons.length - 1];
-        latestSeasonEpisodes = await getTMDBSeasonDetails(tmdbId, latestSeason.season_number);
+    // Try seasons from latest to earliest, find one with aired episodes
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = seasonsWithEpisodes.length - 1; i >= 0; i--) {
+        const season = seasonsWithEpisodes[i];
+        const seasonDetails = await getTMDBSeasonDetails(tmdbId, season.season_number);
+
+        // Check if this season has any aired episodes
+        const hasAiredEpisodes = seasonDetails.episodes?.some((ep: any) => {
+            if (!ep.air_date) return false;
+            const airDate = new Date(ep.air_date);
+            return airDate <= today;
+        });
+
+        if (hasAiredEpisodes) {
+            latestSeasonEpisodes = seasonDetails;
+            break;
+        }
     }
 
     return {

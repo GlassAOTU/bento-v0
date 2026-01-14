@@ -42,17 +42,27 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
     const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false)
     const [showAll, setShowAll] = useState(false)
 
-    // Filter out season 0 (specials) and sort by most recent first
+    // Filter out season 0 (specials) and seasons with no episodes, sort by most recent first
     const regularSeasons = seasons
-        .filter(s => s.season_number > 0)
+        .filter(s => s.season_number > 0 && s.episode_count > 0)
         .sort((a, b) => b.season_number - a.season_number)
 
     if (!regularSeasons || regularSeasons.length === 0) {
         return null
     }
 
-    const displayedEpisodes = showAll ? episodes : episodes.slice(0, 3)
-    const remainingCount = episodes.length - 3
+    // Filter to only show aired episodes (have air_date and date is in the past)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const airedEpisodes = episodes.filter(ep => {
+        if (!ep.air_date) return false
+        const airDate = new Date(ep.air_date)
+        return airDate <= today
+    })
+
+    const displayedEpisodes = showAll ? airedEpisodes : airedEpisodes.slice(0, 3)
+    const remainingCount = airedEpisodes.length - 3
 
     const handleSeasonChange = async (seasonNumber: number) => {
         setSelectedSeasonNumber(seasonNumber)
@@ -138,7 +148,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                         </div>
                     ))}
                 </div>
-            ) : episodes.length > 0 ? (
+            ) : airedEpisodes.length > 0 ? (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {displayedEpisodes.map((episode) => (
@@ -159,7 +169,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                     )}
 
                     {/* Show Less Button */}
-                    {showAll && episodes.length > 3 && (
+                    {showAll && airedEpisodes.length > 3 && (
                         <div className="flex justify-center mt-8">
                             <button
                                 onClick={() => setShowAll(false)}
@@ -172,7 +182,7 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                 </>
             ) : (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    No episodes available for this season
+                    No aired episodes yet for this season
                 </div>
             )}
         </>
