@@ -230,6 +230,28 @@ export function trackReviewDeleted(properties: {
   posthog.capture('review_deleted', properties)
 }
 
+export function trackReviewSharePreviewOpened(properties: {
+  anime_title: string
+  anime_id: number
+}) {
+  posthog.capture('review_share_preview_opened', properties)
+}
+
+export function trackReviewShareCompleted(properties: {
+  anime_title: string
+  anime_id: number
+  method: 'clipboard' | 'download'
+}) {
+  posthog.capture('review_share_completed', properties)
+}
+
+export function trackReviewShareCancelled(properties: {
+  anime_title: string
+  anime_id: number
+}) {
+  posthog.capture('review_share_cancelled', properties)
+}
+
 // ============================================================================
 // WATCHLIST JOURNEY (CONVERSION FUNNEL)
 // ============================================================================

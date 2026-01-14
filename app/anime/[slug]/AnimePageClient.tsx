@@ -334,10 +334,20 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 </section>
 
                 {/* Description Section */}
-                <AnimeSection divider={seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)}>
+                <AnimeSection divider>
                     <ExpandableDescription
                         description={aiDescription || animeDetails.description}
                         loading={descriptionLoading}
+                    />
+                </AnimeSection>
+
+                {/* Reviews Section */}
+                <AnimeSection divider={seasons?.filter(s => s.season_number > 0).length > 0 || (videos && videos.length > 0)} noPaddingTop>
+                    <ReviewsSection
+                        animeId={animeDetails.id}
+                        animeTitle={animeDetails.title}
+                        animeImage={animeDetails.coverImage}
+                        animeBannerImage={animeDetails.bannerImage}
                     />
                 </AnimeSection>
 
@@ -369,7 +379,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 )}
 
                 {/* Details Section */}
-                <AnimeSection title="Details" divider noPaddingTop>
+                <AnimeSection title="Details" divider={similarAnime.length > 0} noPaddingTop>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         {animeDetails.episodes && (
                             <div className="flex">
@@ -416,15 +426,6 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                             </div>
                         )}
                     </div>
-                </AnimeSection>
-
-                {/* Reviews Section */}
-                <AnimeSection divider={similarAnime.length > 0} noPaddingTop>
-                    <ReviewsSection
-                        animeId={animeDetails.id}
-                        animeTitle={animeDetails.title}
-                        animeImage={animeDetails.coverImage}
-                    />
                 </AnimeSection>
 
                 {/* Similar Anime Section */}

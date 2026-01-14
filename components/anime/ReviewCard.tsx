@@ -1,7 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import SharePreviewModal from './SharePreviewModal'
+import { slugify } from '@/lib/utils/slugify'
+import { trackReviewSharePreviewOpened } from '@/lib/analytics/events'
 
 interface ReviewCardProps {
     review: {
@@ -15,9 +19,25 @@ interface ReviewCardProps {
     }
     isOwn: boolean
     onEdit?: () => void
+    anime?: {
+        id: number
+        title: string
+        bannerImage: string
+    }
 }
 
-export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
+export default function ReviewCard({ review, isOwn, onEdit, anime }: ReviewCardProps) {
+    const [showShareModal, setShowShareModal] = useState(false)
+
+    const handleShareClick = () => {
+        if (anime) {
+            trackReviewSharePreviewOpened({
+                anime_title: anime.title,
+                anime_id: anime.id
+            })
+            setShowShareModal(true)
+        }
+    }
     const renderStars = (rating: number) => (
         <div className="flex gap-0.5">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -81,14 +101,27 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
                                 <span className="text-xs bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 rounded">You</span>
                             )}
                         </div>
-                        {isOwn && onEdit && (
-                            <button
-                                onClick={onEdit}
-                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
-                            >
-                                Edit
-                            </button>
-                        )}
+                        <div className="flex items-center gap-2">
+                            {isOwn && anime && (
+                                <button
+                                    onClick={handleShareClick}
+                                    className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                                    title="Share on X"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                    </svg>
+                                </button>
+                            )}
+                            {isOwn && onEdit && (
+                                <button
+                                    onClick={onEdit}
+                                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+                                >
+                                    Edit
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2 mt-1">
@@ -101,6 +134,21 @@ export default function ReviewCard({ review, isOwn, onEdit }: ReviewCardProps) {
                     </p>
                 </div>
             </div>
+
+            {anime && (
+                <SharePreviewModal
+                    isOpen={showShareModal}
+                    onClose={() => setShowShareModal(false)}
+                    animeId={anime.id}
+                    animeTitle={anime.title}
+                    animeSlug={slugify(anime.title)}
+                    bannerUrl={anime.bannerImage}
+                    username={review.username}
+                    displayName={review.display_name}
+                    rating={review.rating}
+                    reviewText={review.review_text}
+                />
+            )}
         </div>
     )
 }

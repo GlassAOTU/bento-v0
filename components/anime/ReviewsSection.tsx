@@ -20,9 +20,10 @@ interface ReviewsSectionProps {
     animeId: number
     animeTitle: string
     animeImage: string
+    animeBannerImage: string
 }
 
-export default function ReviewsSection({ animeId, animeTitle, animeImage }: ReviewsSectionProps) {
+export default function ReviewsSection({ animeId, animeTitle, animeImage, animeBannerImage }: ReviewsSectionProps) {
     const { user, profile } = useAuth()
     const [reviews, setReviews] = useState<Review[]>([])
     const [userReview, setUserReview] = useState<Review | null>(null)
@@ -157,6 +158,7 @@ export default function ReviewsSection({ animeId, animeTitle, animeImage }: Revi
                             }}
                             isOwn={true}
                             onEdit={() => setIsModalOpen(true)}
+                            anime={{ id: animeId, title: animeTitle, bannerImage: animeBannerImage }}
                         />
                     )}
 
