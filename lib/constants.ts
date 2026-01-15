@@ -5,4 +5,4 @@ export const TAGS = [
 ]
 
 export const BASE_URL = 'https://bentoanime.com'
-export const DEFAULT_OG_IMAGE = `${BASE_URL}/images/og-image.png`
+export const DEFAULT_OG_IMAGE = `${BASE_URL}/images/Updated%20Link%20Preview%20Thumbnail.png`
