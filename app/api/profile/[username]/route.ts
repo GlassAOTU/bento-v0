@@ -10,12 +10,18 @@ export async function GET(
         const { username } = await params
         const supabase = await createClient()
 
-        // Fetch profile by username
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, user_id, username, display_name, bio, avatar_url, created_at')
-            .eq('username', username.toLowerCase())
-            .single()
+        // Parallel fetch: profile + current user (independent operations)
+        const [profileResult, userResult] = await Promise.all([
+            supabase
+                .from('profiles')
+                .select('id, user_id, username, display_name, bio, avatar_url, created_at')
+                .eq('username', username.toLowerCase())
+                .single(),
+            supabase.auth.getUser()
+        ])
+
+        const { data: profile, error: profileError } = profileResult
+        const { data: { user } } = userResult
 
         if (profileError || !profile) {
             return NextResponse.json(
@@ -30,7 +36,6 @@ export async function GET(
 
         if (statsError) {
             console.error('Error fetching user stats:', statsError)
-            // Return profile without stats rather than failing
             return NextResponse.json({
                 profile,
                 stats: {
@@ -42,7 +47,6 @@ export async function GET(
             })
         }
 
-        // statsData is an array with one row
         const stats = statsData[0] || {
             watchlist_count: 0,
             review_count: 0,
@@ -50,9 +54,8 @@ export async function GET(
             followers_count: 0
         }
 
-        // Check if current user is following this profile (if authenticated)
+        // Check if current user is following this profile
         let isFollowing = false
-        const { data: { user } } = await supabase.auth.getUser()
 
         if (user && user.id !== profile.user_id) {
             const { data: followData } = await supabase

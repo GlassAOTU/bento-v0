@@ -30,6 +30,7 @@ const nextConfig = {
     ],
   },
   experimental: {
+    optimizePackageImports: ['lucide-react'],
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,

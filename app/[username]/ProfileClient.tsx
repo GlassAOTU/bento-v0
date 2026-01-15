@@ -106,10 +106,11 @@ export default function ProfileClient({ username }: ProfileClientProps) {
             setStats(profileData.stats)
             setIsFollowing(profileData.isFollowing)
 
+            const supabase = createClient()
+
             // Track profile view (only once)
             if (!hasTrackedView.current) {
                 hasTrackedView.current = true
-                const supabase = createClient()
                 const { data: { user } } = await supabase.auth.getUser()
                 trackPublicProfileViewed({
                     profile_username: username,
@@ -118,14 +119,16 @@ export default function ProfileClient({ username }: ProfileClientProps) {
                 })
             }
 
-            const reviewsResponse = await fetch(`/api/reviews/user/${username}?limit=10`)
+            // Parallel fetch: reviews + watchlists (independent operations)
+            const [reviewsResponse, watchlistsResult] = await Promise.all([
+                fetch(`/api/reviews/user/${username}?limit=10`),
+                supabase.rpc('get_public_watchlists', { target_username: username.toLowerCase() })
+            ])
+
             const reviewsData = await reviewsResponse.json()
             setReviews(reviewsData.reviews || [])
 
-            const supabase = createClient()
-            const { data: watchlistsData, error: watchlistsError } = await supabase
-                .rpc('get_public_watchlists', { target_username: username.toLowerCase() })
-
+            const { data: watchlistsData, error: watchlistsError } = watchlistsResult
             if (!watchlistsError && watchlistsData) {
                 const watchlistsWithCounts = await Promise.all(
                     watchlistsData.map(async (watchlist: any) => {
