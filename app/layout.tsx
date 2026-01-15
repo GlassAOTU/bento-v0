@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "https://bentoanime.com/images/og-image.png",
+                url: "https://bentoanime.com/images/Updated%20Link%20Preview%20Thumbnail.png",
                 width: 1200,
                 height: 630,
                 alt: "Bento Site Preview",
