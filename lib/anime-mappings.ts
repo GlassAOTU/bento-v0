@@ -184,6 +184,9 @@ export const SLUG_TO_ANILIST: Record<string, number> = {
   // 5 Centimeters Per Second
   '5-centimeters-per-second': 1689,
 
+  // Look Back (movie)
+  'look-back': 174788,
+
   // Re:ZERO -> rezero
   'rezero-starting-life-in-another-world': 21355,
 }
@@ -231,6 +234,9 @@ export const SEARCH_TO_ANILIST: Record<string, number> = {
 
   // The Boy and the Heron
   'the boy and the heron': 145006,
+
+  // Look Back (movie)
+  'look back': 174788,
 }
 
 /**
