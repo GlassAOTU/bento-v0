@@ -61,7 +61,7 @@ export default function EpisodePageClient({
 
             <div className="container mx-auto max-w-4xl px-6 md:px-8 py-8">
                 <button
-                    onClick={() => router.back()}
+                    onClick={() => router.push(`/anime/${animeSlug}`)}
                     className="mb-6 flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
