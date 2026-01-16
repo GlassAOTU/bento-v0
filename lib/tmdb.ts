@@ -583,6 +583,78 @@ export async function getTMDBMovieDetails(tmdbId: number) {
 }
 
 /**
+ * Get ALL episodes for a TV show across all seasons
+ * Used for caching episode data to Supabase
+ * Returns flat array of episodes with season info
+ */
+export async function getAllTMDBEpisodes(tmdbId: number): Promise<{
+    tmdb_id: number
+    season_number: number
+    episode_number: number
+    name: string | null
+    overview: string | null
+    air_date: string | null
+    runtime: number | null
+    still_url: string | null
+    vote_average: number | null
+}[]> {
+    try {
+        const seasonsData = await getTMDBSeasons(tmdbId)
+
+        if (!seasonsData.seasons || seasonsData.seasons.length === 0) {
+            return []
+        }
+
+        // Filter out season 0 (specials) and seasons with no episodes
+        const regularSeasons = seasonsData.seasons.filter(
+            (s: any) => s.season_number > 0 && s.episode_count > 0
+        )
+
+        // Fetch all seasons in parallel
+        const seasonDetailsPromises = regularSeasons.map((season: any) =>
+            getTMDBSeasonDetails(tmdbId, season.season_number)
+        )
+        const allSeasonDetails = await Promise.all(seasonDetailsPromises)
+
+        // Flatten all episodes into single array
+        const allEpisodes: {
+            tmdb_id: number
+            season_number: number
+            episode_number: number
+            name: string | null
+            overview: string | null
+            air_date: string | null
+            runtime: number | null
+            still_url: string | null
+            vote_average: number | null
+        }[] = []
+
+        for (const seasonDetail of allSeasonDetails) {
+            if (seasonDetail.episodes) {
+                for (const ep of seasonDetail.episodes) {
+                    allEpisodes.push({
+                        tmdb_id: ep.id,
+                        season_number: ep.season_number,
+                        episode_number: ep.episode_number,
+                        name: ep.name || null,
+                        overview: ep.overview || null,
+                        air_date: ep.air_date || null,
+                        runtime: ep.runtime || null,
+                        still_url: ep.still_url_original || ep.still_url_w300 || null,
+                        vote_average: ep.vote_average || null
+                    })
+                }
+            }
+        }
+
+        return allEpisodes
+    } catch (error) {
+        console.error('Error fetching all TMDB episodes:', error)
+        return []
+    }
+}
+
+/**
  * Get comprehensive anime data from TMDB including episodes
  * This is the main function for anime detail pages
  * Supports both TV shows and movies

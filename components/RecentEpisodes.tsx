@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState } from 'react'
 
 interface Episode {
@@ -31,9 +32,10 @@ interface RecentEpisodesProps {
         episodes: Episode[]
     } | null
     onSeasonChange?: (seasonNumber: number) => Promise<Episode[]>
+    animeSlug?: string
 }
 
-export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeasonChange }: RecentEpisodesProps) {
+export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeasonChange, animeSlug }: RecentEpisodesProps) {
     const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number>(
         latestSeasonEpisodes?.season_number || 1
     )
@@ -152,7 +154,12 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {displayedEpisodes.map((episode) => (
-                            <EpisodeCard key={episode.id} episode={episode} />
+                            <EpisodeCard
+                                key={episode.id}
+                                episode={episode}
+                                seasonNumber={selectedSeasonNumber}
+                                animeSlug={animeSlug}
+                            />
                         ))}
                     </div>
 
@@ -189,10 +196,17 @@ export default function RecentEpisodes({ seasons, latestSeasonEpisodes, onSeason
     )
 }
 
-function EpisodeCard({ episode }: { episode: Episode }) {
+function EpisodeCard({
+    episode,
+    seasonNumber,
+    animeSlug
+}: {
+    episode: Episode
+    seasonNumber: number
+    animeSlug?: string
+}) {
     const [imageError, setImageError] = useState(false)
 
-    // Format date
     const formattedDate = episode.air_date
         ? new Date(episode.air_date).toLocaleDateString('en-US', {
             month: 'long',
@@ -201,23 +215,21 @@ function EpisodeCard({ episode }: { episode: Episode }) {
         }).toUpperCase()
         : 'DATE TBA'
 
-    // Truncate description
     const truncatedDescription = episode.overview
         ? episode.overview.length > 120
             ? episode.overview.substring(0, 120) + '...'
             : episode.overview
         : 'This is the episode description and a place where a quick sentence or two will be able to give a quicker explainer what the episode was about.'
 
-    return (
-        <div className="flex flex-col">
-            {/* Episode Thumbnail */}
+    const content = (
+        <div className="flex flex-col group">
             <div className="relative w-full aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
                 {episode.still_url_w300 && !imageError ? (
                     <Image
                         src={episode.still_url_w300}
                         alt={episode.name}
                         fill
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={() => setImageError(true)}
                     />
                 ) : (
@@ -239,9 +251,8 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                 )}
             </div>
 
-            {/* Episode Info */}
             <div className="space-y-2">
-                <h3 className="text-sm font-bold text-mySecondary dark:text-white font-instrument-sans uppercase">
+                <h3 className="text-sm font-bold text-mySecondary dark:text-white font-instrument-sans uppercase group-hover:underline">
                     EPISODE {episode.episode_number} : {episode.name.toUpperCase()}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 font-instrument-sans">
@@ -253,4 +264,14 @@ function EpisodeCard({ episode }: { episode: Episode }) {
             </div>
         </div>
     )
+
+    if (animeSlug) {
+        return (
+            <Link href={`/anime/${animeSlug}/${seasonNumber}/${episode.episode_number}`}>
+                {content}
+            </Link>
+        )
+    }
+
+    return content
 }

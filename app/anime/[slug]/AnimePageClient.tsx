@@ -357,6 +357,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                         <RecentEpisodes
                             seasons={seasons}
                             latestSeasonEpisodes={latestSeasonEpisodes}
+                            animeSlug={slug}
                             onSeasonChange={async (seasonNumber: number) => {
                                 if (!tmdbId) return []
                                 const response = await fetch(`/api/anime/tmdb/season/${tmdbId}/${seasonNumber}`)
