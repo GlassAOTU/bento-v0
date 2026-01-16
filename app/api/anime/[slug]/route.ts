@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { unslugify } from '@/lib/utils/slugify'
 import { getAnimeData, shouldRefresh, saveAnimeData } from '@/lib/supabase/anime-data'
 import { getAnilistBySearchTerm, getAnilistBySlug } from '@/lib/anime-mappings'
-import { resolveAnilistId, fetchUnifiedAnimeData } from '@/lib/anime-fetch'
+import { resolveAnilistId, fetchUnifiedAnimeData, isBrokenTMDBState } from '@/lib/anime-fetch'
 import { fetchFullAnimeDetails } from '@/lib/anilist'
 import { shouldRefreshEpisodes, saveEpisodes } from '@/lib/supabase/episode-data'
 import { getAllTMDBEpisodes } from '@/lib/tmdb'
@@ -91,6 +91,17 @@ export async function GET(
         if (cached && !isStale) {
             console.log(`[API] Cache hit (fresh) for "${searchTerm}"`)
 
+            // Auto-recovery: If cache has broken TMDB state, trigger refetch
+            if (isBrokenTMDBState(cached)) {
+                console.log(`[API] Detected broken TMDB state for "${searchTerm}" - triggering auto-recovery`)
+                const freshData = await fetchUnifiedAnimeData(anilistId)
+                cacheEpisodesIfNeeded(anilistId, freshData.details?.tmdbId, freshData.details?.format).catch(() => {})
+                return NextResponse.json({
+                    ...formatResponse(freshData),
+                    dataSource: 'Auto-Recovery'
+                })
+            }
+
             // Ensure streaming links are present
             let details = cached.details
             if (!details.streamingLinks || details.streamingLinks.length === 0) {
@@ -126,8 +137,8 @@ export async function GET(
         if (cached && isStale) {
             console.log(`[API] Cache hit (stale) for "${searchTerm}" - triggering background refresh`)
 
-            // Fire-and-forget background refresh
-            fetchUnifiedAnimeData(anilistId).catch(err => {
+            // Fire-and-forget background refresh (pass existing cache for preservation)
+            fetchUnifiedAnimeData(anilistId, { existingCache: cached }).catch(err => {
                 console.error(`[Background] Refresh failed for ${anilistId}:`, err)
             })
 
