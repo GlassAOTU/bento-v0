@@ -2,8 +2,30 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import EpisodePageClient from './EpisodePageClient'
 import { getAnimeBySlug } from '@/lib/supabase/anime-data'
-import { getEpisode, getEpisodesByAnimeId, getAllCachedEpisodes } from '@/lib/supabase/episode-data'
+import { getEpisode, getEpisodesByAnimeId, getAllCachedEpisodes, shouldRefreshEpisodes, saveEpisodes } from '@/lib/supabase/episode-data'
+import { getAllTMDBEpisodes } from '@/lib/tmdb'
 import { DEFAULT_OG_IMAGE } from '@/lib/constants'
+
+async function cacheEpisodesIfNeeded(animeId: number, tmdbId: number | null, format: string | null): Promise<boolean> {
+    if (!tmdbId || format === 'MOVIE') return false
+
+    try {
+        const needsRefresh = await shouldRefreshEpisodes(animeId)
+        if (!needsRefresh) return false
+
+        console.log(`[Episode Page] Caching episodes for anime ${animeId} (TMDB ${tmdbId})`)
+        const episodes = await getAllTMDBEpisodes(tmdbId)
+
+        if (episodes.length > 0) {
+            await saveEpisodes(animeId, episodes)
+            console.log(`[Episode Page] Cached ${episodes.length} episodes for anime ${animeId}`)
+            return true
+        }
+    } catch (error) {
+        console.error(`[Episode Page] Failed to cache episodes for anime ${animeId}:`, error)
+    }
+    return false
+}
 
 interface PageProps {
     params: Promise<{ slug: string; season: string; episode: string }>
@@ -191,7 +213,20 @@ export default async function EpisodePage({ params }: PageProps) {
         notFound()
     }
 
-    const episodeData = await getEpisode(animeData.anime_id, seasonNum, episodeNum)
+    let episodeData = await getEpisode(animeData.anime_id, seasonNum, episodeNum)
+
+    // If episode not found, try caching episodes first
+    if (!episodeData && animeData.details?.tmdbId) {
+        const cached = await cacheEpisodesIfNeeded(
+            animeData.anime_id,
+            animeData.details.tmdbId,
+            animeData.details.format
+        )
+        if (cached) {
+            episodeData = await getEpisode(animeData.anime_id, seasonNum, episodeNum)
+        }
+    }
+
     const allEpisodes = await getEpisodesByAnimeId(animeData.anime_id)
     const streamingLinks = animeData.details?.streamingLinks || []
     const animeTitle = animeData.details?.title || slug
