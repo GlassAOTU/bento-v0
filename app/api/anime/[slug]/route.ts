@@ -4,6 +4,30 @@ import { getAnimeData, shouldRefresh, saveAnimeData } from '@/lib/supabase/anime
 import { getAnilistBySearchTerm, getAnilistBySlug } from '@/lib/anime-mappings'
 import { resolveAnilistId, fetchUnifiedAnimeData } from '@/lib/anime-fetch'
 import { fetchFullAnimeDetails } from '@/lib/anilist'
+import { shouldRefreshEpisodes, saveEpisodes } from '@/lib/supabase/episode-data'
+import { getAllTMDBEpisodes } from '@/lib/tmdb'
+
+async function cacheEpisodesIfNeeded(animeId: number, tmdbId: number | null, format: string | null) {
+    if (!tmdbId || format === 'MOVIE') return
+
+    try {
+        const needsRefresh = await shouldRefreshEpisodes(animeId)
+        if (!needsRefresh) {
+            console.log(`[Episodes] Cache fresh for anime ${animeId}`)
+            return
+        }
+
+        console.log(`[Episodes] Fetching episodes for anime ${animeId} (TMDB ${tmdbId})`)
+        const episodes = await getAllTMDBEpisodes(tmdbId)
+
+        if (episodes.length > 0) {
+            const saved = await saveEpisodes(animeId, episodes)
+            console.log(`[Episodes] Cached ${episodes.length} episodes for anime ${animeId}: ${saved}`)
+        }
+    } catch (error) {
+        console.error(`[Episodes] Failed to cache for anime ${animeId}:`, error)
+    }
+}
 
 function formatResponse(data: any) {
     return {
@@ -89,6 +113,9 @@ export async function GET(
                 }
             }
 
+            // Trigger episode caching in background (non-blocking)
+            cacheEpisodesIfNeeded(anilistId, details.tmdbId, details.format).catch(() => {})
+
             return NextResponse.json({
                 ...formatResponse({ ...cached, details }),
                 dataSource: 'Cache'
@@ -104,6 +131,9 @@ export async function GET(
                 console.error(`[Background] Refresh failed for ${anilistId}:`, err)
             })
 
+            // Trigger episode caching in background (non-blocking)
+            cacheEpisodesIfNeeded(anilistId, cached.details?.tmdbId, cached.details?.format).catch(() => {})
+
             return NextResponse.json({
                 ...formatResponse(cached),
                 dataSource: 'Cache (Stale)',
@@ -114,6 +144,9 @@ export async function GET(
         // STEP 5: Cache miss - fetch fresh (blocking)
         console.log(`[API] Cache miss for "${searchTerm}" - fetching fresh data`)
         const freshData = await fetchUnifiedAnimeData(anilistId)
+
+        // Trigger episode caching in background (non-blocking)
+        cacheEpisodesIfNeeded(anilistId, freshData.details?.tmdbId, freshData.details?.format).catch(() => {})
 
         // AI description will be fetched by client via /api/anime/description
         return NextResponse.json({
