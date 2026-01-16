@@ -75,6 +75,9 @@ export const ANILIST_TO_TMDB: Record<number, TMDBMapping> = {
   // Demon Slayer: Mugen Train
   112151: { tmdbId: 635302, type: 'movie' },
 
+  // Demon Slayer: Kimetsu no Yaiba (TV series)
+  101922: { tmdbId: 85937, type: 'tv' },
+
   // Jujutsu Kaisen 0
   131573: { tmdbId: 810693, type: 'movie' },
 

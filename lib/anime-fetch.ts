@@ -1,8 +1,40 @@
 import { searchAnime, fetchAnimeById, fetchSimilarAnime, fetchPopularAnime } from './anilist'
 import { getAnilistBySearchTerm, getTMDBByAnilistId } from './anime-mappings'
-import { getTMDBAnimeDetails, findTMDBAnimeByTitle, getTMDBImageUrl, TMDB_POSTER_SIZES, getTMDBShowDetails, getTMDBMovieDetails } from './tmdb'
+import { getTMDBAnimeDetails, findTMDBAnimeByTitle, getTMDBImageUrl, TMDB_POSTER_SIZES, getTMDBShowDetails, getTMDBMovieDetails, searchTMDBAnime } from './tmdb'
 import { getTMDBIdFromARM } from './arm-api'
-import { saveAnimeData } from './supabase/anime-data'
+import { saveAnimeData, AnimeData } from './supabase/anime-data'
+
+export function isBrokenTMDBState(cached: AnimeData): boolean {
+    const details = cached.details
+    if (!details) return true
+
+    const isMovie = details.format === 'MOVIE'
+    if (isMovie) return false
+
+    const hasEmptySeasons = !details.seasons || details.seasons.length === 0
+    const hasAniListImage = details.coverImage?.includes('anilist.co') ||
+                           details.bannerImage?.includes('anilist.co')
+    const hasTmdbId = !!details.tmdbId
+
+    return hasEmptySeasons && (hasAniListImage || hasTmdbId)
+}
+
+function isValidTMDBMatch(
+    tmdbResult: { first_air_date?: string; release_date?: string },
+    anilistYear: number | null,
+    anilistEpisodes: number | null
+): boolean {
+    if (!anilistYear) return true
+
+    const tmdbDateStr = tmdbResult.first_air_date || tmdbResult.release_date
+    if (!tmdbDateStr) return false
+
+    const tmdbYear = parseInt(tmdbDateStr.split('-')[0], 10)
+    if (isNaN(tmdbYear)) return false
+
+    const yearDiff = Math.abs(tmdbYear - anilistYear)
+    return yearDiff <= 1
+}
 
 async function getVerifiedTMDBImage(
     anilistId: number,
@@ -113,25 +145,33 @@ export async function enhanceWithTMDBImages(anilistId: number, title: string): P
     }
 }
 
+export interface FetchOptions {
+    existingCache?: AnimeData | null
+}
+
 /**
  * Unified fetch that gets all anime data in one go:
  * - AniList details (source of truth)
- * - TMDB images, seasons, episodes
+ * - TMDB images, seasons, episodes (strategy: Manual → ARM → Title with validation)
  * - Similar anime from AniList
  * - Popular anime from AniList
  * Then saves to cache with unified_fetch = true
  */
-export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedAnimeData> {
+export async function fetchUnifiedAnimeData(anilistId: number, options?: FetchOptions): Promise<UnifiedAnimeData> {
     console.log(`[Unified] Fetching data for AniList ID ${anilistId}`)
+    const existingCache = options?.existingCache
 
     // Fetch AniList data (base)
     const anilistDetails = await fetchAnimeById(anilistId)
+    const anilistYear = anilistDetails.seasonYear || null
+    const anilistEpisodes = anilistDetails.episodes || null
 
     // Fetch full TMDB data (images + seasons + episodes)
+    // Strategy order: Manual → ARM → Title search (with validation)
     let tmdbData: any = null
     let tmdbId: number | null = null
 
-    // Try manual mapping first
+    // Strategy 1: Manual mapping (most reliable)
     const manualMapping = getTMDBByAnilistId(anilistId)
     if (manualMapping) {
         tmdbId = manualMapping.tmdbId
@@ -143,29 +183,53 @@ export async function fetchUnifiedAnimeData(anilistId: number): Promise<UnifiedA
         }
     }
 
-    // Try title search
+    // Strategy 2: ARM API (community-verified)
     if (!tmdbData) {
         try {
-            const foundId = await findTMDBAnimeByTitle(anilistDetails.title, anilistId)
-            if (foundId) {
-                tmdbId = foundId
-                tmdbData = await getTMDBAnimeDetails(foundId, anilistId)
+            const armTmdbId = await getTMDBIdFromARM(anilistId)
+            if (armTmdbId) {
+                tmdbId = armTmdbId
+                console.log(`[Unified] Using ARM API: TMDB ${tmdbId}`)
+                tmdbData = await getTMDBAnimeDetails(armTmdbId, anilistId)
+            }
+        } catch (err) {
+            console.error(`[Unified] ARM API failed:`, err)
+        }
+    }
+
+    // Strategy 3: Title search with validation (last resort)
+    if (!tmdbData) {
+        try {
+            const searchResults = await searchTMDBAnime(anilistDetails.title, 5)
+            for (const result of searchResults) {
+                if (isValidTMDBMatch(result, anilistYear, anilistEpisodes)) {
+                    tmdbId = result.tmdb_id
+                    console.log(`[Unified] Using validated title search: TMDB ${tmdbId} (year match)`)
+                    tmdbData = await getTMDBAnimeDetails(tmdbId, anilistId)
+                    break
+                }
+            }
+            if (!tmdbData && searchResults.length > 0) {
+                console.log(`[Unified] Title search found ${searchResults.length} results but none passed validation`)
             }
         } catch (err) {
             console.error(`[Unified] Title search failed:`, err)
         }
     }
 
-    // Try ARM API fallback
-    if (!tmdbData) {
-        try {
-            const armTmdbId = await getTMDBIdFromARM(anilistId)
-            if (armTmdbId) {
-                tmdbId = armTmdbId
-                tmdbData = await getTMDBAnimeDetails(armTmdbId, anilistId)
-            }
-        } catch (err) {
-            console.error(`[Unified] ARM API failed:`, err)
+    // Preserve existing cache if TMDB lookup failed but cache has valid TMDB data
+    if (!tmdbData && existingCache && !isBrokenTMDBState(existingCache)) {
+        console.log(`[Unified] TMDB lookup failed, preserving existing cache data`)
+        tmdbId = existingCache.details?.tmdbId || null
+        tmdbData = {
+            details: {
+                backdrop_url: existingCache.details?.bannerImage,
+                backdrop_url_original: existingCache.details?.bannerImage,
+                poster_url: existingCache.details?.coverImage,
+                videos: existingCache.details?.videos || []
+            },
+            seasons: { seasons: existingCache.details?.seasons || [] },
+            latestSeasonEpisodes: existingCache.details?.latestSeasonEpisodes || null
         }
     }
 
