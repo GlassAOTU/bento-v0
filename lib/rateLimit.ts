@@ -15,6 +15,10 @@ const CONFIGS: Record<string, RateLimitConfig> = {
     maxRequests: 15,
     windowMinutes: 10
   },
+  'share_recommendations': {
+    maxRequests: 10,
+    windowMinutes: 1440
+  },
 }
 
 export type RateLimitResult = {

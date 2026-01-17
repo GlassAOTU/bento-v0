@@ -141,6 +141,45 @@ export function trackRecommendationSeeMoreClicked(properties: {
   posthog.capture('recommendation_see_more_clicked', properties)
 }
 
+export function trackRecommendationShareClicked(properties: {
+  count: number
+}) {
+  posthog.capture('recommendation_share_clicked', properties)
+}
+
+export function trackRecommendationShareCreated(properties: {
+  shortcode: string
+  count: number
+}) {
+  posthog.capture('recommendation_share_created', properties)
+}
+
+export function trackSharedRecommendationViewed(properties: {
+  shortcode: string
+  count: number
+}) {
+  posthog.capture('shared_recommendation_viewed', properties)
+}
+
+export function trackSharedRecommendationCopied(properties: {
+  shortcode: string
+}) {
+  posthog.capture('shared_recommendation_copied', properties)
+}
+
+export function trackSharedRecommendationForked(properties: {
+  shortcode: string
+  count: number
+}) {
+  posthog.capture('shared_recommendation_forked', properties)
+}
+
+export function trackRecommendationClearConfirmed(properties: {
+  count: number
+}) {
+  posthog.capture('recommendation_clear_confirmed', properties)
+}
+
 // ============================================================================
 // ANIME DETAIL PAGE
 // ============================================================================

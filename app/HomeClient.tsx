@@ -3,7 +3,7 @@
 import './globals.css'
 
 import Image from "next/image"
-import { SetStateAction, useEffect, useState, Suspense } from "react"
+import { SetStateAction, useEffect, useState, Suspense, useRef } from "react"
 import { useSearchParams } from 'next/navigation'
 import { ScaleLoader } from "react-spinners"
 import LimitPopup from "../components/LimitPopup"
@@ -15,6 +15,7 @@ import NavigationBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 import { saveRecentSearch, RecentSearchResult } from '@/lib/utils/localStorage'
 import AuthModal from '../components/AuthModal'
+import RecommendationToolbar from '../components/RecommendationToolbar'
 import { trackRecommendationSeeMoreClicked, getAuthStatus } from '@/lib/analytics/events'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { useTheme } from '@/lib/theme/ThemeContext'
@@ -42,8 +43,11 @@ function RecommendationContent() {
         error,
         getRecommendations,
         setRecommendations,
-        setSeenTitles
+        setSeenTitles,
+        clearAll
     } = useRecommendations([], user)
+
+    const [shouldAutoLoad, setShouldAutoLoad] = useState(false);
 
     // Always restore from sessionStorage after mount (client-side only)
     useEffect(() => {
@@ -52,6 +56,9 @@ function RecommendationContent() {
         try {
             // Check if returning from auth flow (e.g., OAuth from watchlist)
             const isReturningFromAuth = sessionStorage.getItem('auth_flow_in_progress') === 'true';
+
+            // Check if we need to auto-load more recommendations (from fork)
+            const autoLoad = sessionStorage.getItem('recommendations_auto_load') === 'true';
 
             // Always restore cache to preserve results across page navigations
             const cachedRecs = sessionStorage.getItem('recommendations_data')
@@ -90,12 +97,21 @@ function RecommendationContent() {
                 sessionStorage.removeItem('auth_return_url')
             }
 
+            // Set flag to trigger auto-load after state is restored
+            if (autoLoad) {
+                sessionStorage.removeItem('recommendations_auto_load')
+                setShouldAutoLoad(true)
+            }
+
             setHasRestoredFromCache(true)
         } catch (error) {
             console.error('Failed to restore from cache:', error)
             setHasRestoredFromCache(true)
         }
     }, [hasRestoredFromCache, setRecommendations, setSeenTitles])
+
+    // Ref to track if auto-load has been triggered
+    const autoLoadTriggeredRef = useRef(false)
 
     const openLimitPopup = () => {
         setLimitPopupOpen(true);
@@ -145,7 +161,17 @@ function RecommendationContent() {
     const handleGetRecommendations = async (append = false) => {
         console.log('[RecommendationPage] handleGetRecommendations called:', { append, isButtonDisabled, isRateLimited });
 
-        if (isButtonDisabled) {
+        // When appending (See More), allow if we have existing recommendations
+        // This supports the fork flow where tags are restored from sessionStorage
+        if (append && recommendations.length > 0) {
+            if (isRateLimited) {
+                console.log('[RecommendationPage] Rate limited, opening popup');
+                openLimitPopup();
+                return;
+            }
+            // Continue with append even if description/tags appear empty in state
+            // (they'll be in sessionStorage and restored)
+        } else if (isButtonDisabled) {
             if (isRateLimited) {
                 console.log('[RecommendationPage] Opening limit popup');
                 openLimitPopup();
@@ -216,7 +242,6 @@ function RecommendationContent() {
     };
 
     const handleSeeMore = () => {
-        // Track see more click
         trackRecommendationSeeMoreClicked({
             current_results_count: recommendations.length,
             total_queries: searchHistory.length,
@@ -224,6 +249,31 @@ function RecommendationContent() {
         });
 
         handleGetRecommendations(true);
+    };
+
+    // Auto-scroll to bottom and trigger "See More" when coming from fork
+    useEffect(() => {
+        if (shouldAutoLoad && recommendations.length > 0 && !isLoading && !autoLoadTriggeredRef.current) {
+            autoLoadTriggeredRef.current = true
+            setShouldAutoLoad(false)
+
+            // Scroll to bottom after a short delay to let the page render
+            setTimeout(() => {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+
+                // Trigger "See More" after scroll completes
+                setTimeout(() => {
+                    handleSeeMore()
+                }, 600)
+            }, 200)
+        }
+    }, [shouldAutoLoad, recommendations.length, isLoading])
+
+    const handleClearAll = () => {
+        clearAll();
+        setSearchHistory([]);
+        setDescription('');
+        setSelectedTags([]);
     };
 
     return (
@@ -452,7 +502,13 @@ function RecommendationContent() {
                 initialView={authModalView}
             />
 
-            {/* <BottomButton /> */}
+            {/* Recommendation Toolbar */}
+            <RecommendationToolbar
+                recommendations={recommendations}
+                prompt={description}
+                tags={selectedTags}
+                onClear={handleClearAll}
+            />
         </div>
     );
 }

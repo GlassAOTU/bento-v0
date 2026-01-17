@@ -42,12 +42,37 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         );
     };
 
+    const clearAll = () => {
+        setRecommendations([]);
+        setSeenTitles([]);
+        setError("");
+        sessionStorage.removeItem('recommendations_data');
+        sessionStorage.removeItem('recommendations_history');
+        sessionStorage.removeItem('recommendations_seenTitles');
+        sessionStorage.removeItem('recommendations_description');
+        sessionStorage.removeItem('recommendations_tags');
+    };
+
+    const loadFromShare = (recs: AnimeRecommendation[], titles: string[]) => {
+        setRecommendations(recs);
+        setSeenTitles(titles);
+    };
+
     const getRecommendations = async (description: string, selectedTags: string[], append: boolean = false) => {
 
-        if (isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited) {
+        // When appending with existing recommendations, allow even if description/tags seem empty
+        // (they're stored in sessionStorage and the API will use seenTitles)
+        const hasExistingRecs = recommendations.length > 0
+        const hasValidInput = selectedTags.length > 0 || description.trim() !== ""
+
+        if (isLoading || isRateLimited) {
             if (isRateLimited) {
                 return { error: "Rate limited" };
             }
+            return { error: "Loading" };
+        }
+
+        if (!hasValidInput && !(append && hasExistingRecs)) {
             return { error: "Invalid input" };
         }
 
@@ -179,6 +204,8 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         getRecommendations,
         addSeenTitle,
         setRecommendations,
-        setSeenTitles
+        setSeenTitles,
+        clearAll,
+        loadFromShare
     };
 } 
