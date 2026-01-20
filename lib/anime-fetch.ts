@@ -295,6 +295,9 @@ export async function fetchUnifiedAnimeData(anilistId: number, options?: FetchOp
         console.error('[Unified] Error fetching popular anime:', error)
     }
 
+    // Preserve existing AI description from cache (avoid regenerating)
+    const preservedAiDescription = existingCache?.ai_description || null
+
     // Save to cache with unified_fetch = true
     try {
         await saveAnimeData(
@@ -302,7 +305,7 @@ export async function fetchUnifiedAnimeData(anilistId: number, options?: FetchOp
             mergedDetails,
             similar,
             popular,
-            null, // AI description generated separately
+            preservedAiDescription,
             anilistDetails.description || '',
             true // unified_fetch = true
         )
@@ -315,6 +318,6 @@ export async function fetchUnifiedAnimeData(anilistId: number, options?: FetchOp
         details: mergedDetails,
         similar_anime: similar,
         popular_anime: popular,
-        ai_description: null
+        ai_description: preservedAiDescription
     }
 }

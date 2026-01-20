@@ -94,7 +94,7 @@ export async function GET(
             // Auto-recovery: If cache has broken TMDB state, trigger refetch
             if (isBrokenTMDBState(cached)) {
                 console.log(`[API] Detected broken TMDB state for "${searchTerm}" - triggering auto-recovery`)
-                const freshData = await fetchUnifiedAnimeData(anilistId)
+                const freshData = await fetchUnifiedAnimeData(anilistId, { existingCache: cached })
                 cacheEpisodesIfNeeded(anilistId, freshData.details?.tmdbId, freshData.details?.format).catch(() => {})
                 return NextResponse.json({
                     ...formatResponse(freshData),
