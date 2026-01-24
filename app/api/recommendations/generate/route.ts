@@ -59,6 +59,16 @@ export async function POST(request: Request) {
     }
 
     const prompt = `You are an anime recommendation engine.
+                    Interpret common anime abbreviations in the user's input. Examples:
+                    - "jjk" = Jujutsu Kaisen
+                    - "aot" = Attack on Titan
+                    - "dbz" = Dragon Ball Z
+                    - "mha" = My Hero Academia
+                    - "opm" = One Punch Man
+                    - "fmab" = Fullmetal Alchemist: Brotherhood
+                    - "hxh" = Hunter x Hunter
+                    - "kny" = Demon Slayer (Kimetsu no Yaiba)
+                    Use your knowledge of anime to interpret other abbreviations the user might use.
                     Based on the following input, recommend exactly 20 distinct animes, matching the described themes or genres, and/or the provided tags.
                     Do not recommend any pornographic animes.
                     Only allow animes from the same franchise if the description explicitly allows it.
