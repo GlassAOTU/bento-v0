@@ -3,27 +3,30 @@ import { getTMDBByAnilistId, getTMDBByTitle } from './anime-mappings'
 
 /**
  * Check if a title's trailing number is part of the actual name (not a season indicator)
- * e.g., "Kaiju No. 8", "No. 6", "Steins;Gate 0"
+ * e.g., "Kaiju No. 8", "No. 6", "Steins;Gate 0", "Mob Psycho 100"
  */
 function hasTrailingNumberInName(title: string): boolean {
+    // If title starts with a number, the trailing number might be part of name
+    if (/^\d+/.test(title)) return true
+
+    // Large numbers (>10) are almost always part of the title, not season indicators
+    // e.g., "Mob Psycho 100", "Eureka Seven", "Area 88"
+    const trailingNumberMatch = title.match(/\s+(\d+)$/)
+    if (trailingNumberMatch) {
+        const num = parseInt(trailingNumberMatch[1], 10)
+        if (num > 10 || num === 0) return true
+    }
+
     // Patterns where trailing numbers are part of the actual title
     const nameNumberPatterns = [
         /No\.\s*\d+$/i,      // "Kaiju No. 8", "No. 6"
         /No\s+\d+$/i,        // "Kaiju No 8"
         /Number\s+\d+$/i,    // "Number 24"
         /#\d+$/,             // "Title #8"
-        /\d+$/,              // Check if starts with number too (like "86")
     ]
 
-    // If title starts with a number, the trailing number might be part of name
-    if (/^\d+/.test(title)) return true
-
-    // Check specific patterns
     for (const pattern of nameNumberPatterns) {
-        if (pattern.test(title)) {
-            // For "No." pattern specifically, this is almost always part of the title
-            if (/No\.?\s*\d+$/i.test(title)) return true
-        }
+        if (pattern.test(title)) return true
     }
 
     return false
@@ -32,7 +35,7 @@ function hasTrailingNumberInName(title: string): boolean {
 /**
  * Extract the base name of an anime by removing season indicators
  */
-function extractBaseName(title: string): string {
+export function extractBaseName(title: string): string {
     let baseName = title;
 
     // Don't strip numbers that are part of the actual title name
@@ -63,7 +66,7 @@ function extractBaseName(title: string): string {
 /**
  * Check if an anime title is likely a season listing that should be filtered out
  */
-function isSeasonListing(title: string): boolean {
+export function isSeasonListing(title: string): boolean {
     // List of patterns that indicate a season-specific entry
     // Note: Simple trailing numbers (/\s+\d+$/) are handled separately below
     // to allow titles like "Kaiju No. 8" where the number is part of the name

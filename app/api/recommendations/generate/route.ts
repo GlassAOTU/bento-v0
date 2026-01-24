@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     const prompt = `You are an anime recommendation engine.
-                    Based on the following input, recommend exactly 7 distinct animes, matching the described themes or genres, and/or the provided tags.
+                    Based on the following input, recommend exactly 20 distinct animes, matching the described themes or genres, and/or the provided tags.
                     Do not recommend any pornographic animes.
                     Only allow animes from the same franchise if the description explicitly allows it.
                     Include both modern and classic animes where appropriate.
@@ -67,6 +67,7 @@ export async function POST(request: Request) {
                     Respond with the official anime title as listed on AniList only.
                     Avoid including extra subtitles, editions, or years unless it is essential.
                     Give only official anime titles, no fan-made or unofficial titles, no fandubs, no expansions, extra content, or spin-offs.
+                    IMPORTANT: Only recommend the FIRST season or original entry of any anime. Do NOT recommend sequels, Season 2+, Part 2+, or continuation entries.
                     If the anime has a remake, use the remake title.
                     Do not repeat any animes that are already in the ${seenTitles} list.
                     IMPORTANT: Do NOT recommend any anime that the user explicitly mentions in their description. If they say "like Steins;Gate" or "similar to Attack on Titan", do not include those anime in your recommendations.
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
 
 
                     Format the response as:
-                    [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason] | [title] ~ [reason]
+                    [title] ~ [reason] | [title] ~ [reason] | ... (20 total recommendations separated by |)
                     Input:
                     Description: ${description || "None"}
                     Tags: ${tags.length ? tags.join(", ") : "None"}`
