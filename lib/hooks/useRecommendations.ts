@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { fetchAnimeDetails } from "@/lib/anilist";
+import { isSeasonListing } from "@/lib/anilist-enhanced";
 import {
     trackRecommendationQueryStarted,
     trackRecommendationQueryCompleted,
@@ -28,9 +29,12 @@ export type AnimeRecommendation = {
     trailer: { id: string, site: string }| null;
 };
 
+type CachedRec = { title: string; reason: string }
+
 export function useRecommendations(initialRecommendations: AnimeRecommendation[] = [], user?: any) {
     const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>(initialRecommendations);
     const [seenTitles, setSeenTitles] = useState<string[]>([]);
+    const [cachedRecs, setCachedRecs] = useState<CachedRec[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isRateLimited, setIsRateLimited] = useState(false);
     const [rateLimitInfo, setRateLimitInfo] = useState<{ message: string; resetAt: string | null } | null>(null);
@@ -45,6 +49,7 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
     const clearAll = () => {
         setRecommendations([]);
         setSeenTitles([]);
+        setCachedRecs([]);
         setError("");
         sessionStorage.removeItem('recommendations_data');
         sessionStorage.removeItem('recommendations_history');
@@ -76,6 +81,45 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
             return { error: "Invalid input" };
         }
 
+        // If appending and we have enough cached recs, use cache instead of API
+        if (append && cachedRecs.length >= 7) {
+            setIsLoading(true);
+            try {
+                const toDisplay = cachedRecs.slice(0, 7);
+                const toCache = cachedRecs.slice(7);
+                const newSeenTitles = [...seenTitles];
+                const animeFinish: AnimeRecommendation[] = [];
+
+                for (const { title, reason } of toDisplay) {
+                    try {
+                        const { description, bannerImage, externalLinks, trailer } = await fetchAnimeDetails(title);
+                        const tmdbImage = await getTMDBImage(title);
+
+                        animeFinish.push({
+                            title,
+                            reason,
+                            description,
+                            image: tmdbImage || bannerImage,
+                            externalLinks,
+                            trailer
+                        });
+
+                        newSeenTitles.push(title);
+                    } catch (e) {
+                        console.warn(`[useRecommendations] Failed to fetch details for: ${title}`, e);
+                    }
+                }
+
+                setCachedRecs(toCache);
+                setSeenTitles(newSeenTitles);
+                setRecommendations(prev => [...animeFinish, ...prev]);
+
+                return { success: true, data: animeFinish, fromCache: true };
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
         const startTime = Date.now();
 
         // Track query started
@@ -92,7 +136,7 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         setError("");
 
         try {
-            const response = await fetch("/api/openai", {
+            const response = await fetch("/api/recommendations/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
@@ -131,25 +175,37 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
             const newSeenTitles = [...seenTitles];
             const animeFinish: AnimeRecommendation[] = [];
 
-            const recommendations = data.recommendations.split(" | ");
+            // Parse all recommendations from API
+            const rawRecs = data.recommendations.split(" | ");
+            const parsedRecs: CachedRec[] = [];
 
-            for (const rec of recommendations) {
+            for (const rec of rawRecs) {
                 const [rawTitle, reason] = rec.split(" ~ ");
                 const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
 
-                if (newSeenTitles.includes(title)) {
-                    continue;
-                }
+                if (!title) continue;
+                if (newSeenTitles.includes(title)) continue;
+                if (isSeasonListing(title)) continue;
 
+                parsedRecs.push({ title, reason: reason?.trim() || "No reason provided" });
+            }
+
+            // Combine with any existing cache (for append scenarios)
+            const allAvailable = append ? [...cachedRecs, ...parsedRecs] : parsedRecs;
+
+            // Take first 7 for display, cache the rest
+            const toDisplay = allAvailable.slice(0, 7);
+            const toCache = allAvailable.slice(7);
+
+            // Fetch details for the 7 we're displaying
+            for (const { title, reason } of toDisplay) {
                 try {
                     const { description, bannerImage, externalLinks, trailer } = await fetchAnimeDetails(title);
-
-                    // Try to get TMDB image, fall back to AniList banner
                     const tmdbImage = await getTMDBImage(title);
 
                     animeFinish.push({
                         title,
-                        reason: reason?.trim() || "No reason provided",
+                        reason,
                         description,
                         image: tmdbImage || bannerImage,
                         externalLinks,
@@ -162,8 +218,10 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
                 }
             }
 
+            // Update cache with remainder
+            setCachedRecs(toCache);
 
-            // Clear state when not appending (fresh search)
+            // Update state
             if (!append) {
                 setSeenTitles(newSeenTitles);
                 setRecommendations(animeFinish);
@@ -197,6 +255,7 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
     return {
         recommendations,
         seenTitles,
+        cachedCount: cachedRecs.length,
         isLoading,
         isRateLimited,
         rateLimitInfo,
