@@ -80,7 +80,7 @@ export async function POST(request: Request) {
                     IMPORTANT: Only recommend the FIRST season or original entry of any anime. Do NOT recommend sequels, Season 2+, Part 2+, or continuation entries.
                     If the anime has a remake, use the remake title.
                     Do not repeat any animes that are already in the ${seenTitles} list.
-                    IMPORTANT: Do NOT recommend any anime that the user explicitly mentions in their description. If they say "like Steins;Gate" or "similar to Attack on Titan", do not include those anime in your recommendations.
+                    IMPORTANT: Do NOT recommend any anime that the user explicitly mentions in their description, including abbreviations you interpret. If they say "like Steins;Gate", "similar to Attack on Titan", or "like jjk" (Jujutsu Kaisen), do not include those anime in your recommendations.
                     If user input is nonsence, disregard it and only accept premade tags and ignore the description.
                     If all else fails, display random animes from the list of 1000 most popular animes.
                     Give a 1-2 sentence reasoning on why the specific anime is similar to the user's input.
