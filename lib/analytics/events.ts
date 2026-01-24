@@ -230,6 +230,35 @@ export function trackAnimeVideoPlayed(properties: {
 }
 
 // ============================================================================
+// AI DESCRIPTION GENERATION
+// ============================================================================
+
+export function trackAIDescriptionRequested(properties: {
+  anime_id: number
+  anime_title: string
+}) {
+  posthog.capture('ai_description_requested', properties)
+}
+
+export function trackAIDescriptionCompleted(properties: {
+  anime_id: number
+  anime_title: string
+  from_cache: boolean
+  fallback: boolean
+  response_time_ms: number
+}) {
+  posthog.capture('ai_description_completed', properties)
+}
+
+export function trackAIDescriptionFailed(properties: {
+  anime_id: number
+  anime_title: string
+  error: string
+}) {
+  posthog.capture('ai_description_failed', properties)
+}
+
+// ============================================================================
 // REVIEWS
 // ============================================================================
 

@@ -22,6 +22,9 @@ import {
     trackWatchlistAddClicked,
     trackAnimeCarouselScroll,
     trackAnimeVideoPlayed,
+    trackAIDescriptionRequested,
+    trackAIDescriptionCompleted,
+    trackAIDescriptionFailed,
     getReferrerPage,
     getAuthStatus
 } from '@/lib/analytics/events'
@@ -178,7 +181,7 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 if (data.aiDescription) {
                     setAiDescription(data.aiDescription)
                 } else {
-                    fetchAIDescription(data.details.id, data.details.description, data.details, data.similar, data.popular)
+                    fetchAIDescription(data.details.id, data.details.description, data.details, data.similar, data.popular, data.details.title)
                 }
 
                 if (process.env.NODE_ENV === 'development') {
@@ -204,9 +207,15 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
             }
         }
 
-        async function fetchAIDescription(animeId: number, description: string, details: any, similar: any, popular: any) {
+        async function fetchAIDescription(animeId: number, description: string, details: any, similar: any, popular: any, animeTitle: string) {
+            const startTime = Date.now()
             try {
                 setDescriptionLoading(true)
+
+                trackAIDescriptionRequested({
+                    anime_id: animeId,
+                    anime_title: animeTitle
+                })
 
                 const response = await fetch('/api/anime/description', {
                     method: 'POST',
@@ -217,12 +226,30 @@ export default function AnimePageClient({ slug }: AnimePageClientProps) {
                 if (response.ok) {
                     const data = await response.json()
                     setAiDescription(data.description)
+
+                    trackAIDescriptionCompleted({
+                        anime_id: animeId,
+                        anime_title: animeTitle,
+                        from_cache: data.fromCache || false,
+                        fallback: data.fallback || false,
+                        response_time_ms: Date.now() - startTime
+                    })
                 } else {
                     setAiDescription(description)
+                    trackAIDescriptionFailed({
+                        anime_id: animeId,
+                        anime_title: animeTitle,
+                        error: `HTTP ${response.status}`
+                    })
                 }
             } catch (err) {
                 console.error('Error fetching AI description:', err)
                 setAiDescription(description)
+                trackAIDescriptionFailed({
+                    anime_id: animeId,
+                    anime_title: animeTitle,
+                    error: err instanceof Error ? err.message : 'Unknown error'
+                })
             } finally {
                 setDescriptionLoading(false)
             }
