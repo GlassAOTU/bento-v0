@@ -4,17 +4,16 @@ import { checkRateLimit } from '@/lib/rateLimit'
 import { createClient } from '@/lib/supabase/server-client'
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: 'https://api.deepseek.com'
 })
 
 export const runtime = 'edge'
 
 export async function POST(request: Request) {
 
-    // Parse the request body first for validation
     const { description, tags, seenTitles } = await request.json()
 
-    // Input validation
     const descriptionLength = description?.trim().length || 0
     const hasValidTags = tags && tags.length > 0
 
@@ -32,15 +31,12 @@ export async function POST(request: Request) {
         )
     }
 
-    // Detect if user is authenticated
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Determine rate limit namespace and identifier
     const namespace = user ? 'recommendations_authenticated' : 'recommendations_anonymous'
     const identifier = user?.id ?? request.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown'
 
-    // Check tiered rate limit
     const rateLimitResult = await checkRateLimit(identifier, namespace)
 
     if (!rateLimitResult.allowed) {
@@ -73,6 +69,7 @@ export async function POST(request: Request) {
                     Give only official anime titles, no fan-made or unofficial titles, no fandubs, no expansions, extra content, or spin-offs.
                     If the anime has a remake, use the remake title.
                     Do not repeat any animes that are already in the ${seenTitles} list.
+                    IMPORTANT: Do NOT recommend any anime that the user explicitly mentions in their description. If they say "like Steins;Gate" or "similar to Attack on Titan", do not include those anime in your recommendations.
                     If user input is nonsence, disregard it and only accept premade tags and ignore the description.
                     If all else fails, display random animes from the list of 1000 most popular animes.
                     Give a 1-2 sentence reasoning on why the specific anime is similar to the user's input.
@@ -85,14 +82,12 @@ export async function POST(request: Request) {
                     Tags: ${tags.length ? tags.join(", ") : "None"}`
 
     try {
-        // Call OpenAI API with the prompt
         const completion = await openai.chat.completions.create({
-            model: "gpt-4",
+            model: "deepseek-chat",
             messages: [{ role: "user", content: prompt }],
         })
         const reply = completion.choices[0]?.message?.content?.trim()
 
-        // Return with rate limit headers
         return NextResponse.json(
             { recommendations: reply },
             {
@@ -104,7 +99,7 @@ export async function POST(request: Request) {
             }
         )
     } catch (error) {
-        console.error("[OpenAI Route] OpenAI API error:", error)
-        return NextResponse.json({ error: "Failed to get recommendations woooooooo" }, { status: 500 })
+        console.error("[Recommendations Route] DeepSeek API error:", error)
+        return NextResponse.json({ error: "Failed to get recommendations" }, { status: 500 })
     }
 }
