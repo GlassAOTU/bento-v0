@@ -1,25 +1,65 @@
+import { normalizeTitleForMatch } from "@/lib/recommendations/normalizeTitle";
+
 const STREAMING_SITES = [
     'Crunchyroll', 'Funimation', 'Netflix', 'Hulu',
     'Amazon Prime Video', 'HIDIVE', 'VRV', 'Tubi',
     'Disney Plus', 'HBO Max', 'Peacock', 'YouTube', 'Bilibili'
 ]
 
+const FORMAT_PRIORITY = [
+    'TV',
+    'MOVIE',
+    'ONA',
+    'OVA',
+    'TV_SHORT',
+    'SPECIAL',
+    'MUSIC'
+]
+
+function getFormatRank(format: string | null | undefined): number {
+    if (!format) return FORMAT_PRIORITY.length
+    const index = FORMAT_PRIORITY.indexOf(format)
+    return index === -1 ? FORMAT_PRIORITY.length : index
+}
+
+function pickBestMatch(mediaList: any[], searchTitle: string) {
+    if (!mediaList.length) return null
+
+    const normalizedSearch = normalizeTitleForMatch(searchTitle)
+    const exactMatches = mediaList.filter((media) => {
+        const titles = [media.title?.english, media.title?.romaji, media.title?.native].filter(Boolean)
+        return titles.some((title: string) => normalizeTitleForMatch(title) === normalizedSearch)
+    })
+
+    const candidates = exactMatches.length ? exactMatches : mediaList
+    return candidates.sort((a, b) => getFormatRank(a.format) - getFormatRank(b.format))[0] ?? null
+}
+
 export async function fetchAnimeDetails(animeTitle: string) {
+    const startTime = Date.now()
     const query = `
     query ($search: String) {
-      Media(search: $search, type: ANIME) {
-        title {
-          romaji
-        }
-        bannerImage
-        externalLinks {
-            url
-            site
-        }
-        description(asHtml: false)
-        trailer {
-            id
-            site
+      Page(perPage: 5) {
+        media(search: $search, type: ANIME, sort: SEARCH_MATCH, isAdult: false) {
+          title {
+            romaji
+            english
+            native
+          }
+          format
+          bannerImage
+          coverImage {
+            large
+          }
+          externalLinks {
+              url
+              site
+          }
+          description(asHtml: false)
+          trailer {
+              id
+              site
+          }
         }
       }
     }`
@@ -34,19 +74,33 @@ export async function fetchAnimeDetails(animeTitle: string) {
     })
 
     if (!response.ok) {
+        console.log("[fetchAnimeDetails] AniList response", {
+            title: animeTitle,
+            ok: response.ok,
+            ms: Date.now() - startTime
+        })
         throw new Error("AniList API returned an error: " + response.status);
     }
 
     const data = await response.json()
 
-    if (!data?.data?.Media) {
+    const mediaList = data?.data?.Page?.media || []
+    console.log("[fetchAnimeDetails] AniList response", {
+        title: animeTitle,
+        ok: response.ok,
+        results: mediaList.length,
+        ms: Date.now() - startTime
+    })
+    const media = pickBestMatch(mediaList, animeTitle)
+
+    if (!media) {
         throw new Error("Anime not found in AniList response");
     }
 
-    const media = data.data.Media
-
     return {
+        titleEnglish: media.title?.english || "",
         bannerImage: media.bannerImage || "",
+        coverImage: media.coverImage?.large || "",
         externalLinks: media.externalLinks?.[0] || null,
         description: (media.description || "No description available")
             .replace(/<br\s*\/?>/gi, "\n")
