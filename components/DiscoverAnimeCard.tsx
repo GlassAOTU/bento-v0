@@ -2,8 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { slugify } from '@/lib/utils/slugify'
 import { trackDiscoverAnimeCardClick, getAuthStatus } from '@/lib/analytics/events'
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/browser-client'
+import { useAuth } from '@/lib/auth/AuthContext'
 
 type DiscoverAnimeCardProps = {
     anime: {
@@ -17,16 +16,7 @@ type DiscoverAnimeCardProps = {
 }
 
 export default function DiscoverAnimeCard({ anime, category = 'unknown', positionInCarousel = 0 }: DiscoverAnimeCardProps) {
-    const [user, setUser] = useState<any>(null)
-
-    useEffect(() => {
-        const initAuth = async () => {
-            const supabase = createClient()
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-        }
-        initAuth()
-    }, [])
+    const { user } = useAuth()
 
     // Convert text to Title Case
     const toTitleCase = (str: string) => {
