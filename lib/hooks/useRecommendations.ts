@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { fetchAnimeDetails } from "@/lib/anilist";
-import { isSeasonListing } from "@/lib/anilist-enhanced";
+import { normalizeTitleForMatch } from "@/lib/recommendations/normalizeTitle";
 import {
     trackRecommendationQueryStarted,
     trackRecommendationQueryCompleted,
@@ -10,12 +10,22 @@ import {
 
 // Helper to fetch TMDB backdrop image for a title (wide format for recommendation cards)
 async function getTMDBImage(title: string): Promise<string | null> {
+    const startTime = Date.now();
     try {
         const response = await fetch(`/api/anime/tmdb-lookup?title=${encodeURIComponent(title)}&type=backdrop`);
         const data = await response.json();
         // Use backdrop for wide cards, fall back to poster if no backdrop
+        console.log("[useRecommendations] TMDB lookup", {
+            title,
+            ms: Date.now() - startTime,
+            ok: response.ok
+        });
         return data.backdrop_url || data.poster_url || null;
     } catch {
+        console.log("[useRecommendations] TMDB lookup failed", {
+            title,
+            ms: Date.now() - startTime
+        });
         return null;
     }
 }
@@ -30,6 +40,57 @@ export type AnimeRecommendation = {
 };
 
 type CachedRec = { title: string; reason: string }
+
+const ABBREVIATION_MAP: Record<string, string> = {
+    'jjk': 'Jujutsu Kaisen',
+    'aot': 'Attack on Titan',
+    'frieren': 'Frieren: Beyond Journey\'s End'
+}
+
+function extractMentionedTitles(description: string): string[] {
+    const mentioned: string[] = []
+    const lowerDesc = description.toLowerCase()
+
+    for (const [abbr, fullTitle] of Object.entries(ABBREVIATION_MAP)) {
+        if (lowerDesc.includes(abbr)) {
+            mentioned.push(fullTitle)
+        }
+    }
+
+    const patterns = [
+        /(?:like|similar to|enjoyed|loved|want more|fans of|if you like)\s+["']?([^"',.\n]+)["']?/gi
+    ]
+
+    for (const pattern of patterns) {
+        let match
+        while ((match = pattern.exec(description)) !== null) {
+            const title = match[1].trim()
+            if (title.length > 2 && title.length < 100) {
+                mentioned.push(title)
+            }
+        }
+    }
+
+    const unique = new Set<string>()
+    const results: string[] = []
+    for (const title of mentioned) {
+        const key = normalizeTitleForMatch(title)
+        if (!key || unique.has(key)) continue
+        unique.add(key)
+        results.push(title)
+    }
+
+    return results
+}
+
+function isMentionedTitle(normalizedTitle: string, mentionedKeys: string[]): boolean {
+    for (const key of mentionedKeys) {
+        if (normalizedTitle === key) return true
+        if (normalizedTitle.startsWith(`${key} `)) return true
+        if (normalizedTitle.startsWith(`${key}:`)) return true
+    }
+    return false
+}
 
 export function useRecommendations(initialRecommendations: AnimeRecommendation[] = [], user?: any) {
     const [recommendations, setRecommendations] = useState<AnimeRecommendation[]>(initialRecommendations);
@@ -88,31 +149,59 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
                 const toDisplay = cachedRecs.slice(0, 7);
                 const toCache = cachedRecs.slice(7);
                 const newSeenTitles = [...seenTitles];
+                const normalizedSelected = new Set(newSeenTitles.map((title) => normalizeTitleForMatch(title)));
                 const animeFinish: AnimeRecommendation[] = [];
 
-                for (const { title, reason } of toDisplay) {
+                const detailPromises = toDisplay.map(async ({ title, reason }) => {
                     try {
-                        const { description, bannerImage, externalLinks, trailer } = await fetchAnimeDetails(title);
+                        const { description, externalLinks, trailer, titleEnglish } = await fetchAnimeDetails(title);
                         const tmdbImage = await getTMDBImage(title);
 
-                        animeFinish.push({
-                            title,
+                        if (!tmdbImage) {
+                            newSeenTitles.push(title);
+                            return null;
+                        }
+
+                        const displayTitle = titleEnglish || title;
+                        const displayKey = normalizeTitleForMatch(displayTitle);
+                        if (displayKey && normalizedSelected.has(displayKey)) {
+                            newSeenTitles.push(displayTitle);
+                            return null;
+                        }
+
+                        if (displayKey) {
+                            normalizedSelected.add(displayKey);
+                        }
+
+                        newSeenTitles.push(displayTitle);
+
+                        return {
+                            title: displayTitle,
                             reason,
                             description,
-                            image: tmdbImage || bannerImage,
+                            image: tmdbImage,
                             externalLinks,
                             trailer
-                        });
-
-                        newSeenTitles.push(title);
+                        } as AnimeRecommendation;
                     } catch (e) {
                         console.warn(`[useRecommendations] Failed to fetch details for: ${title}`, e);
+                        newSeenTitles.push(title);
+                        return null;
                     }
+                });
+
+                for (const promise of detailPromises) {
+                    promise.then((result) => {
+                        if (!result) return;
+                        animeFinish.push(result);
+                        setRecommendations((prev) => [result, ...prev]);
+                    });
                 }
+
+                await Promise.allSettled(detailPromises);
 
                 setCachedRecs(toCache);
                 setSeenTitles(newSeenTitles);
-                setRecommendations(prev => [...animeFinish, ...prev]);
 
                 return { success: true, data: animeFinish, fromCache: true };
             } finally {
@@ -136,10 +225,15 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
         setError("");
 
         try {
+            const apiStart = Date.now();
             const response = await fetch("/api/recommendations/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ description, tags: selectedTags, seenTitles }),
+            });
+            console.log("[useRecommendations] Recommendations API response", {
+                ms: Date.now() - apiStart,
+                status: response.status
             });
 
 
@@ -175,60 +269,113 @@ export function useRecommendations(initialRecommendations: AnimeRecommendation[]
             const newSeenTitles = [...seenTitles];
             const animeFinish: AnimeRecommendation[] = [];
 
-            // Parse all recommendations from API
-            const rawRecs = data.recommendations.split(" | ");
-            const parsedRecs: CachedRec[] = [];
+            let parsedRecs: CachedRec[] = [];
 
-            for (const rec of rawRecs) {
-                const [rawTitle, reason] = rec.split(" ~ ");
-                const title = rawTitle.replace(/^"(.*)"$/, "$1").trim();
+            if (typeof data.recommendations === "string") {
+                const raw = data.recommendations.replace(/\n/g, " ").trim();
+                const entries = raw.split(/\s*\|\s*/g).filter(Boolean);
+                parsedRecs = entries.map((entry: string) => {
+                    const [rawTitle, reason] = entry.split(" ~ ");
+                    const title = rawTitle?.replace(/^"(.*)"$/, "$1").trim() || "";
+                    return {
+                        title,
+                        reason: reason?.trim() || ""
+                    };
+                }).filter((rec: CachedRec) => rec.title.length > 0);
+            } else if (Array.isArray(data.recommendations)) {
+                parsedRecs = data.recommendations.map((rec: any) => ({
+                    title: typeof rec?.title === "string" ? rec.title.trim() : "",
+                    reason: typeof rec?.reason === "string" ? rec.reason.trim() : ""
+                })).filter((rec: CachedRec) => rec.title.length > 0);
+            }
 
-                if (!title) continue;
-                if (newSeenTitles.includes(title)) continue;
-                if (isSeasonListing(title)) continue;
+            const normalizedSeen = new Set(newSeenTitles.map((title) => normalizeTitleForMatch(title)));
+            const mentionedTitles = extractMentionedTitles(description || "");
+            const mentionedKeys = mentionedTitles.map((title) => normalizeTitleForMatch(title)).filter(Boolean);
+            const normalizedBatch = new Set<string>();
+            const filteredRecs: CachedRec[] = [];
 
-                parsedRecs.push({ title, reason: reason?.trim() || "No reason provided" });
+            for (const rec of parsedRecs) {
+                const normalizedTitle = normalizeTitleForMatch(rec.title);
+                if (!normalizedTitle) continue;
+                if (normalizedSeen.has(normalizedTitle)) continue;
+                if (mentionedKeys.length && isMentionedTitle(normalizedTitle, mentionedKeys)) continue;
+                if (normalizedBatch.has(normalizedTitle)) continue;
+
+                normalizedBatch.add(normalizedTitle);
+                filteredRecs.push({
+                    title: rec.title,
+                    reason: rec.reason || "Recommended based on your interest in similar anime"
+                });
             }
 
             // Combine with any existing cache (for append scenarios)
-            const allAvailable = append ? [...cachedRecs, ...parsedRecs] : parsedRecs;
+            const allAvailable = append ? [...cachedRecs, ...filteredRecs] : filteredRecs;
 
             // Take first 7 for display, cache the rest
             const toDisplay = allAvailable.slice(0, 7);
             const toCache = allAvailable.slice(7);
 
+            if (!append) {
+                setRecommendations([]);
+            }
+
             // Fetch details for the 7 we're displaying
-            for (const { title, reason } of toDisplay) {
+            const normalizedSelected = new Set(normalizedSeen);
+
+            const detailPromises = toDisplay.map(async ({ title, reason }) => {
                 try {
-                    const { description, bannerImage, externalLinks, trailer } = await fetchAnimeDetails(title);
+                    const { description, externalLinks, trailer, titleEnglish } = await fetchAnimeDetails(title);
                     const tmdbImage = await getTMDBImage(title);
 
-                    animeFinish.push({
-                        title,
+                    if (!tmdbImage) {
+                        newSeenTitles.push(title);
+                        return null;
+                    }
+
+                    const displayTitle = titleEnglish || title;
+                    const displayKey = normalizeTitleForMatch(displayTitle);
+                    if (displayKey && normalizedSelected.has(displayKey)) {
+                        newSeenTitles.push(displayTitle);
+                        return null;
+                    }
+
+                    if (displayKey) {
+                        normalizedSelected.add(displayKey);
+                    }
+
+                    newSeenTitles.push(displayTitle);
+
+                    return {
+                        title: displayTitle,
                         reason,
                         description,
-                        image: tmdbImage || bannerImage,
+                        image: tmdbImage,
                         externalLinks,
                         trailer
-                    });
-
-                    newSeenTitles.push(title);
+                    } as AnimeRecommendation;
                 } catch (e) {
                     console.warn(`[useRecommendations] Failed to fetch details for: ${title}`, e);
+                    newSeenTitles.push(title);
+                    return null;
                 }
+            });
+
+            for (const promise of detailPromises) {
+                promise.then((result) => {
+                    if (!result) return;
+                    animeFinish.push(result);
+                    setRecommendations((prev) => append ? [result, ...prev] : [...prev, result]);
+                });
             }
+
+            await Promise.allSettled(detailPromises);
 
             // Update cache with remainder
             setCachedRecs(toCache);
 
             // Update state
-            if (!append) {
-                setSeenTitles(newSeenTitles);
-                setRecommendations(animeFinish);
-            } else {
-                setSeenTitles(newSeenTitles);
-                setRecommendations(prev => [...animeFinish, ...prev]);
-            }
+            setSeenTitles(newSeenTitles);
 
             const endTime = Date.now();
             const responseTime = endTime - startTime;
