@@ -18,12 +18,11 @@ import AuthModal from '../components/AuthModal'
 import RecommendationToolbar from '../components/RecommendationToolbar'
 import { trackRecommendationSeeMoreClicked, getAuthStatus } from '@/lib/analytics/events'
 import { useAuth } from '@/lib/auth/AuthContext'
-import { useTheme } from '@/lib/theme/ThemeContext'
+import { useSessionStorageSync } from '@/lib/hooks/useSessionStorage'
 
 function RecommendationContent() {
     const searchParams = useSearchParams()
     const { user } = useAuth()
-    const { theme } = useTheme()
 
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [description, setDescription] = useState("");
@@ -123,26 +122,9 @@ function RecommendationContent() {
 
     const isButtonDisabled = isLoading || (selectedTags.length === 0 && description.trim() === "") || isRateLimited;
 
-    // Save recommendations to sessionStorage whenever they change
-    useEffect(() => {
-        if (recommendations.length > 0) {
-            sessionStorage.setItem('recommendations_data', JSON.stringify(recommendations))
-        }
-    }, [recommendations])
-
-    // Save searchHistory to sessionStorage whenever it changes
-    useEffect(() => {
-        if (searchHistory.length > 0) {
-            sessionStorage.setItem('recommendations_history', JSON.stringify(searchHistory))
-        }
-    }, [searchHistory])
-
-    // Save seenTitles to sessionStorage whenever they change
-    useEffect(() => {
-        if (seenTitles.length > 0) {
-            sessionStorage.setItem('recommendations_seenTitles', JSON.stringify(seenTitles))
-        }
-    }, [seenTitles])
+    useSessionStorageSync('recommendations_data', recommendations, recommendations.length > 0)
+    useSessionStorageSync('recommendations_history', searchHistory, searchHistory.length > 0)
+    useSessionStorageSync('recommendations_seenTitles', seenTitles, seenTitles.length > 0)
 
     // Pre-fill from URL parameters (from recent searches)
     useEffect(() => {
@@ -289,19 +271,37 @@ function RecommendationContent() {
                     {/* Banner */}
                     <section className="flex justify-center sm:px-10 md:mb-10">
                         <div className="relative max-w-[1200px] w-full flex justify-center">
+                            {/* Desktop Banner - Light */}
                             <Image
-                                src={theme === 'dark' ? "/images/Dekstop Banner - Dark Mode.png" : "/images/header-image.png"}
+                                src="/images/header-image.png"
                                 alt="Banner"
                                 width={600}
                                 height={300}
-                                className="hidden sm:inline w-full h-auto"
+                                className="hidden sm:inline dark:sm:hidden w-full h-auto"
                             />
+                            {/* Desktop Banner - Dark */}
                             <Image
-                                src={theme === 'dark' ? "/images/MobileBanner 1 (darkmode).png" : "/images/MobileBanner 1.png"}
+                                src="/images/Dekstop Banner - Dark Mode.png"
+                                alt="Banner"
+                                width={600}
+                                height={300}
+                                className="hidden dark:sm:inline w-full h-auto"
+                            />
+                            {/* Mobile Banner - Light */}
+                            <Image
+                                src="/images/MobileBanner 1.png"
                                 alt="Banner"
                                 width={400}
                                 height={264}
-                                className="sm:hidden w-full h-auto"
+                                className="sm:hidden dark:hidden w-full h-auto"
+                            />
+                            {/* Mobile Banner - Dark */}
+                            <Image
+                                src="/images/MobileBanner 1 (darkmode).png"
+                                alt="Banner"
+                                width={400}
+                                height={264}
+                                className="hidden dark:block dark:sm:hidden w-full h-auto"
                             />
                         </div>
                     </section>

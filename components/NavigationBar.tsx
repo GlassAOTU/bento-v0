@@ -11,13 +11,11 @@ import UsernameSetupModal from './UsernameSetupModal';
 import EditProfileModal from './EditProfileModal';
 import { trackUserSignout } from '@/lib/analytics/events';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { useTheme } from '@/lib/theme/ThemeContext';
 import ThemeToggle from './ThemeToggle';
 
 export default function NavigationBar() {
     const pathname = usePathname();
     const { user, profile, loading, profileLoading, hasProfile, refreshProfile } = useAuth();
-    const { theme } = useTheme();
     const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [authModalView, setAuthModalView] = useState<'signin' | 'signup'>('signin');
@@ -71,21 +69,37 @@ export default function NavigationBar() {
                     {/* Logo + Mobile Page Dropdown */}
                     <div className="flex items-center gap-2">
                         <a href="/" className="flex-shrink-0">
-                            {/* Desktop Logo */}
+                            {/* Desktop Logo - Light */}
                             <Image
-                                src={theme === 'dark' ? '/images/White Cat.png' : '/images/Black Cat.png'}
+                                src="/images/Black Cat.png"
                                 alt="Bento Logo"
                                 width={52}
                                 height={52}
-                                className="hidden md:block w-[52px] h-[52px] object-contain"
+                                className="hidden md:block dark:md:hidden w-[52px] h-[52px] object-contain"
                             />
-                            {/* Mobile Logo */}
+                            {/* Desktop Logo - Dark */}
                             <Image
-                                src={theme === 'dark' ? '/images/Mobile Logo (Dark Mode).png' : '/images/Logo - Mobile.png'}
+                                src="/images/White Cat.png"
+                                alt="Bento Logo"
+                                width={52}
+                                height={52}
+                                className="hidden dark:md:block w-[52px] h-[52px] object-contain"
+                            />
+                            {/* Mobile Logo - Light */}
+                            <Image
+                                src="/images/Logo - Mobile.png"
                                 alt="Bento Logo"
                                 width={40}
                                 height={40}
-                                className="md:hidden w-10 h-10 object-contain"
+                                className="md:hidden dark:hidden w-10 h-10 object-contain"
+                            />
+                            {/* Mobile Logo - Dark */}
+                            <Image
+                                src="/images/Mobile Logo (Dark Mode).png"
+                                alt="Bento Logo"
+                                width={40}
+                                height={40}
+                                className="hidden dark:block dark:md:hidden w-10 h-10 object-contain"
                             />
                         </a>
 

@@ -4,8 +4,6 @@ import '../../../app/globals.css'
 import Image from 'next/image'
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/browser-client'
 import { searchAnimeEnhanced, AnimeFormat } from '@/lib/anilist-enhanced'
 import NavigationBar from '../../../components/NavigationBar'
 import Footer from '../../../components/Footer'
@@ -13,6 +11,7 @@ import CategorySection from '../../../components/CategorySection'
 import DiscoverAnimeCard from '../../../components/DiscoverAnimeCard'
 import PopularOnBentoCarousel from '../../../components/PopularOnBentoCarousel'
 import { trackDiscoverSearch, trackDiscoverSearchCleared, trackDiscoverFormatFilter, getAuthStatus } from '@/lib/analytics/events'
+import { useAuth } from '@/lib/auth/AuthContext'
 
 type FormatFilter = 'all' | 'tv' | 'movie'
 
@@ -55,7 +54,7 @@ type AnimeCategories = {
 function DiscoverContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [user, setUser] = useState<User | null>(null)
+    const { user } = useAuth()
     const [animeData, setAnimeData] = useState<AnimeCategories | null>(null)
 
     // Search state
@@ -94,21 +93,6 @@ function DiscoverContent() {
     }, [searchParams, formatFilter])
 
     useEffect(() => {
-        const initAuth = async () => {
-            const supabase = await createClient()
-
-            // Get initial session
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-
-            // Listen for auth changes
-            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                setUser(session?.user ?? null)
-            })
-
-            return () => subscription.unsubscribe()
-        }
-
         const loadAnimeData = async () => {
             try {
                 const response = await fetch('/data/popular-anime.json')
@@ -119,7 +103,6 @@ function DiscoverContent() {
             }
         }
 
-        initAuth()
         loadAnimeData()
     }, [])
 

@@ -1,10 +1,10 @@
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import WatchlistModal from "./WatchlistModal"
 import { slugify } from "@/lib/utils/slugify"
 import { trackRecommendationTrailerOpened, trackRecommendationExternalLinkClicked, trackWatchlistAddClicked, getAuthStatus } from "@/lib/analytics/events"
-import { createClient } from '@/lib/supabase/browser-client'
+import { useAuth } from "@/lib/auth/AuthContext"
 
 export default function AnimeCard({ item, onTrailerClick }: {
     item: {
@@ -18,16 +18,7 @@ export default function AnimeCard({ item, onTrailerClick }: {
     onTrailerClick?: (trailerId: string) => void;
 }) {
     const [isWatchlistModalOpen, setIsWatchlistModalOpen] = useState(false)
-    const [user, setUser] = useState<any>(null)
-
-    useEffect(() => {
-        const initAuth = async () => {
-            const supabase = createClient()
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-        }
-        initAuth()
-    }, [])
+    const { user } = useAuth()
 
     const handleTrailerClick = () => {
         if (item.trailer?.id) {

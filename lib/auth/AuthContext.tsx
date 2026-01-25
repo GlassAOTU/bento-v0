@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser-client'
 import { identifyUser, trackUserSignup, trackUserSignin } from '@/lib/analytics/events'
@@ -14,6 +14,13 @@ interface Profile {
     avatar_url: string | null
     created_at: string
 }
+
+type AuthStatus =
+    | 'initializing'
+    | 'unauthenticated'
+    | 'loading_profile'
+    | 'no_profile'
+    | 'ready'
 
 interface AuthContextType {
     user: User | null
@@ -29,28 +36,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [profile, setProfile] = useState<Profile | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [profileLoading, setProfileLoading] = useState(false)
-    const [hasProfile, setHasProfile] = useState(false)
-    const [profileFetchInProgress, setProfileFetchInProgress] = useState(false)
+    const [status, setStatus] = useState<AuthStatus>('initializing')
+    const profileFetchInProgress = useRef(false)
 
-    // Fetch profile data with debouncing to prevent duplicate calls
+    const loading = status === 'initializing'
+    const profileLoading = status === 'loading_profile'
+    const hasProfile = status === 'ready' && profile !== null
+
     const fetchProfile = async () => {
-        // Prevent duplicate concurrent fetches
-        if (profileFetchInProgress) {
+        if (profileFetchInProgress.current) {
             console.log('[AuthContext] Profile fetch already in progress, skipping...')
             return
         }
 
         try {
-            setProfileFetchInProgress(true)
-            setProfileLoading(true)
+            profileFetchInProgress.current = true
+            setStatus('loading_profile')
 
             const response = await fetch('/api/profile')
 
             if (!response.ok) {
                 setProfile(null)
-                setHasProfile(false)
+                setStatus('no_profile')
                 return
             }
 
@@ -58,32 +65,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (data.profile) {
                 setProfile(data.profile)
-                setHasProfile(true)
+                setStatus('ready')
             } else {
                 setProfile(null)
-                setHasProfile(false)
+                setStatus('no_profile')
             }
         } catch (err) {
             console.error('Error fetching profile:', err)
             setProfile(null)
-            setHasProfile(false)
+            setStatus('no_profile')
         } finally {
-            setProfileLoading(false)
-            setProfileFetchInProgress(false)
+            profileFetchInProgress.current = false
         }
     }
 
-    // Initialize auth
     useEffect(() => {
         const initAuth = async () => {
             try {
                 const supabase = createClient()
 
-                // Listen for auth changes first (important for OAuth flow)
                 const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
                     console.log('[AuthContext] Auth event:', event)
                     setUser(session?.user ?? null)
-                    setLoading(false)
 
                     if (session?.user) {
                         console.log('Auth state changed:', {
@@ -92,21 +95,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             email_confirmed_at: session.user.email_confirmed_at,
                         })
 
-                        // Identify user in PostHog
                         identifyUser(session.user.id, {
                             email: session.user.email,
                             created_at: session.user.created_at
                         })
 
-                        // Track signup/signin events
                         const provider = session.user.app_metadata?.provider
                         const authMethod = provider === 'google' ? 'google' : provider === 'email' ? 'email' : 'other'
 
                         if (event === 'SIGNED_IN') {
-                            // Check if this is a new user (created_at is very recent)
                             const createdAt = new Date(session.user.created_at)
                             const now = new Date()
-                            const isNewUser = (now.getTime() - createdAt.getTime()) < 60000 // Within 1 minute
+                            const isNewUser = (now.getTime() - createdAt.getTime()) < 60000
 
                             if (isNewUser) {
                                 trackUserSignup({
@@ -120,50 +120,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             }
                         }
 
-                        // Fetch profile
                         fetchProfile()
                     } else {
-                        // User signed out, clear profile
                         setProfile(null)
-                        setHasProfile(false)
-                        setProfileLoading(false)
+                        setStatus('unauthenticated')
                     }
                 })
 
-                // Get session first - reads from storage and auto-refreshes if needed
                 const { data: { session }, error } = await supabase.auth.getSession()
 
                 if (error) {
                     console.error('Error getting session:', error)
                 }
 
-                const user = session?.user ?? null
-                setUser(user)
-                setLoading(false)
+                const currentUser = session?.user ?? null
+                setUser(currentUser)
 
-                // Only fetch profile if user exists and no auth state change is pending
-                // (avoids double fetch during OAuth redirect)
-                if (user) {
+                if (currentUser) {
                     console.log('Current user:', {
-                        id: user.id,
-                        email: user.email,
-                        email_confirmed_at: user.email_confirmed_at,
-                        created_at: user.created_at,
-                        last_sign_in_at: user.last_sign_in_at,
+                        id: currentUser.id,
+                        email: currentUser.email,
+                        email_confirmed_at: currentUser.email_confirmed_at,
+                        created_at: currentUser.created_at,
+                        last_sign_in_at: currentUser.last_sign_in_at,
                     })
 
-                    // Small delay to let onAuthStateChange handle OAuth case
                     setTimeout(() => {
-                        if (!profileFetchInProgress) {
+                        if (!profileFetchInProgress.current) {
                             fetchProfile()
                         }
                     }, 100)
+                } else {
+                    setStatus('unauthenticated')
                 }
 
                 return () => subscription.unsubscribe()
             } catch (error) {
                 console.error('Error initializing auth:', error)
-                setLoading(false)
+                setStatus('unauthenticated')
             }
         }
 

@@ -1,29 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useReducer } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/browser-client'
 import { ChevronLeft } from 'lucide-react'
 import { slugify } from '@/lib/utils/slugify'
 import UnauthenticatedWatchlistOverlay from './UnauthenticatedWatchlistOverlay'
 import AuthModal from './AuthModal'
+import { useWatchlists, WatchlistSummary } from '@/lib/hooks/useWatchlists'
 import {
     trackWatchlistModalOpened,
     trackWatchlistUnauthenticatedPrompt,
     trackWatchlistAnimeAdded,
     trackWatchlistCreated,
     trackWatchlistDuplicatePrevented,
-    getAuthStatus
 } from '@/lib/analytics/events'
-
-interface Watchlist {
-    id: string
-    name: string
-    description: string | null
-    cover_image_url: string | null
-    item_count: number
-    preview_images: string[]
-}
 
 interface AnimeItem {
     title: string
@@ -40,44 +31,129 @@ interface WatchlistModalProps {
     anime: AnimeItem | null
 }
 
+type ModalView = 'select' | 'select_expanded' | 'create' | 'success' | 'unauthenticated' | 'auth_modal'
+
+type ModalState = {
+    view: ModalView
+    selectedWatchlists: Set<string>
+    newWatchlistName: string
+    newWatchlistDescription: string
+    isPublic: boolean
+    error: string | null
+    submitting: boolean
+    successWatchlistNames: string[]
+    skippedWatchlists: string[]
+}
+
+type ModalAction =
+    | { type: 'RESET' }
+    | { type: 'SET_VIEW'; view: ModalView }
+    | { type: 'TOGGLE_WATCHLIST'; id: string }
+    | { type: 'SET_NAME'; name: string }
+    | { type: 'SET_DESCRIPTION'; description: string }
+    | { type: 'SET_PUBLIC'; isPublic: boolean }
+    | { type: 'SET_ERROR'; error: string | null }
+    | { type: 'START_SUBMIT' }
+    | { type: 'ADD_SUCCESS'; watchlistName: string }
+    | { type: 'ADD_SKIPPED'; watchlistName: string }
+    | { type: 'FINISH_SUCCESS' }
+    | { type: 'FINISH_ERROR'; error: string }
+
+const initialState: ModalState = {
+    view: 'select',
+    selectedWatchlists: new Set(),
+    newWatchlistName: '',
+    newWatchlistDescription: '',
+    isPublic: false,
+    error: null,
+    submitting: false,
+    successWatchlistNames: [],
+    skippedWatchlists: [],
+}
+
+function modalReducer(state: ModalState, action: ModalAction): ModalState {
+    switch (action.type) {
+        case 'RESET':
+            return { ...initialState, selectedWatchlists: new Set() }
+        case 'SET_VIEW':
+            return { ...state, view: action.view, error: null }
+        case 'TOGGLE_WATCHLIST': {
+            const next = new Set(state.selectedWatchlists)
+            if (next.has(action.id)) {
+                next.delete(action.id)
+            } else {
+                next.add(action.id)
+            }
+            return { ...state, selectedWatchlists: next }
+        }
+        case 'SET_NAME':
+            return { ...state, newWatchlistName: action.name }
+        case 'SET_DESCRIPTION':
+            return { ...state, newWatchlistDescription: action.description }
+        case 'SET_PUBLIC':
+            return { ...state, isPublic: action.isPublic }
+        case 'SET_ERROR':
+            return { ...state, error: action.error }
+        case 'START_SUBMIT':
+            return { ...state, submitting: true, error: null, successWatchlistNames: [], skippedWatchlists: [] }
+        case 'ADD_SUCCESS':
+            return { ...state, successWatchlistNames: [...state.successWatchlistNames, action.watchlistName] }
+        case 'ADD_SKIPPED':
+            return { ...state, skippedWatchlists: [...state.skippedWatchlists, action.watchlistName] }
+        case 'FINISH_SUCCESS':
+            return { ...state, submitting: false, view: 'success' }
+        case 'FINISH_ERROR':
+            return { ...state, submitting: false, error: action.error }
+        default:
+            return state
+    }
+}
+
 export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModalProps) {
-    const [watchlists, setWatchlists] = useState<Watchlist[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-    const [view, setView] = useState<'select' | 'create'>('select')
-    const [newWatchlistName, setNewWatchlistName] = useState('')
-    const [newWatchlistDescription, setNewWatchlistDescription] = useState('')
-    const [creating, setCreating] = useState(false)
-    const [adding, setAdding] = useState(false)
-    const [success, setSuccess] = useState(false)
-    const [successWatchlistName, setSuccessWatchlistName] = useState('')
+    const { data: watchlists = [], isLoading: loading, error: queryError, invalidate, isAuthenticated, authLoading } = useWatchlists()
+    const [state, dispatch] = useReducer(modalReducer, initialState)
     const [mounted, setMounted] = useState(false)
-    const [showUnauthOverlay, setShowUnauthOverlay] = useState(false)
-    const [showAuthModal, setShowAuthModal] = useState(false)
-    const [selectedWatchlists, setSelectedWatchlists] = useState<Set<string>>(new Set())
-    const [isExpanded, setIsExpanded] = useState(false)
-    const [skippedWatchlists, setSkippedWatchlists] = useState<string[]>([])
-    const [isPublic, setIsPublic] = useState(false)
+    const hasTrackedOpen = useRef(false)
+
+    const { view, selectedWatchlists, newWatchlistName, newWatchlistDescription, isPublic, error, submitting, successWatchlistNames, skippedWatchlists } = state
+    const isExpanded = view === 'select_expanded'
+    const showUnauthOverlay = view === 'unauthenticated'
+    const showAuthModal = view === 'auth_modal'
+    const success = view === 'success'
 
     // Set mounted state on client side
     useEffect(() => {
         setMounted(true)
     }, [])
 
-    // Fetch user's watchlists and prevent body scroll
+    // Track modal open once when data is ready
+    useEffect(() => {
+        if (isOpen && !authLoading && isAuthenticated && !hasTrackedOpen.current && anime) {
+            hasTrackedOpen.current = true
+            trackWatchlistModalOpened({
+                anime_title: anime.title,
+                has_existing_watchlists: watchlists.length > 0,
+                watchlist_count: watchlists.length,
+                auth_status: 'authenticated'
+            })
+        }
+    }, [isOpen, authLoading, isAuthenticated, watchlists.length, anime])
+
+    // Reset state when modal opens/closes and handle scroll lock
+    // Also immediately show unauth overlay if not authenticated
     useEffect(() => {
         if (isOpen) {
-            fetchWatchlists()
-            setSuccess(false)
-            setSuccessWatchlistName('')
-            setShowUnauthOverlay(false)
-            setShowAuthModal(false)
-            setSelectedWatchlists(new Set())
-            setIsExpanded(false)
-            setSkippedWatchlists([])
-            setError(null)
-            setIsPublic(false)
+            dispatch({ type: 'RESET' })
+            hasTrackedOpen.current = false
             document.body.style.overflow = 'hidden'
+
+            // Immediately show unauth if auth is already resolved and user not authenticated
+            if (!authLoading && !isAuthenticated) {
+                dispatch({ type: 'SET_VIEW', view: 'unauthenticated' })
+                if (anime) {
+                    trackWatchlistUnauthenticatedPrompt({ anime_title: anime.title })
+                }
+            }
         } else {
             document.body.style.overflow = 'unset'
         }
@@ -85,111 +161,47 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
         return () => {
             document.body.style.overflow = 'unset'
         }
-    }, [isOpen, anime])
+    }, [isOpen, authLoading, isAuthenticated, anime])
+
+    // Handle delayed auth resolution (e.g., if authLoading was true when modal opened)
+    useEffect(() => {
+        if (isOpen && !authLoading && !isAuthenticated && view === 'select') {
+            dispatch({ type: 'SET_VIEW', view: 'unauthenticated' })
+            if (anime) {
+                trackWatchlistUnauthenticatedPrompt({ anime_title: anime.title })
+            }
+        }
+    }, [isOpen, authLoading, isAuthenticated, anime, view])
 
     // Listen for auth state changes
     useEffect(() => {
         const supabase = createClient()
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user && showAuthModal) {
-                // User successfully signed in, close auth modal and main modal
-                setShowAuthModal(false)
-                setShowUnauthOverlay(false)
+            if (session?.user && view === 'auth_modal') {
                 onClose()
             }
         })
 
         return () => subscription.unsubscribe()
-    }, [showAuthModal, onClose])
-
-    const fetchWatchlists = async () => {
-        setLoading(true)
-        setError(null)
-
-        try {
-            const supabase = createClient()
-
-            // Check if user is authenticated
-            const { data: { user } } = await supabase.auth.getUser()
-
-            if (!user) {
-                setLoading(false)
-                setShowUnauthOverlay(true)
-
-                // Track unauthenticated prompt
-                if (anime) {
-                    trackWatchlistUnauthenticatedPrompt({
-                        anime_title: anime.title
-                    })
-                }
-
-                return
-            }
-
-            const { data, error: fetchError } = await supabase
-                .from('watchlists')
-                .select('id, name, description, cover_image_url')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-
-            if (fetchError) {
-                console.error('Error fetching watchlists:', fetchError)
-                setError('Failed to load watchlists')
-            } else {
-                const watchlistsWithCounts = await Promise.all(
-                    (data || []).map(async (w) => {
-                        const { count } = await supabase
-                            .from('watchlist_items')
-                            .select('*', { count: 'exact', head: true })
-                            .eq('watchlist_id', w.id)
-                        const { data: items } = await supabase
-                            .from('watchlist_items')
-                            .select('image')
-                            .eq('watchlist_id', w.id)
-                            .order('created_at', { ascending: false })
-                            .limit(3)
-                        const preview_images = (items || []).map(item => item.image).filter(Boolean)
-                        return { ...w, item_count: count || 0, preview_images }
-                    })
-                )
-                setWatchlists(watchlistsWithCounts)
-
-                if (anime) {
-                    trackWatchlistModalOpened({
-                        anime_title: anime.title,
-                        has_existing_watchlists: watchlistsWithCounts.length > 0,
-                        watchlist_count: watchlistsWithCounts.length,
-                        auth_status: 'authenticated'
-                    })
-                }
-            }
-        } catch (err) {
-            console.error('Error fetching watchlists:', err)
-            setError('Failed to load watchlists')
-        } finally {
-            setLoading(false)
-        }
-    }
+    }, [view, onClose])
 
     const handleCreateWatchlist = async (e: React.FormEvent) => {
         e.preventDefault()
 
         if (!newWatchlistName.trim()) {
-            setError('Please enter a watchlist name')
+            dispatch({ type: 'SET_ERROR', error: 'Please enter a watchlist name' })
             return
         }
 
-        setCreating(true)
-        setError(null)
+        dispatch({ type: 'START_SUBMIT' })
 
         try {
             const supabase = createClient()
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {
-                setError('You must be signed in to create watchlists')
-                setCreating(false)
+                dispatch({ type: 'FINISH_ERROR', error: 'You must be signed in to create watchlists' })
                 return
             }
 
@@ -207,7 +219,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
             if (createError) {
                 console.error('Error creating watchlist:', createError)
-                setError(`Failed to create watchlist: ${createError.message}`)
+                dispatch({ type: 'FINISH_ERROR', error: `Failed to create watchlist: ${createError.message}` })
             } else if (data && anime) {
                 trackWatchlistCreated({
                     watchlist_name: data.name,
@@ -216,38 +228,21 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     anime_title: anime.title
                 })
 
-                setWatchlists([...watchlists, {
-                    id: data.id,
-                    name: data.name,
-                    description: data.description,
-                    cover_image_url: null,
-                    item_count: 0,
-                    preview_images: []
-                }])
-                await addAnimeToWatchlist(data.id)
+                invalidate()
+                await handleSingleAdd(data.id, data.name)
             }
         } catch (err) {
             console.error('Error creating watchlist:', err)
-            setError('Failed to create watchlist')
-        } finally {
-            setCreating(false)
+            dispatch({ type: 'FINISH_ERROR', error: 'Failed to create watchlist' })
         }
     }
 
-    const addAnimeToWatchlist = async (watchlistId: string) => {
-        if (!anime) return
-
-        setAdding(true)
-        setError(null)
+    const addAnimeToSingleWatchlist = async (watchlistId: string, watchlistName: string): Promise<'success' | 'duplicate' | 'error'> => {
+        if (!anime) return 'error'
 
         try {
             const supabase = createClient()
 
-            // Find the watchlist name
-            const watchlist = watchlists.find(w => w.id === watchlistId)
-            const watchlistName = watchlist?.name || 'your watchlist'
-
-            // Check if anime already exists in this watchlist
             const { data: existingItem, error: checkError } = await supabase
                 .from('watchlist_items')
                 .select('id')
@@ -257,31 +252,22 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
             if (checkError) {
                 console.error('Error checking for duplicate:', checkError)
-                setError(`Failed to check watchlist: ${checkError.message}`)
-                setAdding(false)
-                return
+                return 'error'
             }
 
             if (existingItem) {
-                setError(`"${anime.title}" is already in ${watchlistName}`)
-
-                // Track duplicate prevented
                 trackWatchlistDuplicatePrevented({
                     anime_title: anime.title,
                     watchlist_name: watchlistName
                 })
-
-                setAdding(false)
-                return
+                return 'duplicate'
             }
 
-            // Try to get TMDB data and cache image
             let finalImageUrl = anime.image
             let tmdbId: number | null = null
             let imageSource = 'external'
 
             try {
-                // Look up TMDB data
                 const tmdbResponse = await fetch(
                     `/api/anime/tmdb-lookup?title=${encodeURIComponent(anime.title)}`
                 )
@@ -313,49 +299,93 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
             if (addError) {
                 console.error('Error adding to watchlist:', addError)
-                setError(`Failed to add anime to watchlist: ${addError.message}`)
-            } else {
-                // Track anime added to watchlist
-                trackWatchlistAnimeAdded({
-                    anime_title: anime.title,
-                    watchlist_name: watchlistName,
-                    watchlist_id: watchlistId,
-                    auth_status: 'authenticated'
-                })
-
-                // Regenerate cover image if watchlist has 3+ items (fire-and-forget)
-                const { count } = await supabase
-                    .from('watchlist_items')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('watchlist_id', watchlistId)
-
-                if (count && count >= 3) {
-                    fetch(`/api/watchlists/${watchlistId}/generate-cover`, { method: 'POST' })
-                        .catch(err => console.warn('Cover generation failed:', err))
-                }
-
-                // Success! Show success message
-                setSuccess(true)
-                setSuccessWatchlistName(watchlistName)
-                // Close modal after 2 seconds
-                setTimeout(() => {
-                    onClose()
-                    // Reset state
-                    setView('select')
-                    setNewWatchlistName('')
-                    setNewWatchlistDescription('')
-                }, 2000)
+                return 'error'
             }
+
+            trackWatchlistAnimeAdded({
+                anime_title: anime.title,
+                watchlist_name: watchlistName,
+                watchlist_id: watchlistId,
+                auth_status: 'authenticated'
+            })
+
+            const { count } = await supabase
+                .from('watchlist_items')
+                .select('*', { count: 'exact', head: true })
+                .eq('watchlist_id', watchlistId)
+
+            if (count && count >= 3) {
+                fetch(`/api/watchlists/${watchlistId}/generate-cover`, { method: 'POST' })
+                    .catch(err => console.warn('Cover generation failed:', err))
+            }
+
+            return 'success'
         } catch (err) {
             console.error('Error adding to watchlist:', err)
-            setError('Failed to add anime to watchlist')
-        } finally {
-            setAdding(false)
+            return 'error'
+        }
+    }
+
+    const handleMultiAdd = async () => {
+        if (!anime || selectedWatchlists.size === 0) return
+
+        dispatch({ type: 'START_SUBMIT' })
+
+        const ids = Array.from(selectedWatchlists)
+        let hasSuccess = false
+        let lastError: string | null = null
+
+        for (const id of ids) {
+            const watchlist = watchlists.find(w => w.id === id)
+            const name = watchlist?.name || 'watchlist'
+
+            const result = await addAnimeToSingleWatchlist(id, name)
+
+            if (result === 'success') {
+                dispatch({ type: 'ADD_SUCCESS', watchlistName: name })
+                hasSuccess = true
+            } else if (result === 'duplicate') {
+                dispatch({ type: 'ADD_SKIPPED', watchlistName: name })
+            } else {
+                lastError = `Failed to add to ${name}`
+            }
+        }
+
+        invalidate()
+
+        if (hasSuccess) {
+            dispatch({ type: 'FINISH_SUCCESS' })
+            setTimeout(() => {
+                onClose()
+            }, 2000)
+        } else if (lastError) {
+            dispatch({ type: 'FINISH_ERROR', error: lastError })
+        } else {
+            dispatch({ type: 'FINISH_ERROR', error: 'Already in all selected watchlists' })
+        }
+    }
+
+    const handleSingleAdd = async (watchlistId: string, watchlistName: string) => {
+        dispatch({ type: 'START_SUBMIT' })
+
+        const result = await addAnimeToSingleWatchlist(watchlistId, watchlistName)
+
+        invalidate()
+
+        if (result === 'success') {
+            dispatch({ type: 'ADD_SUCCESS', watchlistName })
+            dispatch({ type: 'FINISH_SUCCESS' })
+            setTimeout(() => {
+                onClose()
+            }, 2000)
+        } else if (result === 'duplicate') {
+            dispatch({ type: 'FINISH_ERROR', error: `"${anime?.title}" is already in ${watchlistName}` })
+        } else {
+            dispatch({ type: 'FINISH_ERROR', error: 'Failed to add anime to watchlist' })
         }
     }
 
     const handleCreateAccount = () => {
-        // Track auth initiated from watchlist
         if (anime) {
             const { trackWatchlistAuthInitiated } = require('@/lib/analytics/events')
             trackWatchlistAuthInitiated({
@@ -364,24 +394,17 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
             })
         }
 
-        // Store current page for OAuth return using a cookie (persists across redirects)
-        // Cookie expires in 10 minutes (enough time for OAuth flow)
         document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=600; SameSite=Lax`
-
-        // Mark auth flow in progress in sessionStorage (for cache restoration logic)
         sessionStorage.setItem('auth_flow_in_progress', 'true')
 
-        setShowUnauthOverlay(false)
-        setShowAuthModal(true)
+        dispatch({ type: 'SET_VIEW', view: 'auth_modal' })
     }
 
     const handleCloseUnauthOverlay = () => {
-        setShowUnauthOverlay(false)
         onClose()
     }
 
     const handleCloseAuthModal = () => {
-        setShowAuthModal(false)
         onClose()
     }
 
@@ -406,12 +429,11 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 <button
                                     onClick={() => {
                                         if (view === 'create') {
-                                            setView('select')
-                                            setNewWatchlistName('')
-                                            setNewWatchlistDescription('')
-                                            setError(null)
+                                            dispatch({ type: 'SET_VIEW', view: 'select' })
+                                            dispatch({ type: 'SET_NAME', name: '' })
+                                            dispatch({ type: 'SET_DESCRIPTION', description: '' })
                                         } else {
-                                            setIsExpanded(false)
+                                            dispatch({ type: 'SET_VIEW', view: 'select' })
                                         }
                                     }}
                                     className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors -ml-1"
@@ -441,25 +463,20 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                 </div>
 
                 {/* Divider */}
-                {!success && view === 'select' && <div className="mx-4 border-t border-gray-200 dark:border-gray-700" />}
+                {!success && (view === 'select' || view === 'select_expanded') && <div className="mx-4 border-t border-gray-200 dark:border-gray-700" />}
 
                 {/* Content */}
                 <div className="p-4 pt-4">
-                    {error && (
+                    {(error || queryError) && (
                         <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-red-600 dark:text-red-400 text-sm">
-                            {error}
+                            {error || queryError?.message}
                         </div>
                     )}
 
                     {success ? (
                         <div
                             className="text-center py-8 cursor-pointer"
-                            onClick={() => {
-                                onClose()
-                                setView('select')
-                                setNewWatchlistName('')
-                                setNewWatchlistDescription('')
-                            }}
+                            onClick={() => onClose()}
                         >
                             {anime && (
                                 <img
@@ -469,7 +486,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 />
                             )}
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                                Added to {successWatchlistName}!
+                                Added to {successWatchlistNames.join(', ')}!
                             </h3>
                             {skippedWatchlists.length > 0 && (
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
@@ -481,7 +498,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                     ) : (
                         <>
 
-                            {view === 'select' && (
+                            {(view === 'select' || view === 'select_expanded') && (
                         <div>
                             {loading ? (
                                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -491,7 +508,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                 <div className="text-center py-8">
                                     <p className="text-gray-500 dark:text-gray-400 mb-4">You don't have any watchlists yet.</p>
                                     <button
-                                        onClick={() => setView('create')}
+                                        onClick={() => dispatch({ type: 'SET_VIEW', view: 'create' })}
                                         className="w-full py-4 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-[10px] border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
                                     >
                                         Create your first watchlist
@@ -503,7 +520,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                         <p className="text-sm text-gray-600 dark:text-gray-400">Select a list</p>
                                         {watchlists.length > 2 && !isExpanded && (
                                             <button
-                                                onClick={() => setIsExpanded(true)}
+                                                onClick={() => dispatch({ type: 'SET_VIEW', view: 'select_expanded' })}
                                                 className="text-sm text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300 font-medium"
                                             >
                                                 View all lists
@@ -516,18 +533,8 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                             return (
                                                 <button
                                                     key={watchlist.id}
-                                                    onClick={() => {
-                                                        setSelectedWatchlists(prev => {
-                                                            const next = new Set(prev)
-                                                            if (next.has(watchlist.id)) {
-                                                                next.delete(watchlist.id)
-                                                            } else {
-                                                                next.add(watchlist.id)
-                                                            }
-                                                            return next
-                                                        })
-                                                    }}
-                                                    disabled={adding}
+                                                    onClick={() => dispatch({ type: 'TOGGLE_WATCHLIST', id: watchlist.id })}
+                                                    disabled={submitting}
                                                     className="w-full flex items-center gap-4 p-4 rounded-[10px] border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     <img
@@ -550,17 +557,15 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
                                     {selectedWatchlists.size > 0 ? (
                                         <button
-                                            onClick={() => {
-                                                selectedWatchlists.forEach(id => addAnimeToWatchlist(id))
-                                            }}
-                                            disabled={adding}
+                                            onClick={handleMultiAdd}
+                                            disabled={submitting}
                                             className="w-full py-3 bg-pink-300 text-pink-900 rounded-xl hover:bg-pink-400 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            {adding ? 'Adding...' : 'Add?'}
+                                            {submitting ? 'Adding...' : 'Add?'}
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => setView('create')}
+                                            onClick={() => dispatch({ type: 'SET_VIEW', view: 'create' })}
                                             className="w-full py-4 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-[10px] border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
                                         >
                                             Create new watchlist
@@ -582,7 +587,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                         id="watchlist-name"
                                         type="text"
                                         value={newWatchlistName}
-                                        onChange={(e) => setNewWatchlistName(e.target.value)}
+                                        onChange={(e) => dispatch({ type: 'SET_NAME', name: e.target.value })}
                                         className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-darkInput text-black dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-transparent"
                                         maxLength={100}
                                         required
@@ -596,7 +601,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                     <textarea
                                         id="watchlist-description"
                                         value={newWatchlistDescription}
-                                        onChange={(e) => setNewWatchlistDescription(e.target.value)}
+                                        onChange={(e) => dispatch({ type: 'SET_DESCRIPTION', description: e.target.value })}
                                         className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-darkInput text-black dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:border-transparent resize-none"
                                         rows={3}
                                         maxLength={500}
@@ -610,7 +615,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
                                             type="button"
-                                            onClick={() => setIsPublic(true)}
+                                            onClick={() => dispatch({ type: 'SET_PUBLIC', isPublic: true })}
                                             className={`p-4 rounded-xl border transition-colors ${
                                                 isPublic ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                             }`}
@@ -624,7 +629,7 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={() => setIsPublic(false)}
+                                            onClick={() => dispatch({ type: 'SET_PUBLIC', isPublic: false })}
                                             className={`p-4 rounded-xl border transition-colors ${
                                                 !isPublic ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                             }`}
@@ -641,10 +646,10 @@ export default function WatchlistModal({ isOpen, onClose, anime }: WatchlistModa
 
                                 <button
                                     type="submit"
-                                    disabled={creating || !newWatchlistName.trim()}
+                                    disabled={submitting || !newWatchlistName.trim()}
                                     className="w-full py-3 bg-[#F9F9F9] dark:bg-darkInput text-black dark:text-white rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {creating ? 'Creating...' : 'Create Watchlist'}
+                                    {submitting ? 'Creating...' : 'Create Watchlist'}
                                 </button>
                             </form>
                         </div>
